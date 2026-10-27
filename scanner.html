@@ -6,13 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PLMunTrack - QR Scanner</title>
 
-  <!-- UPDATED QR SCANNER LIBRARY -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -59,9 +56,7 @@
       cursor: pointer;
     }
 
-    button:disabled {
-      opacity: 0.5;
-    }
+    button:disabled { opacity: 0.5; }
 
     #result {
       margin-top: 16px;
@@ -70,26 +65,20 @@
       background: #334155;
       overflow-wrap: anywhere;
       white-space: pre-line;
+      line-height: 1.7;
     }
 
-    .success {
-      color: #86efac;
-    }
+    .success { color: #86efac; }
+    .error { color: #fca5a5; }
 
-    .error {
-      color: #fca5a5;
-    }
-
-    a {
-      color: #67e8f9;
-    }
+    a { color: #67e8f9; }
   </style>
 </head>
 
 <body>
   <div class="container">
     <h1>PLMunTrack</h1>
-    <p>QR Code Attendance Scanner</p>
+    <p>Permanent QR Code Attendance Scanner</p>
 
     <div id="reader"></div>
 
@@ -105,9 +94,7 @@
       Pindutin ang Start Camera Scanner para magsimula.
     </div>
 
-    <p>
-      <a href="index.html">Back to Home</a>
-    </p>
+    <p><a href="index.html">Back to Home</a></p>
   </div>
 
   <script>
@@ -116,6 +103,7 @@
 
     let scanner = null;
     let processing = false;
+    let lastScannedToken = "";
 
     function showMessage(message, type = "") {
       const result = document.getElementById("result");
@@ -128,7 +116,7 @@
 
       if (!window.Html5Qrcode) {
         showMessage(
-          "QR scanner library failed to load. Check your internet connection and refresh the page.",
+          "Hindi nag-load ang QR scanner. Check your internet connection, then refresh.",
           "error"
         );
         return;
@@ -151,14 +139,13 @@
         document.getElementById("stopBtn").disabled = false;
 
         showMessage(
-          "Camera active! Itapat ang camera sa PLMunTrack QR code."
+          "Camera active! Itapat ang camera sa permanent PLMunTrack QR code."
         );
-
       } catch (error) {
         scanner = null;
 
         showMessage(
-          "Hindi mabuksan ang camera. Gumamit ng HTTPS website at payagan ang camera permission sa browser.",
+          "Hindi mabuksan ang camera. Buksan ang website gamit ang HTTPS at i-allow ang camera permission.",
           "error"
         );
       }
@@ -176,6 +163,7 @@
 
       scanner = null;
       processing = false;
+      lastScannedToken = "";
 
       document.getElementById("startBtn").disabled = false;
       document.getElementById("stopBtn").disabled = true;
@@ -184,34 +172,37 @@
     }
 
     async function handleQRCode(decodedText) {
-      if (processing) return;
+      if (processing || decodedText === lastScannedToken) return;
 
       processing = true;
+      lastScannedToken = decodedText;
+
       showMessage("QR detected. Checking attendance...");
 
       try {
         const url =
           API_URL +
           "?action=scan&token=" +
-          encodeURIComponent(decodedText);
+          encodeURIComponent(decodedText) +
+          "&_=" + Date.now();
 
         const response = await fetch(url);
         const data = await response.json();
 
         if (!response.ok || !data.success) {
           showMessage(
-            data.message || "Hindi na-validate ang QR code.",
+            "FAILED\n" + (data.message || "Hindi na-validate ang QR code."),
             "error"
           );
           return;
         }
 
         const details = [
+          "ATTENDANCE SUCCESSFUL",
+          "",
           "Result: " + (data.message || "Attendance processed"),
           data.fullName ? "Name: " + data.fullName : "",
-          data.studentNumber
-            ? "Student Number: " + data.studentNumber
-            : "",
+          data.studentNumber ? "ID: " + data.studentNumber : "",
           data.personType ? "Type: " + data.personType : "",
           data.date ? "Date: " + data.date : "",
           data.time ? "Time: " + data.time : "",
@@ -228,7 +219,8 @@
       } finally {
         setTimeout(() => {
           processing = false;
-        }, 2000);
+          lastScannedToken = "";
+        }, 3000);
       }
     }
   </script>
