@@ -6,10 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PLMunTrack - QR Scanner</title>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- UPDATED QR SCANNER LIBRARY -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -27,8 +30,15 @@
       border-radius: 16px;
     }
 
-    h1 { text-align: center; color: #818cf8; }
-    p { text-align: center; color: #cbd5e1; }
+    h1 {
+      text-align: center;
+      color: #818cf8;
+    }
+
+    p {
+      text-align: center;
+      color: #cbd5e1;
+    }
 
     #reader {
       width: 100%;
@@ -49,7 +59,9 @@
       cursor: pointer;
     }
 
-    button:disabled { opacity: 0.5; }
+    button:disabled {
+      opacity: 0.5;
+    }
 
     #result {
       margin-top: 16px;
@@ -57,11 +69,20 @@
       border-radius: 10px;
       background: #334155;
       overflow-wrap: anywhere;
+      white-space: pre-line;
     }
 
-    .success { color: #86efac; }
-    .error { color: #fca5a5; }
-    a { color: #67e8f9; }
+    .success {
+      color: #86efac;
+    }
+
+    .error {
+      color: #fca5a5;
+    }
+
+    a {
+      color: #67e8f9;
+    }
   </style>
 </head>
 
@@ -84,7 +105,9 @@
       Pindutin ang Start Camera Scanner para magsimula.
     </div>
 
-    <p><a href="index.html">Back to Home</a></p>
+    <p>
+      <a href="index.html">Back to Home</a>
+    </p>
   </div>
 
   <script>
@@ -104,7 +127,10 @@
       if (scanner) return;
 
       if (!window.Html5Qrcode) {
-        showMessage("Hindi ma-load ang QR scanner library. Check your internet connection.", "error");
+        showMessage(
+          "QR scanner library failed to load. Check your internet connection and refresh the page.",
+          "error"
+        );
         return;
       }
 
@@ -113,18 +139,26 @@
       try {
         await scanner.start(
           { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 240, height: 240 } },
+          {
+            fps: 10,
+            qrbox: { width: 240, height: 240 }
+          },
           handleQRCode,
           () => {}
         );
 
         document.getElementById("startBtn").disabled = true;
         document.getElementById("stopBtn").disabled = false;
-        showMessage("Camera active. Itapat ang camera sa PLMunTrack QR code.");
+
+        showMessage(
+          "Camera active! Itapat ang camera sa PLMunTrack QR code."
+        );
+
       } catch (error) {
         scanner = null;
+
         showMessage(
-          "Hindi mabuksan ang camera. Gamitin ang HTTPS website sa cellphone at payagan ang camera permission.",
+          "Hindi mabuksan ang camera. Gumamit ng HTTPS website at payagan ang camera permission sa browser.",
           "error"
         );
       }
@@ -137,38 +171,47 @@
         await scanner.stop();
         await scanner.clear();
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
 
       scanner = null;
       processing = false;
+
       document.getElementById("startBtn").disabled = false;
       document.getElementById("stopBtn").disabled = true;
+
       showMessage("Camera stopped.");
     }
 
     async function handleQRCode(decodedText) {
       if (processing) return;
-      processing = true;
 
+      processing = true;
       showMessage("QR detected. Checking attendance...");
 
       try {
-        const url = API_URL + "?action=scan&token=" +
+        const url =
+          API_URL +
+          "?action=scan&token=" +
           encodeURIComponent(decodedText);
 
         const response = await fetch(url);
         const data = await response.json();
 
         if (!response.ok || !data.success) {
-          showMessage(data.message || "Hindi na-validate ang QR code.", "error");
+          showMessage(
+            data.message || "Hindi na-validate ang QR code.",
+            "error"
+          );
           return;
         }
 
         const details = [
           "Result: " + (data.message || "Attendance processed"),
           data.fullName ? "Name: " + data.fullName : "",
-          data.studentNumber ? "Student Number: " + data.studentNumber : "",
+          data.studentNumber
+            ? "Student Number: " + data.studentNumber
+            : "",
           data.personType ? "Type: " + data.personType : "",
           data.date ? "Date: " + data.date : "",
           data.time ? "Time: " + data.time : "",
@@ -176,13 +219,16 @@
         ].filter(Boolean);
 
         showMessage(details.join("\n"), "success");
+
       } catch (error) {
         showMessage(
           "Hindi makakonekta sa attendance server. Check internet at Apps Script deployment.",
           "error"
         );
       } finally {
-        setTimeout(() => { processing = false; }, 2000);
+        setTimeout(() => {
+          processing = false;
+        }, 2000);
       }
     }
   </script>
