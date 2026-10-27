@@ -1,506 +1,490 @@
 
-const SPREADSHEET_ID = "1YH2m_YXAoe-23x0_hOzp4vBIircb0tyznv9z_9_KOqw";
-const TIME_ZONE = "Asia/Manila";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLMunTrack - Admin Dashboard</title>
 
-// MAIN WEB APP ROUTER
-function doGet(e) {
-  try {
-    const params = e && e.parameter ? e.parameter : {};
-    const action = params.action || "";
-
-    if (action === "generateQR") {
-      return generateQR(params.studentNumber, params.type);
+  <style>
+    :root {
+      --primary: #173b7a;
+      --primary-dark: #102b59;
+      --accent: #3478f6;
+      --background: #f3f6fb;
+      --surface: #ffffff;
+      --text: #172b4d;
+      --muted: #687891;
+      --border: #dce4ef;
+      --success: #15803d;
     }
 
-    if (action === "scan") {
-      return scanQRCode(params.token);
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
     }
 
-    // ADMIN DASHBOARD
-    if (action === "dashboard") {
-      return jsonResponse(getDashboardSummary());
+    header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      padding: 24px 5%;
+      box-shadow: 0 4px 18px rgba(16, 43, 89, 0.15);
     }
 
-    return jsonResponse({
-      success: true,
-      system: "PLMunTrack",
-      message: "Google Sheets connected successfully!"
-    });
-
-  } catch (error) {
-    return jsonResponse({
-      success: false,
-      message: error.message
-    });
-  }
-}
-
-// HANDLE WEBSITE REGISTRATION
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents || "{}");
-
-    if (data.action === "registerStudent") {
-      return registerStudent(data);
+    header h1 {
+      margin: 0;
+      font-size: 28px;
     }
 
-    return jsonResponse({
-      success: false,
-      message: "Invalid action."
-    });
+    header p {
+      margin: 5px 0 0;
+      color: #dbeafe;
+      font-size: 14px;
+    }
 
-  } catch (error) {
-    return jsonResponse({
-      success: false,
-      message: error.message
-    });
-  }
-}
+    main {
+      max-width: 1150px;
+      margin: auto;
+      padding: 32px 20px;
+    }
 
-// REGISTER STUDENT
-function registerStudent(data) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName("People");
+    .page-heading {
+      margin-bottom: 22px;
+    }
 
-  if (!sheet) throw new Error("People sheet not found.");
+    .page-heading h2 {
+      margin: 0 0 5px;
+      font-size: 26px;
+      color: var(--primary);
+    }
 
-  const studentNumber = String(data.studentNumber || "").trim();
-  const fullName = String(data.fullName || "").trim();
-  const email = String(data.email || "").trim();
-  const course = String(data.course || "").trim();
-  const yearSection = String(data.yearSection || "").trim();
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+    }
 
-  if (!studentNumber || !fullName || !email) {
-    throw new Error(
-      "Student number, full name, and email are required."
-    );
-  }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 22px 0;
+    }
 
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+    .card, .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(25, 48, 85, 0.05);
+    }
 
-  try {
-    const lastRow = sheet.getLastRow();
+    .card {
+      padding: 23px;
+      border-top: 4px solid var(--accent);
+    }
 
-    if (lastRow >= 2) {
-      const numbers = sheet
-        .getRange(2, 1, lastRow - 1, 1)
-        .getDisplayValues()
-        .flat()
-        .map(value => value.trim());
+    .card h3 {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
 
-      if (numbers.includes(studentNumber)) {
-        throw new Error("Student number is already registered.");
+    .number {
+      color: var(--primary);
+      font-size: 34px;
+      font-weight: 750;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 25px;
+    }
+
+    .section h2 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      color: var(--primary);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button, .link-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px 17px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover, .link-button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 450px;
+      padding: 12px 14px;
+      margin: 14px 0 18px;
+      border: 1px solid #cbd6e5;
+      border-radius: 9px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .search-box:focus {
+      outline: 3px solid #bfdbfe;
+      border-color: var(--accent);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 750px;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 13px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e8edf5;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      background: #edf3ff;
+      color: var(--primary);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: #f8faff;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 20px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    #message, #visitorMessage {
+      margin-top: 14px;
+      font-size: 14px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .success { color: var(--success); }
+    .error { color: #b91c1c; }
+
+    .empty {
+      padding: 25px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 22px 18px; }
+      main { padding: 22px 14px; }
+      .section { padding: 18px 14px; }
+      .page-heading h2 { font-size: 23px; }
+      .actions > * { flex: 1 1 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>PLMunTrack</h1>
+    <p>Admin Dashboard | Visitor Monitoring and Attendance Management</p>
+  </header>
+
+  <main>
+    <div class="page-heading">
+      <h2>Dashboard Overview</h2>
+      <p class="note">Attendance and visitor monitoring summary.</p>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Registered People</h3>
+        <div class="number" id="totalPeople">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Today's Time-In</h3>
+        <div class="number" id="totalIn">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Today's Time-Out</h3>
+        <div class="number" id="totalOut">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Currently Inside</h3>
+        <div class="number" id="inside">—</div>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Dashboard Actions</h2>
+      <p class="note">Refresh the summary or open another module.</p>
+
+      <div class="actions">
+        <button id="refreshBtn" onclick="loadDashboard()">Refresh Summary</button>
+        <button id="refreshVisitorsBtn" onclick="loadVisitors()">Refresh Visitors</button>
+        <a class="link-button" href="generator.html">QR Generator</a>
+        <a class="link-button" href="scanner.html">QR Scanner</a>
+        <a class="link-button" href="index.html">Home</a>
+      </div>
+
+      <div id="message" role="status" aria-live="polite">
+        Loading dashboard summary...
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Visitor Records</h2>
+      <p class="note">
+        Registered visitors from the Visitors sheet.
+      </p>
+
+      <input
+        id="visitorSearch"
+        class="search-box"
+        type="search"
+        placeholder="Search name, email, purpose, or office..."
+        aria-label="Search visitor records"
+      >
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Visitor ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Purpose</th>
+              <th>Person / Office</th>
+              <th>Registration Date</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="visitorTableBody">
+            <tr>
+              <td colspan="8" class="empty">Visitor records have not been loaded yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="visitorMessage" role="status" aria-live="polite">
+        Visitor records need to be connected to Google Apps Script.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Attendance Summary</h2>
+      <p class="note">
+        Registered People counts active records in the People sheet.
+        Time-In and Time-Out count today's attendance records.
+        Currently Inside counts today's records with a Time-In and no Time-Out.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa
+  </footer>
+
+  <script>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+    async function loadDashboard() {
+      const message = document.getElementById("message");
+      const button = document.getElementById("refreshBtn");
+
+      button.disabled = true;
+      message.className = "";
+      message.textContent = "Loading attendance summary...";
+
+      try {
+        const response = await fetch(API_URL + "?action=dashboard");
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Dashboard data unavailable.");
+        }
+
+        document.getElementById("totalPeople").textContent = data.totalPeople ?? 0;
+        document.getElementById("totalIn").textContent = data.totalIn ?? 0;
+        document.getElementById("totalOut").textContent = data.totalOut ?? 0;
+        document.getElementById("inside").textContent = data.inside ?? 0;
+
+        message.className = "success";
+        message.textContent = "Summary loaded successfully for " + (data.date || "today") + ".";
+      } catch (error) {
+        message.className = "error";
+        message.textContent = "Unable to load dashboard summary. Check the Apps Script deployment and action=dashboard.";
+        console.error(error);
+      } finally {
+        button.disabled = false;
       }
     }
 
-    sheet.appendRow([
-      studentNumber,
-      "STUDENT",
-      fullName,
-      email,
-      course,
-      yearSection,
-      "Active"
-    ]);
+    let visitorRecords = [];
 
-  } finally {
-    lock.releaseLock();
-  }
+    async function loadVisitors() {
+      const message = document.getElementById("visitorMessage");
+      const button = document.getElementById("refreshVisitorsBtn");
+      button.disabled = true;
+      message.className = "";
+      message.textContent = "Loading visitor records...";
 
-  return jsonResponse({
-    success: true,
-    message: "Student registered successfully!"
-  });
-}
+      try {
+        const response = await fetch(API_URL + "?action=visitors");
 
-// GENERATE DAILY QR TOKEN
-function generateQR(studentNumber, type) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const people = ss.getSheetByName("People");
-  const tokens = ss.getSheetByName("QR_Tokens");
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
 
-  if (!people || !tokens) {
-    throw new Error("People or QR_Tokens sheet not found.");
-  }
+        const data = await response.json();
 
-  studentNumber = String(studentNumber || "").trim();
-  type = String(type || "").trim().toUpperCase();
+        if (!data.success || !Array.isArray(data.visitors)) {
+          throw new Error(data.message || "Visitor records are unavailable.");
+        }
 
-  if (!studentNumber) {
-    throw new Error("Student number is required.");
-  }
+        visitorRecords = data.visitors;
+        renderVisitors();
 
-  if (!["IN", "OUT"].includes(type)) {
-    throw new Error("QR type must be IN or OUT.");
-  }
+        message.className = "success";
+        message.textContent = visitorRecords.length + " visitor record(s) loaded.";
+      } catch (error) {
+        message.className = "error";
+        message.textContent =
+          "Hindi pa ma-load ang visitor records. Idagdag muna ang action=visitors sa Google Apps Script at i-deploy ang bagong version.";
+        console.error(error);
+      } finally {
+        button.disabled = false;
+      }
+    }
 
-  const today = Utilities.formatDate(
-    new Date(),
-    TIME_ZONE,
-    "yyyy-MM-dd"
-  );
+    function renderVisitors() {
+      const tbody = document.getElementById("visitorTableBody");
+      const query = document.getElementById("visitorSearch").value.trim().toLowerCase();
 
-  const peopleData = people.getDataRange().getDisplayValues();
+      const filtered = visitorRecords.filter(visitor =>
+        [
+          visitor.visitorId,
+          visitor.fullName,
+          visitor.email,
+          visitor.purpose,
+          visitor.personToVisit,
+          visitor.registrationDate,
+          visitor.registrationTime,
+          visitor.status
+        ].some(value => String(value ?? "").toLowerCase().includes(query))
+      );
 
-  const person = peopleData.slice(1).find(row =>
-    String(row[0]).trim() === studentNumber &&
-    String(row[6]).trim().toLowerCase() === "active"
-  );
+      tbody.replaceChildren();
 
-  if (!person) {
-    throw new Error(
-      "Active student not found. Register the student first."
-    );
-  }
+      if (filtered.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 8;
+        cell.className = "empty";
+        cell.textContent = query ? "No matching visitors found." : "No visitor records found.";
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        return;
+      }
 
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
+      filtered.forEach(visitor => {
+        const row = document.createElement("tr");
 
-  try {
-    const tokenData = tokens.getDataRange().getDisplayValues();
+        const values = [
+          visitor.visitorId,
+          visitor.fullName,
+          visitor.email,
+          visitor.purpose,
+          visitor.personToVisit,
+          visitor.registrationDate,
+          visitor.registrationTime
+        ];
 
-    // Reuse today's active token for the same student and QR type.
-    const existing = tokenData.slice(1).find(row =>
-      String(row[1]).trim() === studentNumber &&
-      String(row[3]).trim() === today &&
-      String(row[5]).trim().toLowerCase() === "active" &&
-      String(row[6]).trim().toUpperCase() === type
-    );
+        values.forEach(value => {
+          const cell = document.createElement("td");
+          cell.textContent = value || "—";
+          row.appendChild(cell);
+        });
 
-    if (existing) {
-      return jsonResponse({
-        success: true,
-        studentNumber: studentNumber,
-        fullName: person[2],
-        type: type,
-        date: today,
-        token: existing[2],
-        message: "Today's QR token already exists."
+        const statusCell = document.createElement("td");
+        const badge = document.createElement("span");
+        badge.className = "status";
+        badge.textContent = visitor.status || "Registered";
+        statusCell.appendChild(badge);
+        row.appendChild(statusCell);
+
+        tbody.appendChild(row);
       });
     }
 
-    // Random token only; no personal information in the QR.
-    const token = Utilities.getUuid() + "-" + Utilities.getUuid();
-    const tokenId = "QR-" + Utilities.getUuid();
-
-    tokens.appendRow([
-      tokenId,
-      studentNumber,
-      token,
-      today,
-      new Date(),
-      "Active",
-      type
-    ]);
-
-    return jsonResponse({
-      success: true,
-      studentNumber: studentNumber,
-      fullName: person[2],
-      type: type,
-      date: today,
-      token: token,
-      message: "Daily QR token generated successfully."
-    });
-
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-// VALIDATE QR TOKEN AND RECORD ATTENDANCE
-function scanQRCode(qrToken) {
-  qrToken = String(qrToken || "").trim();
-
-  if (!qrToken) {
-    throw new Error("QR token is required.");
-  }
-
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const tokens = ss.getSheetByName("QR_Tokens");
-  const people = ss.getSheetByName("People");
-  const attendance = ss.getSheetByName("Attendance");
-
-  if (!tokens || !people || !attendance) {
-    throw new Error(
-      "Required sheet missing: QR_Tokens, People, or Attendance."
-    );
-  }
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
-  try {
-    const now = new Date();
-
-    const today = Utilities.formatDate(
-      now,
-      TIME_ZONE,
-      "yyyy-MM-dd"
-    );
-
-    const currentTime = Utilities.formatDate(
-      now,
-      TIME_ZONE,
-      "HH:mm:ss"
-    );
-
-    const tokenData = tokens.getDataRange().getDisplayValues();
-
-    const tokenIndex = tokenData.findIndex((row, index) =>
-      index > 0 && String(row[2]).trim() === qrToken
-    );
-
-    if (tokenIndex === -1) {
-      throw new Error("Invalid QR token.");
-    }
-
-    const tokenRow = tokenData[tokenIndex];
-    const tokenSheetRow = tokenIndex + 1;
-
-    if (String(tokenRow[5]).trim().toLowerCase() !== "active") {
-      throw new Error("This QR token is not active.");
-    }
-
-    if (String(tokenRow[3]).trim() !== today) {
-      tokens.getRange(tokenSheetRow, 6).setValue("Expired");
-      throw new Error("This QR code has expired. Generate today's QR.");
-    }
-
-    const studentNumber = String(tokenRow[1]).trim();
-    const type = String(tokenRow[6]).trim().toUpperCase();
-
-    if (!["IN", "OUT"].includes(type)) {
-      throw new Error("Invalid QR type.");
-    }
-
-    const peopleData = people.getDataRange().getDisplayValues();
-
-    const person = peopleData.slice(1).find(row =>
-      String(row[0]).trim() === studentNumber &&
-      String(row[6]).trim().toLowerCase() === "active"
-    );
-
-    if (!person) {
-      throw new Error("Student is not registered or is inactive.");
-    }
-
-    const attendanceData =
-      attendance.getDataRange().getDisplayValues();
-
-    const attendanceIndex = attendanceData.findIndex((row, index) =>
-      index > 0 &&
-      String(row[1]).trim() === studentNumber &&
-      String(row[3]).trim() === today
-    );
-
-    let attendanceRowNumber;
-    let message;
-
-    if (type === "IN") {
-      if (attendanceIndex !== -1) {
-        const existingAttendance = attendanceData[attendanceIndex];
-
-        if (String(existingAttendance[4]).trim()) {
-          throw new Error("Time-In has already been recorded today.");
-        }
-      }
-
-      const attendanceId = "ATT-" + Utilities.getUuid();
-
-      attendance.appendRow([
-        attendanceId,
-        studentNumber,
-        person[1],
-        today,
-        currentTime,
-        "",
-        "Present"
-      ]);
-
-      attendanceRowNumber = attendance.getLastRow();
-      message = "Time-In recorded successfully.";
-
-    } else {
-      if (attendanceIndex === -1) {
-        throw new Error(
-          "No Time-In found for today. Record Time-In first."
-        );
-      }
-
-      attendanceRowNumber = attendanceIndex + 1;
-
-      const existingAttendance = attendanceData[attendanceIndex];
-
-      if (!String(existingAttendance[4]).trim()) {
-        throw new Error("Record Time-In before Time-Out.");
-      }
-
-      if (String(existingAttendance[5]).trim()) {
-        throw new Error("Time-Out has already been recorded today.");
-      }
-
-      attendance.getRange(attendanceRowNumber, 6)
-        .setValue(currentTime);
-
-      attendance.getRange(attendanceRowNumber, 7)
-        .setValue("Completed");
-
-      message = "Time-Out recorded successfully.";
-    }
-
-    const audit = ss.getSheetByName("Audit");
-
-    if (audit) {
-      audit.appendRow([
-        "AUD-" + Utilities.getUuid(),
-        person[3],
-        "ATTENDANCE_" + type,
-        studentNumber + " - " + message,
-        now
-      ]);
-    }
-
-    return jsonResponse({
-      success: true,
-      message: message,
-      fullName: person[2],
-      studentNumber: studentNumber,
-      personType: person[1],
-      date: today,
-      time: currentTime,
-      status: type === "IN" ? "Time-In" : "Time-Out"
-    });
-
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-// ADMIN DASHBOARD SUMMARY
-function getDashboardSummary() {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const peopleSheet = ss.getSheetByName("People");
-  const attendanceSheet = ss.getSheetByName("Attendance");
-
-  if (!peopleSheet || !attendanceSheet) {
-    return {
-      success: false,
-      message: "People or Attendance sheet was not found."
-    };
-  }
-
-  const peopleData = peopleSheet.getDataRange().getDisplayValues();
-  const attendanceData =
-    attendanceSheet.getDataRange().getDisplayValues();
-
-  if (peopleData.length === 0 || attendanceData.length === 0) {
-    return {
-      success: false,
-      message: "The People or Attendance sheet has no header row."
-    };
-  }
-
-  const peopleHeaders = peopleData[0].map(value =>
-    String(value).trim()
-  );
-
-  const attendanceHeaders = attendanceData[0].map(value =>
-    String(value).trim()
-  );
-
-  const peopleStatusIndex = peopleHeaders.indexOf("Status");
-  const timeInIndex = attendanceHeaders.indexOf("Time_In");
-  const timeOutIndex = attendanceHeaders.indexOf("Time_Out");
-  const dateIndex = attendanceHeaders.indexOf("Date");
-
-  if (
-    timeInIndex === -1 ||
-    timeOutIndex === -1 ||
-    dateIndex === -1
-  ) {
-    return {
-      success: false,
-      message:
-        "Attendance headers must include Date, Time_In, and Time_Out."
-    };
-  }
-
-  const today = Utilities.formatDate(
-    new Date(),
-    TIME_ZONE,
-    "yyyy-MM-dd"
-  );
-
-  const totalPeople = peopleData.slice(1).filter(row => {
-    if (peopleStatusIndex === -1) return true;
-
-    return String(row[peopleStatusIndex])
-      .trim()
-      .toLowerCase() === "active";
-  }).length;
-
-  let totalIn = 0;
-  let totalOut = 0;
-  let inside = 0;
-
-  attendanceData.slice(1).forEach(row => {
-    const rowDate = normalizeSheetDate(row[dateIndex]);
-
-    if (rowDate !== today) return;
-
-    const timeIn = String(row[timeInIndex] || "").trim();
-    const timeOut = String(row[timeOutIndex] || "").trim();
-
-    if (timeIn !== "") {
-      totalIn++;
-
-      if (timeOut === "") {
-        inside++;
-      } else {
-        totalOut++;
-      }
-    }
-  });
-
-  return {
-    success: true,
-    date: today,
-    totalPeople: totalPeople,
-    totalIn: totalIn,
-    totalOut: totalOut,
-    inside: inside
-  };
-}
-
-// NORMALIZE DATE FROM GOOGLE SHEETS
-function normalizeSheetDate(value) {
-  if (value instanceof Date && !isNaN(value.getTime())) {
-    return Utilities.formatDate(value, TIME_ZONE, "yyyy-MM-dd");
-  }
-
-  const text = String(value || "").trim();
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
-    return text;
-  }
-
-  // Handle dates displayed as MM/DD/YYYY.
-  const match = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-  if (match) {
-    const month = match[1].padStart(2, "0");
-    const day = match[2].padStart(2, "0");
-    return match[3] + "-" + month + "-" + day;
-  }
-
-  return text.slice(0, 10);
-}
-
-// JSON RESPONSE
-function jsonResponse(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+    document.getElementById("visitorSearch").addEventListener("input", renderVisitors);
+
+    loadDashboard();
+    loadVisitors();
+  </script>
+</body>
+</html>
