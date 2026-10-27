@@ -2,460 +2,644 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080d1b">
-  <title>PLMunTrack | QR Scanner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack - QR Scanner</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 
-  <style>
-    :root {
-      --bg:#080d1b; --panel:#111a2d; --panel2:#172239;
-      --border:rgba(148,163,184,.16); --text:#f1f5f9;
-      --muted:#94a3b8; --primary:#6366f1; --cyan:#06b6d4;
-      --green:#34d399; --red:#fb7185;
-    }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body {
-      min-height:100vh; background:var(--bg); color:var(--text);
-      font-family:Inter,sans-serif;
-    }
-    a { text-decoration:none; color:inherit; }
-    button,input { font:inherit; }
-    .topbar {
-      display:flex; align-items:center; justify-content:space-between;
-      flex-wrap:wrap; gap:15px; padding:15px 6%;
-      background:#0b1222; border-bottom:1px solid var(--border);
-    }
-    .brand { display:flex; align-items:center; gap:12px; font-weight:800; }
-    .brand-icon {
-      width:42px; height:42px; display:grid; place-items:center;
-      border-radius:13px; background:linear-gradient(135deg,var(--primary),var(--cyan));
-    }
-    .brand small {
-      display:block; margin-top:4px; font-size:9px;
-      letter-spacing:1.4px; color:var(--muted);
-    }
-    nav { display:flex; flex-wrap:wrap; gap:7px; }
-    nav a { padding:10px 12px; border-radius:9px; color:var(--muted); font-size:11px; font-weight:700; }
-    nav a:hover,nav a.active { background:var(--panel2); color:white; }
-    .container { width:min(1100px,90%); margin:auto; padding:42px 0 65px; }
-    h1 { margin:18px 0 10px; font-size:clamp(29px,5vw,43px); }
-    .gradient {
-      background:linear-gradient(100deg,#818cf8,#22d3ee);
-      -webkit-background-clip:text; background-clip:text; color:transparent;
-    }
-    .heading { margin-bottom:26px; }
-    .eyebrow {
-      display:inline-block; padding:8px 12px; border-radius:30px;
-      color:#67e8f9; background:rgba(6,182,212,.08);
-      border:1px solid rgba(6,182,212,.25);
-      font-size:10px; font-weight:800; letter-spacing:1px;
-    }
-    .heading p,.desc { color:var(--muted); font-size:12px; line-height:1.8; }
-    .layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
-    .panel {
-      min-width:0; padding:24px; border:1px solid var(--border);
-      border-radius:19px; background:var(--panel);
-    }
-    .panel h2 { display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:16px; }
-    .desc { margin-bottom:20px; }
-    .camera-box { min-height:250px; overflow:hidden; border:1px solid var(--border); border-radius:15px; background:#070b14; }
-    #reader { width:100%; }
-    #reader video { border-radius:12px; object-fit:cover; }
-    #reader__dashboard { padding:12px!important; color:white!important; }
-    #reader__dashboard button {
-      margin:5px; padding:10px 13px; border:0; border-radius:9px;
-      background:#4f46e5; color:white; cursor:pointer;
-    }
-    #reader__dashboard select {
-      max-width:100%; padding:9px; border-radius:8px;
-      background:#172239; color:white; border:1px solid var(--border);
-    }
-    .camera-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px; }
-    .btn {
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:12px 15px; border:1px solid var(--border); border-radius:10px;
-      color:white; font-size:11px; font-weight:800; cursor:pointer;
-    }
-    .btn:disabled { opacity:.45; cursor:not-allowed; }
-    .primary { background:linear-gradient(120deg,#6366f1,#4f46e5); border:0; }
-    .secondary { background:var(--panel2); }
-    .field { margin-bottom:15px; }
-    label { display:block; margin-bottom:8px; font-size:11px; font-weight:700; color:#dbeafe; }
-    input {
-      width:100%; min-width:0; padding:12px 13px;
-      border:1px solid var(--border); border-radius:10px;
-      background:#0b1325; color:white; outline:none; font-size:12px;
-    }
-    input:focus { border-color:#818cf8; }
-    .manual-row { display:grid; grid-template-columns:1fr auto; gap:9px; }
-    .status {
-      display:none; margin-top:15px; padding:12px 13px;
-      border-radius:10px; font-size:11px; line-height:1.7; overflow-wrap:anywhere;
-    }
-    .status.show { display:block; }
-    .status.info { color:#bae6fd; background:rgba(6,182,212,.08); border:1px solid rgba(6,182,212,.2); }
-    .status.success { color:#a7f3d0; background:rgba(52,211,153,.08); border:1px solid rgba(52,211,153,.2); }
-    .status.error { color:#fecdd3; background:rgba(251,113,133,.08); border:1px solid rgba(251,113,133,.2); }
-    .result {
-      display:none; margin-top:18px; padding:18px;
-      border:1px solid rgba(52,211,153,.22); border-radius:14px;
-      background:rgba(52,211,153,.06);
-    }
-    .result.show { display:block; }
-    .result-head { display:flex; align-items:center; gap:12px; margin-bottom:15px; }
-    .result-icon {
-      display:grid; place-items:center; width:40px; height:40px;
-      border-radius:12px; color:#6ee7b7; background:rgba(52,211,153,.13);
-    }
-    .result-head h3 { font-size:14px; }
-    .result-head p { margin-top:5px; color:var(--muted); font-size:10px; }
-    .result-row {
-      display:flex; justify-content:space-between; gap:15px;
-      padding:10px 0; border-top:1px solid var(--border); font-size:11px;
-    }
-    .result-row span { color:var(--muted); }
-    .result-row strong { text-align:right; overflow-wrap:anywhere; }
-    .tips {
-      margin-top:16px; padding:14px; border-radius:12px;
-      background:rgba(99,102,241,.08); color:#c7d2fe;
-      font-size:10px; line-height:1.8;
-    }
-    .tips strong { display:block; margin-bottom:5px; }
-    footer {
-      display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px;
-      padding:22px 6%; border-top:1px solid var(--border);
-      color:var(--muted); font-size:10px;
-    }
-    @media(max-width:800px) {
-      .layout { grid-template-columns:1fr; }
-      .topbar { align-items:flex-start; flex-direction:column; }
-    }
-    @media(max-width:480px) {
-      .panel { padding:17px; }
-      .camera-actions,.manual-row { grid-template-columns:1fr; }
-      .result-row { flex-direction:column; gap:5px; }
-      .result-row strong { text-align:left; }
-    }
-  </style>
+    <style>
+        :root {
+            --bg: #0b1120;
+            --panel: #111c31;
+            --panel2: #17243b;
+            --primary: #6366f1;
+            --cyan: #06b6d4;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #293851;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px 14px;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 12px;
+            background: #202b55;
+            color: #a5b4fc;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            margin: 5px 0 10px;
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 20px;
+            min-width: 0;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin-top: 0;
+        }
+
+        #reader {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: white;
+            background: var(--primary);
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        button.secondary {
+            background: var(--panel2);
+            border: 1px solid var(--border);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #0b1425;
+            color: white;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--cyan);
+        }
+
+        .hint {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: var(--panel2);
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .message.success {
+            color: #bbf7d0;
+            border: 1px solid #166534;
+            background: #10291f;
+        }
+
+        .message.error {
+            color: #fecaca;
+            border: 1px solid #7f1d1d;
+            background: #301619;
+        }
+
+        .result {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .result-title h2 {
+            margin: 0;
+        }
+
+        .status-badge {
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #164e35;
+            color: #bbf7d0;
+        }
+
+        .status-badge.error {
+            background: #511b22;
+            color: #fecaca;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+            gap: 10px;
+        }
+
+        .detail {
+            background: #0b1425;
+            border: 1px solid var(--border);
+            padding: 13px;
+            border-radius: 10px;
+            min-width: 0;
+        }
+
+        .detail-label {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            display: block;
+            font-size: 15px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .attendance-status {
+            color: #67e8f9;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <a href="index.html" class="brand">
-      <span class="brand-icon"><i class="fa-solid fa-qrcode"></i></span>
-      <span>PLMunTrack<small>ATTENDANCE MANAGEMENT SYSTEM</small></span>
-    </a>
-    <nav aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="admin.html">Dashboard</a>
-      <a href="generator.html">QR Generator</a>
-      <a href="scanner.html" class="active">QR Scanner</a>
-    </nav>
-  </header>
+<div class="container">
 
-  <main class="container">
-    <div class="heading">
-      <div class="eyebrow"><i class="fa-solid fa-camera"></i> ATTENDANCE SCANNER</div>
-      <h1>QR <span class="gradient">Code Scanner</span></h1>
-      <p>Scan a PLMunTrack QR token to validate it using Google Apps Script.</p>
-    </div>
+    <header class="header">
+        <div class="logo">PLMunTrack</div>
+        <h1>QR Code Scanner</h1>
+        <div class="subtitle">
+            Visitor Monitoring and Attendance Management System
+        </div>
+    </header>
 
     <div class="layout">
-      <section class="panel">
-        <h2><i class="fa-solid fa-camera" style="color:#a5b4fc"></i> Camera Scanner</h2>
-        <p class="desc">Allow camera access when prompted. You can also test using the manual token field.</p>
 
-        <div class="camera-box"><div id="reader"></div></div>
+        <section class="card">
+            <h2>📷 Camera Scanner</h2>
+            <div id="reader"></div>
 
-        <div class="camera-actions">
-          <button class="btn primary" id="startBtn" type="button"><i class="fa-solid fa-play"></i> Start Camera</button>
-          <button class="btn secondary" id="stopBtn" type="button" disabled><i class="fa-solid fa-stop"></i> Stop Camera</button>
-        </div>
-
-        <div class="status info show" id="cameraStatus" role="status">Camera is stopped. Click Start Camera to begin.</div>
-
-        <div class="tips">
-          <strong>Camera tip</strong>
-          Camera access normally requires HTTPS or localhost.
-        </div>
-      </section>
-
-      <section class="panel">
-        <h2><i class="fa-solid fa-clipboard-check" style="color:#67e8f9"></i> Scan Result</h2>
-        <p class="desc">The server validates the token and returns the scan result.</p>
-
-        <div class="field">
-          <label for="manualToken">QR TOKEN</label>
-          <div class="manual-row">
-            <input id="manualToken" type="text" placeholder="Paste the exact QR token here" autocomplete="off">
-            <button class="btn secondary" id="submitManualBtn" type="button">Submit</button>
-          </div>
-        </div>
-
-        <div class="status" id="scanStatus" role="status" aria-live="polite"></div>
-
-        <div class="result" id="resultCard">
-          <div class="result-head">
-            <div class="result-icon"><i class="fa-solid fa-circle-check"></i></div>
-            <div>
-              <h3 id="resultTitle">Scan processed</h3>
-              <p id="resultSubtitle">Server response received</p>
+            <div class="button-row">
+                <button id="startBtn" onclick="startCamera()">
+                    Start Camera
+                </button>
+                <button id="stopBtn" class="secondary"
+                        onclick="stopCamera()" disabled>
+                    Stop Camera
+                </button>
             </div>
-          </div>
-          <div class="result-row"><span>Name</span><strong id="outName">—</strong></div>
-          <div class="result-row"><span>Reference ID</span><strong id="outId">—</strong></div>
-          <div class="result-row"><span>Person Type</span><strong id="outType">—</strong></div>
-          <div class="result-row"><span>Date</span><strong id="outDate">—</strong></div>
-          <div class="result-row"><span>Time</span><strong id="outTime">—</strong></div>
-          <div class="result-row"><span>Attendance / Visit Status</span><strong id="outStatus">—</strong></div>
-        </div>
 
-        <div class="tips">
-          <strong><i class="fa-solid fa-shield-halved"></i> Validation rules</strong>
-          Only the server can approve or reject a token. The page displays the server response.
-        </div>
-      </section>
+            <div class="message" id="cameraMessage">
+                Click Start Camera to begin scanning.
+            </div>
+
+            <p class="hint">
+                After a successful scan, scan the same QR again to record
+                the next attendance action. If the camera does not scan it
+                again, stop and restart the camera.
+            </p>
+        </section>
+
+        <section class="card">
+            <h2>⌨️ Manual QR Token</h2>
+            <p class="hint">
+                Use this option if the camera is unavailable. Paste the
+                exact token contained in the student's or visitor's QR code.
+            </p>
+
+            <form id="tokenForm">
+                <label for="tokenInput">QR Token</label>
+                <input id="tokenInput" type="text"
+                       placeholder="Enter or paste QR token"
+                       autocomplete="off" required>
+
+                <div class="button-row">
+                    <button type="submit" id="submitBtn">
+                        Submit Token
+                    </button>
+                    <button type="button" class="secondary"
+                            onclick="clearToken()">
+                        Clear
+                    </button>
+                </div>
+            </form>
+
+            <div id="scanMessage" class="message">
+                Waiting for a QR scan.
+            </div>
+        </section>
+
     </div>
-  </main>
 
-  <footer>
-    <span><strong>PLMunTrack</strong> · QR Scanner</span>
-    <span><a href="index.html">Home</a> · <a href="generator.html">QR Generator</a></span>
-    <span>© <span id="year"></span> PLMunTrack</span>
-  </footer>
+    <section class="card result" id="resultCard">
+        <div class="result-title">
+            <h2>Scan Details</h2>
+            <span id="resultBadge" class="status-badge">SUCCESS</span>
+        </div>
 
-  <script>
-    // Use the current deployed Apps Script URL.
-    const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+        <div class="details">
+            <div class="detail">
+                <span class="detail-label">Name</span>
+                <span class="detail-value" id="personName">—</span>
+            </div>
 
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-    const cameraStatus = document.getElementById("cameraStatus");
-    const scanStatus = document.getElementById("scanStatus");
-    const manualToken = document.getElementById("manualToken");
-    const submitManualBtn = document.getElementById("submitManualBtn");
-    const resultCard = document.getElementById("resultCard");
+            <div class="detail">
+                <span class="detail-label">Student / Visitor ID</span>
+                <span class="detail-value" id="personId">—</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Person Type</span>
+                <span class="detail-value" id="personType">—</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Date</span>
+                <span class="detail-value" id="scanDate">—</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Time</span>
+                <span class="detail-value" id="scanTime">—</span>
+            </div>
+
+            <div class="detail">
+                <span class="detail-label">Attendance / Visit Status</span>
+                <span class="detail-value attendance-status"
+                      id="attendanceStatus">—</span>
+            </div>
+        </div>
+
+        <div class="message" id="resultMessage"></div>
+    </section>
+
+    <footer class="footer">
+        PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
+    </footer>
+</div>
+
+<script>
+    // Keep this URL consistent with the currently deployed Apps Script.
+    const API_URL =
+        "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
     let scanner = null;
     let cameraRunning = false;
     let processing = false;
     let lastScannedToken = "";
+    let lastScanAt = 0;
 
-    document.getElementById("year").textContent = new Date().getFullYear();
+    const cameraMessage = document.getElementById("cameraMessage");
+    const scanMessage = document.getElementById("scanMessage");
+    const submitBtn = document.getElementById("submitBtn");
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
 
-    function setStatus(element, message, type = "info") {
-      element.className = "status show " + type;
-      element.textContent = message;
+    function setMessage(element, message, type = "") {
+        element.textContent = message;
+        element.className = "message" + (type ? " " + type : "");
     }
 
-    function getValue(data, keys, fallback = "—") {
-      if (!data || typeof data !== "object") return fallback;
-
-      for (const key of keys) {
-        if (data[key] !== undefined && data[key] !== null && data[key] !== "") {
-          return String(data[key]);
-        }
-      }
-
-      if (data.data && typeof data.data === "object") {
+    function firstValue(data, keys, fallback = "—") {
         for (const key of keys) {
-          if (data.data[key] !== undefined && data.data[key] !== null && data.data[key] !== "") {
-            return String(data.data[key]);
-          }
+            if (data && data[key] !== undefined &&
+                data[key] !== null && String(data[key]).trim() !== "") {
+                return String(data[key]);
+            }
         }
-      }
-
-      return fallback;
+        return fallback;
     }
 
-    function displayResult(data) {
-      document.getElementById("resultTitle").textContent =
-        getValue(data, ["title", "message"], "Scan processed");
+    function showResult(data) {
+        const card = document.getElementById("resultCard");
+        const badge = document.getElementById("resultBadge");
 
-      document.getElementById("resultSubtitle").textContent =
-        getValue(data, ["result", "description"], "Server response received");
+        document.getElementById("personName").textContent =
+            firstValue(data, [
+                "fullName", "Full_Name", "name",
+                "visitorName", "studentName"
+            ]);
 
-      document.getElementById("outName").textContent =
-        getValue(data, ["fullName", "Full_Name", "name", "visitorName", "studentName"]);
+        document.getElementById("personId").textContent =
+            firstValue(data, [
+                "studentNumber", "Student_Number",
+                "visitorId", "Visitor_ID", "id"
+            ]);
 
-      document.getElementById("outId").textContent =
-        getValue(data, ["studentNumber", "Student_Number", "visitorId", "Visitor_ID", "id"]);
+        document.getElementById("personType").textContent =
+            firstValue(data, [
+                "personType", "Person_Type", "type", "person_type"
+            ]);
 
-      document.getElementById("outType").textContent =
-        getValue(data, ["personType", "Person_Type", "type", "person_type"], "—");
+        document.getElementById("scanDate").textContent =
+            firstValue(data, [
+                "date", "Date", "visitDate",
+                "Visit_Date", "Token_Date"
+            ]);
 
-      document.getElementById("outDate").textContent =
-        getValue(data, ["date", "Date", "visitDate", "Visit_Date", "Token_Date"]);
+        document.getElementById("scanTime").textContent =
+            firstValue(data, [
+                "time", "Time", "scanTime",
+                "timeIn", "Time_In", "timeOut", "Time_Out"
+            ]);
 
-      document.getElementById("outTime").textContent =
-        getValue(data, ["time", "Time", "timeIn", "Time_In", "timeOut", "Time_Out", "scanTime"]);
+        const status = firstValue(data, [
+            "attendanceStatus", "status", "Status",
+            "action", "visitStatus", "Authorization_Status"
+        ]);
 
-      document.getElementById("outStatus").textContent =
-        getValue(data, ["attendanceStatus", "authorizationStatus", "Authorization_Status", "Status", "status", "action", "attendance"]);
+        document.getElementById("attendanceStatus").textContent = status;
+        document.getElementById("resultMessage").textContent =
+            firstValue(data, ["message", "Message"], "Scan completed.");
 
-      resultCard.classList.add("show");
+        badge.textContent = "SUCCESS";
+        badge.className = "status-badge";
+        card.classList.add("show");
+    }
+
+    function showError(message) {
+        const card = document.getElementById("resultCard");
+        const badge = document.getElementById("resultBadge");
+
+        document.getElementById("personName").textContent = "—";
+        document.getElementById("personId").textContent = "—";
+        document.getElementById("personType").textContent = "—";
+        document.getElementById("scanDate").textContent = "—";
+        document.getElementById("scanTime").textContent = "—";
+        document.getElementById("attendanceStatus").textContent = "FAILED";
+        document.getElementById("resultMessage").textContent = message;
+
+        badge.textContent = "ERROR";
+        badge.className = "status-badge error";
+        card.classList.add("show");
     }
 
     async function submitToken(rawToken) {
-      const token = String(rawToken || "").trim();
+        const token = String(rawToken || "").trim();
 
-      if (!token) {
-        setStatus(scanStatus, "Please scan a QR code or enter its token.", "error");
-        return;
-      }
-
-      if (processing) return;
-
-      processing = true;
-      submitManualBtn.disabled = true;
-      startBtn.disabled = true;
-      clearResult();
-      setStatus(scanStatus, "Validating QR token with PLMunTrack...", "info");
-
-      try {
-        const url = new URL(API_URL);
-        url.searchParams.set("action", "scan");
-
-        // Apps Script scan action expects the parameter named "token".
-        url.searchParams.set("token", token);
-
-        const response = await fetch(url.toString(), {
-          method: "GET",
-          redirect: "follow"
-        });
-
-        if (!response.ok) {
-          throw new Error("Server returned HTTP " + response.status + ".");
+        if (!token) {
+            setMessage(scanMessage, "Please enter a QR token.", "error");
+            return;
         }
 
-        const responseText = await response.text();
-        let data;
+        if (processing) return;
+
+        processing = true;
+        submitBtn.disabled = true;
+        setMessage(scanMessage, "Processing QR token...");
 
         try {
-          data = JSON.parse(responseText);
-        } catch (_) {
-          throw new Error("The server did not return JSON. Check the Apps Script deployment and doGet response.");
+            const url = new URL(API_URL);
+            url.searchParams.set("action", "scan");
+            // Apps Script doGet expects the parameter name "token".
+            url.searchParams.set("token", token);
+            url.searchParams.set("_", String(Date.now()));
+
+            const response = await fetch(url.toString(), {
+                method: "GET",
+                redirect: "follow",
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error("Server response: HTTP " + response.status);
+            }
+
+            const text = await response.text();
+            let data;
+
+            try {
+                data = JSON.parse(text);
+            } catch (_) {
+                throw new Error(
+                    "The server did not return JSON. Check the Apps Script deployment URL."
+                );
+            }
+
+            if (data.success === false || data.error) {
+                throw new Error(data.message || data.error || "QR scan failed.");
+            }
+
+            if (data.success !== true) {
+                throw new Error(data.message || "The QR token was not accepted.");
+            }
+
+            lastScannedToken = token;
+            lastScanAt = Date.now();
+
+            showResult(data);
+
+            const status = firstValue(data, ["status", "Status"], "Success");
+            const name = firstValue(data, ["fullName", "Full_Name", "name"], "Record");
+            setMessage(
+                scanMessage,
+                name + " — " + status + ".",
+                "success"
+            );
+
+            setMessage(
+                cameraMessage,
+                "Scan successful: " + status +
+                ". Scan again for the next attendance action.",
+                "success"
+            );
+
+            document.getElementById("tokenInput").value = "";
+
+        } catch (error) {
+            const message = error.message || "Unable to process this QR token.";
+            setMessage(scanMessage, message, "error");
+            setMessage(cameraMessage, message, "error");
+            showError(message);
+        } finally {
+            processing = false;
+            submitBtn.disabled = false;
         }
-
-        if (!data || typeof data !== "object") {
-          throw new Error("The server response was empty or invalid.");
-        }
-
-        if (data.success === false || data.error) {
-          setStatus(scanStatus, data.message || data.error || "The server rejected this QR token.", "error");
-          return;
-        }
-
-        displayResult(data);
-        setStatus(scanStatus, data.message || "Server response received. Review the result below.", "success");
-        lastScannedToken = token;
-        manualToken.value = "";
-      } catch (error) {
-        setStatus(
-          scanStatus,
-          "Could not validate the QR token. " + (error.message || "Unknown error") +
-          " Check the Apps Script URL, deployment access, and response format.",
-          "error"
-        );
-      } finally {
-        processing = false;
-        submitManualBtn.disabled = false;
-        startBtn.disabled = false;
-      }
-    }
-
-    function clearResult() {
-      resultCard.classList.remove("show");
     }
 
     async function startCamera() {
-      if (cameraRunning) return;
+        if (cameraRunning) return;
 
-      if (typeof Html5Qrcode === "undefined") {
-        setStatus(cameraStatus, "Camera library did not load. Check your internet connection and refresh.", "error");
-        return;
-      }
+        // Clear the previous-camera duplicate guard when starting a new session.
+        lastScannedToken = "";
 
-      try {
-        scanner = new Html5Qrcode("reader");
-        setStatus(cameraStatus, "Requesting camera access...", "info");
+        try {
+            if (!scanner) {
+                scanner = new Html5Qrcode("reader");
+            }
 
-        await scanner.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 230, height: 230 }, aspectRatio: 1 },
-          async (decodedText) => {
-            if (processing || decodedText === lastScannedToken) return;
+            setMessage(cameraMessage, "Starting camera...");
 
-            try {
-              if (scanner && cameraRunning) await scanner.pause(true);
-            } catch (_) {}
+            await scanner.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 240, height: 240 },
+                    aspectRatio: 1.0
+                },
+                async (decodedText) => {
+                    if (processing) return;
 
-            await submitToken(decodedText);
+                    // Prevent rapid duplicate camera callbacks.
+                    if (
+                        decodedText === lastScannedToken &&
+                        Date.now() - lastScanAt < 2500
+                    ) {
+                        return;
+                    }
 
-            try {
-              if (scanner && cameraRunning) scanner.resume();
-            } catch (_) {}
-          },
-          () => {}
-        );
+                    try {
+                        if (scanner && cameraRunning) {
+                            await scanner.pause(true);
+                        }
+                    } catch (_) {}
 
-        cameraRunning = true;
-        startBtn.disabled = true;
-        stopBtn.disabled = false;
-        setStatus(cameraStatus, "Camera is running. Point it at a PLMunTrack QR code.", "success");
-      } catch (error) {
-        scanner = null;
-        cameraRunning = false;
-        setStatus(
-          cameraStatus,
-          "Could not start the camera. Allow camera permission and use HTTPS or localhost. " +
-          (error.message || ""),
-          "error"
-        );
-      }
+                    await submitToken(decodedText);
+
+                    try {
+                        if (scanner && cameraRunning) {
+                            scanner.resume();
+                        }
+                    } catch (_) {}
+                },
+                () => {}
+            );
+
+            cameraRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            setMessage(cameraMessage, "Camera is running. Point it at a QR code.");
+
+        } catch (error) {
+            cameraRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            setMessage(
+                cameraMessage,
+                "Cannot start camera. Allow camera permission or use Manual QR Token.",
+                "error"
+            );
+        }
     }
 
     async function stopCamera() {
-      if (!scanner || !cameraRunning) {
-        cameraRunning = false;
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-        setStatus(cameraStatus, "Camera is stopped.", "info");
-        return;
-      }
+        if (!scanner || !cameraRunning) return;
 
-      try {
-        await scanner.stop();
-        await scanner.clear();
-        setStatus(cameraStatus, "Camera stopped.", "info");
-      } catch (error) {
-        setStatus(cameraStatus, "Could not stop the camera cleanly. " + error.message, "error");
-      } finally {
-        scanner = null;
-        cameraRunning = false;
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-      }
+        try {
+            await scanner.stop();
+            cameraRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            setMessage(cameraMessage, "Camera stopped. Start it again to scan.");
+        } catch (error) {
+            setMessage(cameraMessage, "Unable to stop the camera.", "error");
+        }
     }
 
-    startBtn.addEventListener("click", startCamera);
-    stopBtn.addEventListener("click", stopCamera);
-    submitManualBtn.addEventListener("click", () => submitToken(manualToken.value));
+    function clearToken() {
+        document.getElementById("tokenInput").value = "";
+        setMessage(scanMessage, "Token field cleared.");
+    }
 
-    manualToken.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") submitToken(manualToken.value);
+    document.getElementById("tokenForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const token = document.getElementById("tokenInput").value;
+        await submitToken(token);
     });
-
-    window.addEventListener("beforeunload", () => {
-      if (scanner && cameraRunning) scanner.stop().catch(() => {});
-    });
-  </script>
+</script>
 </body>
 </html>
 
