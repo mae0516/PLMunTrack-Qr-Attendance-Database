@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,15 +7,17 @@
     <title>PLMunTrack | Dashboard</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             background: #0b1120;
             color: #f8fafc;
+        }
+
+        body.loading {
+            visibility: hidden;
         }
 
         header {
@@ -33,16 +35,29 @@
             font-weight: bold;
         }
 
-        .brand span {
-            color: #67e8f9;
+        .brand span { color: #67e8f9; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        #accountInfo {
+            color: #94a3b8;
+            font-size: 12px;
+            overflow-wrap: anywhere;
         }
 
         .logout {
             padding: 10px 15px;
+            border: 0;
             border-radius: 9px;
             background: #293851;
             color: white;
-            text-decoration: none;
+            cursor: pointer;
             font-size: 14px;
         }
 
@@ -52,9 +67,7 @@
             padding: 35px 20px;
         }
 
-        .welcome {
-            margin-bottom: 30px;
-        }
+        .welcome { margin-bottom: 30px; }
 
         .welcome h1 {
             margin-bottom: 10px;
@@ -63,17 +76,6 @@
 
         .welcome p {
             color: #94a3b8;
-            line-height: 1.6;
-        }
-
-        .notice {
-            padding: 14px;
-            margin-bottom: 25px;
-            border: 1px solid #854d0e;
-            border-radius: 10px;
-            background: #29200d;
-            color: #fde68a;
-            font-size: 13px;
             line-height: 1.6;
         }
 
@@ -119,9 +121,7 @@
             font-weight: bold;
         }
 
-        .card a:hover {
-            background: #6366f1;
-        }
+        .card a:hover { background: #6366f1; }
 
         footer {
             padding: 25px;
@@ -129,13 +129,33 @@
             text-align: center;
             font-size: 12px;
         }
+
+        #pageMessage {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 20px;
+            color: #fca5a5;
+        }
+
+        @media (max-width: 600px) {
+            header { padding: 18px 5%; }
+            .brand { font-size: 19px; }
+            #accountInfo { max-width: 150px; }
+            .welcome h1 { font-size: 26px; }
+        }
     </style>
 </head>
 
-<body>
+<body class="loading">
     <header>
         <div class="brand">PLMun<span>Track</span></div>
-        <a class="logout" href="login.html">Log Out</a>
+
+        <div class="header-actions">
+            <span id="accountInfo"></span>
+            <button class="logout" id="logoutButton" type="button">
+                Log Out
+            </button>
+        </div>
     </header>
 
     <main>
@@ -147,17 +167,11 @@
             </p>
         </section>
 
-        <div class="notice">
-            Prototype dashboard: login verification and account-based access
-            are not connected yet. Do not publish this as a secure user
-            dashboard until authentication is implemented.
-        </div>
-
         <section class="cards">
             <article class="card">
                 <div class="icon">📝</div>
                 <h2>Registration</h2>
-                <p>Register a student or visitor account.</p>
+                <p>Register a student or visitor.</p>
                 <a href="register.html">Open Registration</a>
             </article>
 
@@ -171,14 +185,68 @@
             <article class="card">
                 <div class="icon">▦</div>
                 <h2>My QR Code</h2>
-                <p>Open the existing QR generator page for now.</p>
+                <p>Open the existing QR generator page.</p>
                 <a href="generator.html">Open QR Generator</a>
             </article>
         </section>
     </main>
 
+    <div id="pageMessage" role="status" aria-live="polite"></div>
+
     <footer>
         PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
     </footer>
+
+    <script type="module">
+        import { initializeApp, getApp, getApps }
+            from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKAPZZdsY6mkkcCT8LSFpHAYMy3TEDRog",
+            authDomain: "plmuntrack.firebaseapp.com",
+            projectId: "plmuntrack",
+            storageBucket: "plmuntrack.firebasestorage.app",
+            messagingSenderId: "156534335192",
+            appId: "1:156534335192:web:35d43ff8446786840919ad"
+        };
+
+        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const accountInfo = document.getElementById("accountInfo");
+        const pageMessage = document.getElementById("pageMessage");
+        const logoutButton = document.getElementById("logoutButton");
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.replace("login.html");
+                return;
+            }
+
+            accountInfo.textContent = user.email || "Signed-in user";
+            document.body.classList.remove("loading");
+        });
+
+        logoutButton.addEventListener("click", async () => {
+            logoutButton.disabled = true;
+
+            try {
+                await signOut(auth);
+                window.location.replace("login.html");
+            } catch (error) {
+                console.error("Sign-out failed:", error.code);
+                pageMessage.textContent =
+                    "Unable to log out. Please check your connection and try again.";
+                logoutButton.disabled = false;
+            }
+        });
+    </script>
 </body>
 </html>
+```
