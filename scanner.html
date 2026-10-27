@@ -5,10 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PLMunTrack - QR Attendance Scanner</title>
+
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -26,9 +29,19 @@
       border-radius: 16px;
     }
 
-    h1, h2 { text-align: center; }
-    h1 { color: #818cf8; }
-    .hint { color: #cbd5e1; line-height: 1.6; }
+    h1 {
+      text-align: center;
+      color: #818cf8;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .hint {
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
 
     #reader {
       width: 100%;
@@ -40,12 +53,18 @@
     button {
       width: 100%;
       padding: 13px;
+      margin-top: 8px;
       border: 0;
       border-radius: 8px;
       background: #4f46e5;
       color: white;
       font-size: 16px;
       cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #result {
@@ -55,11 +74,20 @@
       border-radius: 10px;
       line-height: 1.7;
       overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
-    .success { color: #4ade80; }
-    .error { color: #fca5a5; }
-    .label { color: #cbd5e1; }
+    .success {
+      color: #4ade80;
+    }
+
+    .error {
+      color: #fca5a5;
+    }
+
+    .secondary {
+      background: #334155;
+    }
   </style>
 </head>
 
@@ -70,11 +98,18 @@
 
     <p class="hint">
       I-scan ang iyong valid QR code para sa attendance.
-      Ipapakita rito ang resulta ng scan.
+      Gagamitin ng scanner ang back camera kung available.
     </p>
 
     <div id="reader"></div>
-    <button id="startBtn" type="button">Start Scanner</button>
+
+    <button id="startBtn" type="button">
+      Start Scanner
+    </button>
+
+    <button id="switchBtn" class="secondary" type="button" hidden>
+      Switch Camera
+    </button>
 
     <div id="result" aria-live="polite">
       Handa nang mag-scan.
@@ -87,14 +122,95 @@
 
     const resultBox = document.getElementById("result");
     const startBtn = document.getElementById("startBtn");
+    const switchBtn = document.getElementById("switchBtn");
 
     let scanner = null;
+    let cameras = [];
+    let cameraIndex = 0;
     let processing = false;
     let scannerRunning = false;
 
     function showMessage(message, type = "") {
       resultBox.className = type;
       resultBox.textContent = message;
+    }
+
+    function getPreferredCameraIndex() {
+      const backCameraIndex = cameras.findIndex(camera =>
+        /back|rear|environment|world/i.test(camera.label)
+      );
+
+      if (backCameraIndex >= 0) {
+        return backCameraIndex;
+      }
+
+      // Sa maraming cellphone, ang huling camera ay rear camera.
+      // Kung hindi ito ang rear camera, gamitin ang Switch Camera.
+      return cameras.length > 1 ? cameras.length - 1 : 0;
+    }
+
+    async function stopScanner() {
+      if (scanner && scannerRunning) {
+        try {
+          await scanner.stop();
+        } catch (error) {
+          console.warn("Scanner stop:", error);
+        }
+      }
+
+      scannerRunning = false;
+    }
+
+    async function startCamera(index) {
+      if (!scanner || !cameras.length) {
+        showMessage("Walang available na camera.", "error");
+        return;
+      }
+
+      await stopScanner();
+
+      cameraIndex = index;
+      processing = false;
+      startBtn.disabled = true;
+      switchBtn.disabled = true;
+
+      try {
+        await scanner.start(
+          cameras[cameraIndex].id,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          async decodedText => {
+            if (processing) return;
+
+            processing = true;
+            await stopScanner();
+            startBtn.textContent = "Scan Again";
+            switchBtn.hidden = true;
+
+            await verifyQR(decodedText);
+          },
+          () => {}
+        );
+
+        scannerRunning = true;
+        startBtn.textContent = "Scanner Running";
+        switchBtn.hidden = cameras.length < 2;
+        showMessage(
+          "Camera is on. Itapat ang QR code sa scan box."
+        );
+      } catch (error) {
+        scannerRunning = false;
+        showMessage(
+          "Hindi mabuksan ang camera. Payagan ang camera access at subukan muli.",
+          "error"
+        );
+        startBtn.textContent = "Start Scanner";
+      } finally {
+        startBtn.disabled = false;
+        switchBtn.disabled = false;
+      }
     }
 
     function showAttendance(data) {
@@ -111,7 +227,7 @@
         ["Type", data.personType || data.type],
         ["Date", data.date || data.visitDate],
         ["Time", data.time],
-        ["Attendance", data.status],
+        ["Status", data.status],
         ["Message", data.message]
       ];
 
@@ -119,6 +235,7 @@
         if (value !== undefined && value !== null && value !== "") {
           const line = document.createElement("p");
           const strong = document.createElement("strong");
+
           strong.textContent = label + ": ";
           line.append(strong, document.createTextNode(String(value)));
           resultBox.appendChild(line);
@@ -127,13 +244,11 @@
     }
 
     async function verifyQR(qrText) {
-      if (processing) return;
-      processing = true;
-
-      showMessage("QR detected. Checking registration and recording attendance...");
+      showMessage("QR detected. Checking registration and attendance...");
 
       try {
-        const url = API_URL + "?action=scan&token=" +
+        const url = API_URL +
+          "?action=scan&qrToken=" +
           encodeURIComponent(qrText);
 
         const response = await fetch(url);
@@ -154,22 +269,29 @@
         }
       } catch (error) {
         showMessage(
-          "Hindi makakonekta sa server. I-check ang Apps Script deployment at scan action. " +
+          "Hindi makakonekta sa server. I-check ang Apps Script deployment at scan action.\n" +
           error.message,
           "error"
         );
       } finally {
         processing = false;
-        startBtn.textContent = "Scan Again";
         startBtn.disabled = false;
+        startBtn.textContent = "Scan Again";
+        switchBtn.hidden = true;
       }
     }
 
     startBtn.addEventListener("click", async () => {
-      if (scannerRunning) return;
+      if (scannerRunning) {
+        showMessage("Naka-on na ang camera. I-scan ang QR code.");
+        return;
+      }
 
       if (typeof Html5Qrcode === "undefined") {
-        showMessage("Hindi ma-load ang QR scanner library. Check your internet connection.", "error");
+        showMessage(
+          "Hindi ma-load ang QR scanner library. Check your internet connection.",
+          "error"
+        );
         return;
       }
 
@@ -180,46 +302,31 @@
           scanner = new Html5Qrcode("reader");
         }
 
-        const cameras = await Html5Qrcode.getCameras();
+        cameras = await Html5Qrcode.getCameras();
 
         if (!cameras.length) {
-          throw new Error("Walang camera na nakita.");
+          showMessage("Walang camera na nakita.", "error");
+          return;
         }
 
-        const camera = cameras[0];
-
-        await scanner.start(
-          camera.id,
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          async (decodedText) => {
-            if (processing) return;
-
-            try {
-              await scanner.stop();
-              scannerRunning = false;
-              await verifyQR(decodedText);
-            } catch (error) {
-              scannerRunning = false;
-              showMessage("Hindi maihinto ang scanner nang maayos.", "error");
-            }
-          },
-          () => {}
-        );
-
-        scannerRunning = true;
-        showMessage("Camera is on. Itapat ang QR code sa scan box.");
-        startBtn.textContent = "Scanner Running";
-        startBtn.disabled = false;
+        cameraIndex = getPreferredCameraIndex();
+        await startCamera(cameraIndex);
 
       } catch (error) {
-        scannerRunning = false;
         showMessage(
-          "Hindi mabuksan ang camera. Payagan ang camera access at subukan muli.",
+          "Hindi mabuksan ang camera. Payagan ang camera access sa browser.",
           "error"
         );
-        startBtn.textContent = "Start Scanner";
+      } finally {
         startBtn.disabled = false;
       }
+    });
+
+    switchBtn.addEventListener("click", async () => {
+      if (cameras.length < 2 || processing) return;
+
+      const nextIndex = (cameraIndex + 1) % cameras.length;
+      await startCamera(nextIndex);
     });
   </script>
 </body>
