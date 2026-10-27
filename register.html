@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLMunTrack | Registration</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 30px 16px;
+      background: #080d1b;
+      color: #f1f5f9;
+      font-family: Arial, sans-serif;
+    }
+    .container { max-width: 650px; margin: auto; }
+    h1 { color: #a5b4fc; }
+    p { color: #94a3b8; line-height: 1.6; }
+    .card {
+      margin: 22px 0;
+      padding: 24px;
+      border: 1px solid #293650;
+      border-radius: 16px;
+      background: #111a2d;
+    }
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-size: 14px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 9px;
+      font: inherit;
+    }
+    input, select {
+      color: white;
+      background: #080d1b;
+      border: 1px solid #334155;
+    }
+    button {
+      margin-top: 18px;
+      border: 0;
+      background: #6366f1;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .message { white-space: pre-wrap; margin-top: 14px; font-size: 14px; }
+    a { color: #67e8f9; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>PLMunTrack Registration</h1>
+  <p>Choose the appropriate form below. Required information will be submitted to the PLMunTrack registration service.</p>
+
+  <div class="card">
+    <h2>Student Registration</h2>
+    <form id="studentForm">
+      <label for="studentNumber">Student Number *</label>
+      <input id="studentNumber" required maxlength="40">
+
+      <label for="studentName">Full Name *</label>
+      <input id="studentName" required maxlength="120">
+
+      <label for="studentEmail">Email *</label>
+      <input id="studentEmail" type="email" required maxlength="160">
+
+      <label for="course">Course</label>
+      <input id="course" placeholder="e.g. BSIT" maxlength="60">
+
+      <label for="yearSection">Year and Section</label>
+      <input id="yearSection" placeholder="e.g. BSIT3K" maxlength="60">
+
+      <button type="submit">Register Student</button>
+      <div id="studentMessage" class="message" role="status"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Visitor Registration</h2>
+    <form id="visitorForm">
+      <label for="visitorName">Full Name *</label>
+      <input id="visitorName" required maxlength="120">
+
+      <label for="visitorEmail">Email *</label>
+      <input id="visitorEmail" type="email" required maxlength="160">
+
+      <label for="purpose">Purpose of Visit *</label>
+      <input id="purpose" required maxlength="250">
+
+      <label for="personToVisit">Person or Office to Visit *</label>
+      <input id="personToVisit" required maxlength="120">
+
+      <label for="visitDate">Visit Date *</label>
+      <input id="visitDate" type="date" required>
+
+      <button type="submit">Register Visitor</button>
+      <div id="visitorMessage" class="message" role="status"></div>
+    </form>
+  </div>
+
+  <p><a href="index.html">← Back to Home</a></p>
+</div>
+
+<script>
+  const API_URL =
+    "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+  // Use a date-only value based on the browser's local calendar date.
+  const dateInput = document.getElementById("visitDate");
+  const now = new Date();
+  dateInput.min =
+    now.getFullYear() + "-" +
+    String(now.getMonth() + 1).padStart(2, "0") + "-" +
+    String(now.getDate()).padStart(2, "0");
+  dateInput.value = dateInput.min;
+
+  async function submitRegistration(data, button, output) {
+    button.disabled = true;
+    output.textContent = "Submitting registration...";
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message || "Registration failed.");
+      }
+
+      output.textContent = result.message;
+
+      if (data.action === "registerVisitor") {
+        output.textContent +=
+          "\nVisitor ID: " + result.visitorId +
+          "\nAuthorization: " + result.authorizationStatus +
+          "\nPlease wait for admin authorization before scanning.";
+      } else {
+        output.textContent +=
+          "\nStudent Number: " + result.studentNumber;
+      }
+    } catch (error) {
+      output.textContent =
+        "Could not confirm registration: " + error.message +
+        "\nCheck your internet connection and Apps Script deployment.";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  document.getElementById("studentForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    submitRegistration({
+      action: "registerStudent",
+      studentNumber: document.getElementById("studentNumber").value.trim(),
+      fullName: document.getElementById("studentName").value.trim(),
+      email: document.getElementById("studentEmail").value.trim(),
+      course: document.getElementById("course").value.trim(),
+      yearSection: document.getElementById("yearSection").value.trim()
+    }, this.querySelector("button"), document.getElementById("studentMessage"));
+  });
+
+  document.getElementById("visitorForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    submitRegistration({
+      action: "registerVisitor",
+      fullName: document.getElementById("visitorName").value.trim(),
+      email: document.getElementById("visitorEmail").value.trim(),
+      purpose: document.getElementById("purpose").value.trim(),
+      personToVisit: document.getElementById("personToVisit").value.trim(),
+      visitDate: document.getElementById("visitDate").value
+    }, this.querySelector("button"), document.getElementById("visitorMessage"));
+  });
+</script>
+</body>
+</html>
