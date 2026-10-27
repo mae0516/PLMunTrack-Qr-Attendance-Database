@@ -1,259 +1,506 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PLMunTrack - Admin Dashboard</title>
+const SPREADSHEET_ID = "1YH2m_YXAoe-23x0_hOzp4vBIircb0tyznv9z_9_KOqw";
+const TIME_ZONE = "Asia/Manila";
 
-  <style>
-    * { box-sizing: border-box; }
+// MAIN WEB APP ROUTER
+function doGet(e) {
+  try {
+    const params = e && e.parameter ? e.parameter : {};
+    const action = params.action || "";
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+    if (action === "generateQR") {
+      return generateQR(params.studentNumber, params.type);
     }
 
-    header {
-      background: #1e293b;
-      padding: 20px;
-      border-bottom: 1px solid #334155;
+    if (action === "scan") {
+      return scanQRCode(params.token);
     }
 
-    header h1 {
-      margin: 0;
-      color: #818cf8;
-      font-size: 24px;
+    // ADMIN DASHBOARD
+    if (action === "dashboard") {
+      return jsonResponse(getDashboardSummary());
     }
 
-    header p {
-      margin-bottom: 0;
-      color: #cbd5e1;
+    return jsonResponse({
+      success: true,
+      system: "PLMunTrack",
+      message: "Google Sheets connected successfully!"
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message: error.message
+    });
+  }
+}
+
+// HANDLE WEBSITE REGISTRATION
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents || "{}");
+
+    if (data.action === "registerStudent") {
+      return registerStudent(data);
     }
 
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 20px;
-    }
+    return jsonResponse({
+      success: false,
+      message: "Invalid action."
+    });
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 15px;
-      margin: 20px 0;
-    }
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      message: error.message
+    });
+  }
+}
 
-    .card, .section {
-      padding: 20px;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 14px;
-    }
+// REGISTER STUDENT
+function registerStudent(data) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName("People");
 
-    .card h3 {
-      margin: 0 0 14px;
-      font-size: 14px;
-      color: #cbd5e1;
-    }
+  if (!sheet) throw new Error("People sheet not found.");
 
-    .number {
-      font-size: 32px;
-      font-weight: bold;
-      color: #818cf8;
-    }
+  const studentNumber = String(data.studentNumber || "").trim();
+  const fullName = String(data.fullName || "").trim();
+  const email = String(data.email || "").trim();
+  const course = String(data.course || "").trim();
+  const yearSection = String(data.yearSection || "").trim();
 
-    .section { margin-top: 24px; }
-    .section h2 { margin-top: 0; font-size: 19px; }
+  if (!studentNumber || !fullName || !email) {
+    throw new Error(
+      "Student number, full name, and email are required."
+    );
+  }
 
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
 
-    button, .link-button {
-      display: inline-block;
-      padding: 12px 16px;
-      border: 0;
-      border-radius: 8px;
-      background: #4f46e5;
-      color: white;
-      font-size: 14px;
-      text-decoration: none;
-      cursor: pointer;
-    }
+  try {
+    const lastRow = sheet.getLastRow();
 
-    button:hover, .link-button:hover {
-      background: #4338ca;
-    }
+    if (lastRow >= 2) {
+      const numbers = sheet
+        .getRange(2, 1, lastRow - 1, 1)
+        .getDisplayValues()
+        .flat()
+        .map(value => value.trim());
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
-
-    #message {
-      margin-top: 14px;
-      color: #cbd5e1;
-      white-space: pre-line;
-      overflow-wrap: anywhere;
-    }
-
-    .note {
-      color: #cbd5e1;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .success { color: #86efac !important; }
-    .error { color: #fca5a5 !important; }
-
-    footer {
-      padding: 25px;
-      text-align: center;
-      color: #94a3b8;
-      font-size: 13px;
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <h1>PLMunTrack</h1>
-    <p>Admin Dashboard | Visitor Monitoring and Attendance Management</p>
-  </header>
-
-  <main>
-    <h2>Dashboard Overview</h2>
-    <p class="note">
-      Attendance summary for today. Click Refresh Summary to load the latest data.
-    </p>
-
-    <div class="cards">
-      <div class="card">
-        <h3>Registered People</h3>
-        <div class="number" id="totalPeople">—</div>
-      </div>
-
-      <div class="card">
-        <h3>Today's Time-In</h3>
-        <div class="number" id="totalIn">—</div>
-      </div>
-
-      <div class="card">
-        <h3>Today's Time-Out</h3>
-        <div class="number" id="totalOut">—</div>
-      </div>
-
-      <div class="card">
-        <h3>Currently Inside</h3>
-        <div class="number" id="inside">—</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Dashboard Actions</h2>
-
-      <div class="actions">
-        <button id="refreshBtn" onclick="loadDashboard()">
-          Refresh Summary
-        </button>
-
-        <a class="link-button" href="generator.html">QR Generator</a>
-        <a class="link-button" href="scanner.html">QR Scanner</a>
-        <a class="link-button" href="index.html">Home</a>
-      </div>
-
-      <div id="message" role="status" aria-live="polite">
-        Loading dashboard summary...
-      </div>
-    </div>
-
-    <div class="section">
-      <h2>Attendance Summary</h2>
-
-      <p class="note">
-        Registered People counts active records in the People sheet.
-        Today's Time-In counts attendance rows with a Time-In for today.
-        Today's Time-Out counts rows with a Time-Out for today.
-        Currently Inside counts today's rows with a Time-In and no Time-Out.
-      </p>
-    </div>
-  </main>
-
-  <footer>
-    PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa
-  </footer>
-
-  <script>
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
-
-    async function loadDashboard() {
-      const message = document.getElementById("message");
-      const refreshBtn = document.getElementById("refreshBtn");
-
-      refreshBtn.disabled = true;
-      message.className = "";
-      message.textContent = "Loading attendance summary...";
-
-      try {
-        const response = await fetch(
-          API_URL + "?action=dashboard"
-        );
-
-        if (!response.ok) {
-          throw new Error("Server returned HTTP " + response.status);
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(
-            data.message || "Dashboard summary is unavailable."
-          );
-        }
-
-        document.getElementById("totalPeople").textContent =
-          data.totalPeople ?? 0;
-
-        document.getElementById("totalIn").textContent =
-          data.totalIn ?? 0;
-
-        document.getElementById("totalOut").textContent =
-          data.totalOut ?? 0;
-
-        document.getElementById("inside").textContent =
-          data.inside ?? 0;
-
-        message.className = "success";
-        message.textContent =
-          "Summary loaded successfully for " +
-          (data.date || "today") + ".";
-
-      } catch (error) {
-        message.className = "error";
-        message.textContent =
-          "Hindi pa makuha ang dashboard data. " +
-          "Kailangan munang idagdag ang action=dashboard sa " +
-          "Google Apps Script doGet(e) at i-deploy ang bagong version.";
-
-        document.getElementById("totalPeople").textContent = "—";
-        document.getElementById("totalIn").textContent = "—";
-        document.getElementById("totalOut").textContent = "—";
-        document.getElementById("inside").textContent = "—";
-
-        console.error(error);
-
-      } finally {
-        refreshBtn.disabled = false;
+      if (numbers.includes(studentNumber)) {
+        throw new Error("Student number is already registered.");
       }
     }
 
-    loadDashboard();
-  </script>
-</body>
-</html>
+    sheet.appendRow([
+      studentNumber,
+      "STUDENT",
+      fullName,
+      email,
+      course,
+      yearSection,
+      "Active"
+    ]);
+
+  } finally {
+    lock.releaseLock();
+  }
+
+  return jsonResponse({
+    success: true,
+    message: "Student registered successfully!"
+  });
+}
+
+// GENERATE DAILY QR TOKEN
+function generateQR(studentNumber, type) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const people = ss.getSheetByName("People");
+  const tokens = ss.getSheetByName("QR_Tokens");
+
+  if (!people || !tokens) {
+    throw new Error("People or QR_Tokens sheet not found.");
+  }
+
+  studentNumber = String(studentNumber || "").trim();
+  type = String(type || "").trim().toUpperCase();
+
+  if (!studentNumber) {
+    throw new Error("Student number is required.");
+  }
+
+  if (!["IN", "OUT"].includes(type)) {
+    throw new Error("QR type must be IN or OUT.");
+  }
+
+  const today = Utilities.formatDate(
+    new Date(),
+    TIME_ZONE,
+    "yyyy-MM-dd"
+  );
+
+  const peopleData = people.getDataRange().getDisplayValues();
+
+  const person = peopleData.slice(1).find(row =>
+    String(row[0]).trim() === studentNumber &&
+    String(row[6]).trim().toLowerCase() === "active"
+  );
+
+  if (!person) {
+    throw new Error(
+      "Active student not found. Register the student first."
+    );
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+
+  try {
+    const tokenData = tokens.getDataRange().getDisplayValues();
+
+    // Reuse today's active token for the same student and QR type.
+    const existing = tokenData.slice(1).find(row =>
+      String(row[1]).trim() === studentNumber &&
+      String(row[3]).trim() === today &&
+      String(row[5]).trim().toLowerCase() === "active" &&
+      String(row[6]).trim().toUpperCase() === type
+    );
+
+    if (existing) {
+      return jsonResponse({
+        success: true,
+        studentNumber: studentNumber,
+        fullName: person[2],
+        type: type,
+        date: today,
+        token: existing[2],
+        message: "Today's QR token already exists."
+      });
+    }
+
+    // Random token only; no personal information in the QR.
+    const token = Utilities.getUuid() + "-" + Utilities.getUuid();
+    const tokenId = "QR-" + Utilities.getUuid();
+
+    tokens.appendRow([
+      tokenId,
+      studentNumber,
+      token,
+      today,
+      new Date(),
+      "Active",
+      type
+    ]);
+
+    return jsonResponse({
+      success: true,
+      studentNumber: studentNumber,
+      fullName: person[2],
+      type: type,
+      date: today,
+      token: token,
+      message: "Daily QR token generated successfully."
+    });
+
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// VALIDATE QR TOKEN AND RECORD ATTENDANCE
+function scanQRCode(qrToken) {
+  qrToken = String(qrToken || "").trim();
+
+  if (!qrToken) {
+    throw new Error("QR token is required.");
+  }
+
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const tokens = ss.getSheetByName("QR_Tokens");
+  const people = ss.getSheetByName("People");
+  const attendance = ss.getSheetByName("Attendance");
+
+  if (!tokens || !people || !attendance) {
+    throw new Error(
+      "Required sheet missing: QR_Tokens, People, or Attendance."
+    );
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+
+  try {
+    const now = new Date();
+
+    const today = Utilities.formatDate(
+      now,
+      TIME_ZONE,
+      "yyyy-MM-dd"
+    );
+
+    const currentTime = Utilities.formatDate(
+      now,
+      TIME_ZONE,
+      "HH:mm:ss"
+    );
+
+    const tokenData = tokens.getDataRange().getDisplayValues();
+
+    const tokenIndex = tokenData.findIndex((row, index) =>
+      index > 0 && String(row[2]).trim() === qrToken
+    );
+
+    if (tokenIndex === -1) {
+      throw new Error("Invalid QR token.");
+    }
+
+    const tokenRow = tokenData[tokenIndex];
+    const tokenSheetRow = tokenIndex + 1;
+
+    if (String(tokenRow[5]).trim().toLowerCase() !== "active") {
+      throw new Error("This QR token is not active.");
+    }
+
+    if (String(tokenRow[3]).trim() !== today) {
+      tokens.getRange(tokenSheetRow, 6).setValue("Expired");
+      throw new Error("This QR code has expired. Generate today's QR.");
+    }
+
+    const studentNumber = String(tokenRow[1]).trim();
+    const type = String(tokenRow[6]).trim().toUpperCase();
+
+    if (!["IN", "OUT"].includes(type)) {
+      throw new Error("Invalid QR type.");
+    }
+
+    const peopleData = people.getDataRange().getDisplayValues();
+
+    const person = peopleData.slice(1).find(row =>
+      String(row[0]).trim() === studentNumber &&
+      String(row[6]).trim().toLowerCase() === "active"
+    );
+
+    if (!person) {
+      throw new Error("Student is not registered or is inactive.");
+    }
+
+    const attendanceData =
+      attendance.getDataRange().getDisplayValues();
+
+    const attendanceIndex = attendanceData.findIndex((row, index) =>
+      index > 0 &&
+      String(row[1]).trim() === studentNumber &&
+      String(row[3]).trim() === today
+    );
+
+    let attendanceRowNumber;
+    let message;
+
+    if (type === "IN") {
+      if (attendanceIndex !== -1) {
+        const existingAttendance = attendanceData[attendanceIndex];
+
+        if (String(existingAttendance[4]).trim()) {
+          throw new Error("Time-In has already been recorded today.");
+        }
+      }
+
+      const attendanceId = "ATT-" + Utilities.getUuid();
+
+      attendance.appendRow([
+        attendanceId,
+        studentNumber,
+        person[1],
+        today,
+        currentTime,
+        "",
+        "Present"
+      ]);
+
+      attendanceRowNumber = attendance.getLastRow();
+      message = "Time-In recorded successfully.";
+
+    } else {
+      if (attendanceIndex === -1) {
+        throw new Error(
+          "No Time-In found for today. Record Time-In first."
+        );
+      }
+
+      attendanceRowNumber = attendanceIndex + 1;
+
+      const existingAttendance = attendanceData[attendanceIndex];
+
+      if (!String(existingAttendance[4]).trim()) {
+        throw new Error("Record Time-In before Time-Out.");
+      }
+
+      if (String(existingAttendance[5]).trim()) {
+        throw new Error("Time-Out has already been recorded today.");
+      }
+
+      attendance.getRange(attendanceRowNumber, 6)
+        .setValue(currentTime);
+
+      attendance.getRange(attendanceRowNumber, 7)
+        .setValue("Completed");
+
+      message = "Time-Out recorded successfully.";
+    }
+
+    const audit = ss.getSheetByName("Audit");
+
+    if (audit) {
+      audit.appendRow([
+        "AUD-" + Utilities.getUuid(),
+        person[3],
+        "ATTENDANCE_" + type,
+        studentNumber + " - " + message,
+        now
+      ]);
+    }
+
+    return jsonResponse({
+      success: true,
+      message: message,
+      fullName: person[2],
+      studentNumber: studentNumber,
+      personType: person[1],
+      date: today,
+      time: currentTime,
+      status: type === "IN" ? "Time-In" : "Time-Out"
+    });
+
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// ADMIN DASHBOARD SUMMARY
+function getDashboardSummary() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const peopleSheet = ss.getSheetByName("People");
+  const attendanceSheet = ss.getSheetByName("Attendance");
+
+  if (!peopleSheet || !attendanceSheet) {
+    return {
+      success: false,
+      message: "People or Attendance sheet was not found."
+    };
+  }
+
+  const peopleData = peopleSheet.getDataRange().getDisplayValues();
+  const attendanceData =
+    attendanceSheet.getDataRange().getDisplayValues();
+
+  if (peopleData.length === 0 || attendanceData.length === 0) {
+    return {
+      success: false,
+      message: "The People or Attendance sheet has no header row."
+    };
+  }
+
+  const peopleHeaders = peopleData[0].map(value =>
+    String(value).trim()
+  );
+
+  const attendanceHeaders = attendanceData[0].map(value =>
+    String(value).trim()
+  );
+
+  const peopleStatusIndex = peopleHeaders.indexOf("Status");
+  const timeInIndex = attendanceHeaders.indexOf("Time_In");
+  const timeOutIndex = attendanceHeaders.indexOf("Time_Out");
+  const dateIndex = attendanceHeaders.indexOf("Date");
+
+  if (
+    timeInIndex === -1 ||
+    timeOutIndex === -1 ||
+    dateIndex === -1
+  ) {
+    return {
+      success: false,
+      message:
+        "Attendance headers must include Date, Time_In, and Time_Out."
+    };
+  }
+
+  const today = Utilities.formatDate(
+    new Date(),
+    TIME_ZONE,
+    "yyyy-MM-dd"
+  );
+
+  const totalPeople = peopleData.slice(1).filter(row => {
+    if (peopleStatusIndex === -1) return true;
+
+    return String(row[peopleStatusIndex])
+      .trim()
+      .toLowerCase() === "active";
+  }).length;
+
+  let totalIn = 0;
+  let totalOut = 0;
+  let inside = 0;
+
+  attendanceData.slice(1).forEach(row => {
+    const rowDate = normalizeSheetDate(row[dateIndex]);
+
+    if (rowDate !== today) return;
+
+    const timeIn = String(row[timeInIndex] || "").trim();
+    const timeOut = String(row[timeOutIndex] || "").trim();
+
+    if (timeIn !== "") {
+      totalIn++;
+
+      if (timeOut === "") {
+        inside++;
+      } else {
+        totalOut++;
+      }
+    }
+  });
+
+  return {
+    success: true,
+    date: today,
+    totalPeople: totalPeople,
+    totalIn: totalIn,
+    totalOut: totalOut,
+    inside: inside
+  };
+}
+
+// NORMALIZE DATE FROM GOOGLE SHEETS
+function normalizeSheetDate(value) {
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return Utilities.formatDate(value, TIME_ZONE, "yyyy-MM-dd");
+  }
+
+  const text = String(value || "").trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+    return text;
+  }
+
+  // Handle dates displayed as MM/DD/YYYY.
+  const match = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+  if (match) {
+    const month = match[1].padStart(2, "0");
+    const day = match[2].padStart(2, "0");
+    return match[3] + "-" + month + "-" + day;
+  }
+
+  return text.slice(0, 10);
+}
+
+// JSON RESPONSE
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
