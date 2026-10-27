@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>PLMunTrack | Permanent QR Generator</title>
+    <title>PLMunTrack | QR Generator</title>
     <link rel="stylesheet" href="style.css">
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -17,15 +15,9 @@
             text-align: left;
         }
 
-        .generator-card h2 {
-            color: #173b7a;
-            margin-bottom: 8px;
-        }
-
-        .intro {
-            color: #687891;
-            margin-bottom: 24px;
-        }
+        .generator-card h2 { color: #173b7a; margin-bottom: 8px; }
+        .intro, .notice { color: #687891; }
+        .intro { margin-bottom: 24px; }
 
         .generator-card label {
             display: block;
@@ -43,9 +35,20 @@
             font: inherit;
         }
 
-        .generator-card button {
-            width: 100%;
-            margin-top: 20px;
+        .generator-card button { margin-top: 16px; }
+        .generator-card form > button { width: 100%; }
+
+        .qr-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 22px 0;
+        }
+
+        .qr-tabs button { flex: 1; }
+
+        .qr-tabs button.active {
+            background: #173b7a;
+            color: white;
         }
 
         #qrResult {
@@ -54,7 +57,7 @@
             padding: 24px;
             border: 1px solid #dce4ef;
             border-radius: 14px;
-            background: #fff;
+            background: white;
             text-align: center;
         }
 
@@ -64,18 +67,12 @@
             margin: 20px auto;
         }
 
-        #qrcode img,
-        #qrcode canvas {
+        #qrcode img, #qrcode canvas {
             max-width: 100%;
             height: auto;
         }
 
-        .notice {
-            color: #687891;
-            font-size: 13px;
-            margin-top: 12px;
-        }
-
+        .notice { font-size: 13px; margin-top: 12px; }
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -84,10 +81,7 @@
             font-weight: 600;
         }
 
-        .student-details {
-            line-height: 1.8;
-            overflow-wrap: anywhere;
-        }
+        .details { line-height: 1.8; overflow-wrap: anywhere; }
 
         .permanent-label {
             display: inline-block;
@@ -99,35 +93,38 @@
             font-weight: bold;
         }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 
 <body>
 <header>
     <h1>PLMunTrack</h1>
-    <p>Permanent QR Code Generator</p>
+    <p>Student and Visitor QR Code Generator</p>
 </header>
 
 <main>
     <section class="welcome-card generator-card">
         <a class="back-link" href="index.html">← Back to Home</a>
 
-        <h2>Generate Student QR Code</h2>
-
+        <h2>QR Code Generator</h2>
         <p class="intro">
-            Generate one permanent QR code for a registered, active student.
-            The same QR will be used for Time-In and Time-Out.
+            Generate a permanent QR code for a registered student or visitor.
         </p>
 
-        <form id="qrForm">
-            <label for="studentNumber">Student Number</label>
+        <div class="qr-tabs">
+            <button type="button" id="studentTab" class="active">
+                Student QR
+            </button>
+            <button type="button" id="visitorTab">
+                Visitor QR
+            </button>
+        </div>
 
+        <form id="qrForm">
+            <label id="idLabel" for="personId">Student Number</label>
             <input
-                id="studentNumber"
+                id="personId"
                 type="text"
                 placeholder="Enter registered student number"
                 autocomplete="off"
@@ -135,32 +132,25 @@
             >
 
             <button id="generateBtn" type="submit">
-                Generate Permanent QR
+                Generate Student QR
             </button>
         </form>
 
         <div id="qrResult">
-            <span class="permanent-label">PERMANENT QR</span>
-
-            <h2>Student QR Code</h2>
-
-            <div id="qrDetails" class="student-details"></div>
-
+            <span class="permanent-label">QR CODE</span>
+            <h2 id="resultTitle">QR Code</h2>
+            <div id="qrDetails" class="details"></div>
             <div id="qrcode"></div>
-
-            <button type="button" id="downloadBtn">
-                Download QR Code
-            </button>
+            <button type="button" id="downloadBtn">Download QR Code</button>
 
             <p class="notice">
-                Keep your QR code private. The same QR is used for both
-                attendance actions. The scanner determines whether to record
-                Time-In or Time-Out based on today's attendance record.
+                Keep this QR code private. The scanner determines whether
+                to record Time-In or Time-Out.
             </p>
         </div>
 
         <p id="statusMessage" class="notice" role="status">
-            Ready to generate a permanent QR code.
+            Ready to generate a QR code.
         </p>
     </section>
 </main>
@@ -170,143 +160,186 @@
 </footer>
 
 <script>
-    const API_URL =
-        "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
-    const qrForm = document.getElementById("qrForm");
-    const studentNumberInput = document.getElementById("studentNumber");
-    const qrResult = document.getElementById("qrResult");
-    const qrDetails = document.getElementById("qrDetails");
-    const qrContainer = document.getElementById("qrcode");
-    const statusMessage = document.getElementById("statusMessage");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const generateBtn = document.getElementById("generateBtn");
+const qrForm = document.getElementById("qrForm");
+const personId = document.getElementById("personId");
+const idLabel = document.getElementById("idLabel");
+const generateBtn = document.getElementById("generateBtn");
+const studentTab = document.getElementById("studentTab");
+const visitorTab = document.getElementById("visitorTab");
+const qrResult = document.getElementById("qrResult");
+const qrDetails = document.getElementById("qrDetails");
+const qrContainer = document.getElementById("qrcode");
+const statusMessage = document.getElementById("statusMessage");
+const downloadBtn = document.getElementById("downloadBtn");
+const resultTitle = document.getElementById("resultTitle");
 
-    let generatedToken = "";
-    let generatedStudentNumber = "";
+let currentType = "STUDENT";
+let generatedToken = "";
+let generatedId = "";
 
-    qrForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
+function setType(type) {
+    currentType = type;
+    qrResult.style.display = "none";
+    qrContainer.replaceChildren();
+    qrDetails.replaceChildren();
+    generatedToken = "";
+    generatedId = "";
 
-        const studentNumber = studentNumberInput.value.trim();
+    const isStudent = type === "STUDENT";
 
-        if (!studentNumber) {
-            statusMessage.textContent = "Please enter a student number.";
-            return;
+    studentTab.classList.toggle("active", isStudent);
+    visitorTab.classList.toggle("active", !isStudent);
+
+    idLabel.textContent = isStudent ? "Student Number" : "Visitor ID";
+    personId.placeholder = isStudent
+        ? "Enter registered student number"
+        : "Enter Visitor ID (example: VIS-1234ABCD)";
+
+    generateBtn.textContent = isStudent
+        ? "Generate Student QR"
+        : "Load Visitor QR";
+
+    statusMessage.textContent = isStudent
+        ? "Ready to generate a student QR code."
+        : "Enter the Visitor ID from the visitor registration result.";
+}
+
+studentTab.addEventListener("click", () => setType("STUDENT"));
+visitorTab.addEventListener("click", () => setType("VISITOR"));
+
+qrForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const id = personId.value.trim();
+    if (!id) {
+        statusMessage.textContent = "Please enter the required ID.";
+        return;
+    }
+
+    qrResult.style.display = "none";
+    qrContainer.replaceChildren();
+    qrDetails.replaceChildren();
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = "Connecting...";
+    statusMessage.textContent = "Connecting to PLMunTrack...";
+
+    try {
+        let url;
+
+        if (currentType === "STUDENT") {
+            url = API_URL
+                + "?action=generateQR"
+                + "&studentNumber=" + encodeURIComponent(id);
+        } else {
+            url = API_URL
+                + "?action=generateVisitorQR"
+                + "&visitorId=" + encodeURIComponent(id);
         }
 
-        qrResult.style.display = "none";
-        qrContainer.replaceChildren();
-        qrDetails.replaceChildren();
+        url += "&_=" + Date.now();
 
-        generatedToken = "";
-        generatedStudentNumber = "";
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error("Unable to connect to the server.");
+        }
 
-        generateBtn.disabled = true;
-        generateBtn.textContent = "Connecting...";
-        statusMessage.textContent = "Checking student registration...";
+        const result = await response.json();
 
-        try {
-            const url = API_URL
-                + "?action=generateQR"
-                + "&studentNumber=" + encodeURIComponent(studentNumber)
-                + "&_=" + Date.now();
+        if (!result.success) {
+            throw new Error(result.message || "Unable to load QR code.");
+        }
 
-            const response = await fetch(url);
+        if (!result.token) {
+            throw new Error("The server did not return a QR token.");
+        }
 
-            if (!response.ok) {
-                throw new Error("Unable to connect to the Apps Script server.");
-            }
+        if (typeof QRCode === "undefined") {
+            throw new Error("QR library did not load. Check your internet connection.");
+        }
 
-            const result = await response.json();
+        generatedToken = result.token;
+        generatedId = currentType === "STUDENT"
+            ? (result.studentNumber || id)
+            : (result.visitorId || id);
 
-            if (!result.success) {
-                throw new Error(
-                    result.message || "Permanent QR could not be generated."
-                );
-            }
+        new QRCode(qrContainer, {
+            text: generatedToken,
+            width: 240,
+            height: 240,
+            correctLevel: QRCode.CorrectLevel.M
+        });
 
-            if (!result.token) {
-                throw new Error("The server did not return a QR token.");
-            }
+        resultTitle.textContent = currentType === "STUDENT"
+            ? "Student QR Code"
+            : "Visitor QR Code";
 
-            if (typeof QRCode === "undefined") {
-                throw new Error(
-                    "QR library did not load. Check your internet connection."
-                );
-            }
-
-            generatedToken = result.token;
-            generatedStudentNumber = result.studentNumber || studentNumber;
-
-            new QRCode(qrContainer, {
-                text: generatedToken,
-                width: 240,
-                height: 240,
-                correctLevel: QRCode.CorrectLevel.M
-            });
-
-            const details = [
+        const details = currentType === "STUDENT"
+            ? [
                 ["Name", result.fullName || "Not provided"],
-                ["Student Number", generatedStudentNumber],
+                ["Student Number", generatedId],
                 ["Person Type", result.personType || "STUDENT"],
                 ["QR Type", "Permanent — Time-In and Time-Out"]
+            ]
+            : [
+                ["Visitor Name", result.fullName || "Not provided"],
+                ["Visitor ID", generatedId],
+                ["Person Type", "VISITOR"],
+                ["Visit Date", result.visitDate || "Not provided"],
+                ["Authorization", result.authorizationStatus || "Not provided"],
+                ["QR Type", "Visitor attendance"]
             ];
 
-            details.forEach(function (item) {
-                const line = document.createElement("p");
-                const label = document.createElement("strong");
+        details.forEach(function(item) {
+            const line = document.createElement("p");
+            const label = document.createElement("strong");
+            label.textContent = item[0] + ": ";
+            line.appendChild(label);
+            line.appendChild(document.createTextNode(item[1]));
+            qrDetails.appendChild(line);
+        });
 
-                label.textContent = item[0] + ": ";
-                line.appendChild(label);
-                line.appendChild(document.createTextNode(item[1]));
+        qrResult.style.display = "block";
+        statusMessage.textContent = result.message || "QR code loaded successfully.";
 
-                qrDetails.appendChild(line);
-            });
+    } catch (error) {
+        statusMessage.textContent = "Error: " + error.message;
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = currentType === "STUDENT"
+            ? "Generate Student QR"
+            : "Load Visitor QR";
+    }
+});
 
-            qrResult.style.display = "block";
+downloadBtn.addEventListener("click", function() {
+    if (!generatedToken) {
+        statusMessage.textContent = "Load a QR code first.";
+        return;
+    }
 
-            statusMessage.textContent =
-                result.message || "Permanent QR loaded successfully.";
+    const canvas = qrContainer.querySelector("canvas");
+    const image = qrContainer.querySelector("img");
 
-        } catch (error) {
-            statusMessage.textContent = "Error: " + error.message;
-        } finally {
-            generateBtn.disabled = false;
-            generateBtn.textContent = "Generate Permanent QR";
-        }
-    });
+    const imageUrl = canvas
+        ? canvas.toDataURL("image/png")
+        : image ? image.src : "";
 
-    downloadBtn.addEventListener("click", function () {
-        if (!generatedToken) {
-            statusMessage.textContent = "Generate a QR code first.";
-            return;
-        }
+    if (!imageUrl) {
+        statusMessage.textContent = "QR image is not ready yet.";
+        return;
+    }
 
-        const canvas = qrContainer.querySelector("canvas");
-        const image = qrContainer.querySelector("img");
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = "PLMunTrack-" + generatedId + "-QR.png";
+    link.click();
 
-        const imageUrl = canvas
-            ? canvas.toDataURL("image/png")
-            : image
-                ? image.src
-                : "";
-
-        if (!imageUrl) {
-            statusMessage.textContent = "QR image is not ready yet.";
-            return;
-        }
-
-        const link = document.createElement("a");
-        link.href = imageUrl;
-        link.download =
-            "PLMunTrack-" + generatedStudentNumber + "-Permanent-QR.png";
-
-        link.click();
-
-        statusMessage.textContent = "QR code download started.";
-    });
+    statusMessage.textContent = "QR code download started.";
+});
 </script>
 </body>
 </html>
-
