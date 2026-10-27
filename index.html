@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>PLMunTrack</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,67 +18,151 @@
 
     <main>
         <section class="welcome-card">
+
             <h2>Welcome to PLMunTrack</h2>
             <p>Manage attendance, monitor visitors, and view attendance records.</p>
 
             <div class="menu">
-                <button id="studentBtn" type="button">Student / Faculty</button>
-                <button id="visitorBtn" type="button">Visitor</button>
-                <button id="adminBtn" type="button">Admin Dashboard</button>
-                <button id="generatorBtn" type="button">QR Generator</button>
-                <button id="scannerBtn" type="button">QR Scanner</button>
+                <button id="studentBtn" type="button">
+                    Student / Faculty
+                </button>
+
+                <button id="visitorBtn" type="button">
+                    Visitor
+                </button>
+
+                <button id="adminBtn" type="button">
+                    Admin Dashboard
+                </button>
+
+                <button id="generatorBtn" type="button">
+                    QR Generator
+                </button>
+
+                <button id="scannerBtn" type="button">
+                    QR Scanner
+                </button>
             </div>
 
+            <!-- STUDENT REGISTRATION -->
             <section id="studentForm" hidden>
                 <h2>Student Registration</h2>
 
                 <form id="registrationForm">
+
                     <label for="studentNumber">Student Number</label>
-                    <input id="studentNumber" name="studentNumber"
-                           type="text" required>
+                    <input
+                        id="studentNumber"
+                        name="studentNumber"
+                        type="text"
+                        required
+                    >
 
                     <label for="fullName">Full Name</label>
-                    <input id="fullName" name="fullName"
-                           type="text" required>
+                    <input
+                        id="fullName"
+                        name="fullName"
+                        type="text"
+                        required
+                    >
 
                     <label for="email">Email</label>
-                    <input id="email" name="email"
-                           type="email" required>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                    >
 
                     <label for="course">Course</label>
-                    <input id="course" name="course"
-                           type="text" placeholder="e.g. BSIT">
+                    <input
+                        id="course"
+                        name="course"
+                        type="text"
+                        placeholder="e.g. BSIT"
+                    >
 
                     <label for="yearSection">Year and Section</label>
-                    <input id="yearSection" name="yearSection"
-                           type="text" placeholder="e.g. BSIT3K">
+                    <input
+                        id="yearSection"
+                        name="yearSection"
+                        type="text"
+                        placeholder="e.g. BSIT3K"
+                    >
 
                     <button type="submit">Register Student</button>
                 </form>
             </section>
 
+            <!-- VISITOR REGISTRATION -->
+            <section id="visitorForm" hidden>
+                <h2>Visitor Registration</h2>
+
+                <form id="visitorRegistrationForm">
+
+                    <label for="visitorName">Full Name</label>
+                    <input
+                        id="visitorName"
+                        name="fullName"
+                        type="text"
+                        required
+                    >
+
+                    <label for="visitorEmail">Email</label>
+                    <input
+                        id="visitorEmail"
+                        name="email"
+                        type="email"
+                        required
+                    >
+
+                    <label for="visitorPurpose">Purpose of Visit</label>
+                    <input
+                        id="visitorPurpose"
+                        name="purpose"
+                        type="text"
+                        placeholder="e.g. Meeting or document submission"
+                        required
+                    >
+
+                    <label for="personToVisit">Person or Office to Visit</label>
+                    <input
+                        id="personToVisit"
+                        name="personToVisit"
+                        type="text"
+                        placeholder="e.g. Registrar's Office"
+                        required
+                    >
+
+                    <button type="submit">Register Visitor</button>
+                </form>
+            </section>
+
             <p id="message">Select a module to get started.</p>
+
         </section>
     </main>
 
     <footer>
-        <p>© 2026 PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</p>
+        <p>
+            © 2026 PLMunTrack |
+            Pamantasan ng Lungsod ng Muntinlupa
+        </p>
     </footer>
 
+    <!-- EXISTING JAVASCRIPT -->
     <script src="script.js"></script>
 
+    <!-- PAGE NAVIGATION -->
     <script>
-        // Open the Admin Dashboard
         document.getElementById("adminBtn").addEventListener("click", function () {
             window.location.href = "admin.html";
         });
 
-        // Open the QR Generator
         document.getElementById("generatorBtn").addEventListener("click", function () {
             window.location.href = "generator.html";
         });
 
-        // Open the QR Scanner
         document.getElementById("scannerBtn").addEventListener("click", function () {
             window.location.href = "scanner.html";
         });
@@ -84,3 +170,4 @@
 
 </body>
 </html>
+
