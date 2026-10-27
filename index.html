@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,9 +20,11 @@
             <p>Manage attendance, monitor visitors, and view attendance records.</p>
 
             <div class="menu">
-                <button id="studentBtn">Student / Faculty</button>
-                <button id="visitorBtn">Visitor</button>
-                <button id="adminBtn">Admin Dashboard</button>
+                <button id="studentBtn" type="button">Student / Faculty</button>
+                <button id="visitorBtn" type="button">Visitor</button>
+                <button id="adminBtn" type="button">Admin Dashboard</button>
+                <button id="generatorBtn" type="button">QR Generator</button>
+                <button id="scannerBtn" type="button">QR Scanner</button>
             </div>
 
             <section id="studentForm" hidden>
@@ -61,5 +64,23 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <script>
+        // Open the Admin Dashboard
+        document.getElementById("adminBtn").addEventListener("click", function () {
+            window.location.href = "admin.html";
+        });
+
+        // Open the QR Generator
+        document.getElementById("generatorBtn").addEventListener("click", function () {
+            window.location.href = "generator.html";
+        });
+
+        // Open the QR Scanner
+        document.getElementById("scannerBtn").addEventListener("click", function () {
+            window.location.href = "scanner.html";
+        });
+    </script>
+
 </body>
 </html>
