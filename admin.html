@@ -2,411 +2,928 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLMunTrack - Admin Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLMunTrack | Admin Dashboard</title>
 
-    <style>
-        * { box-sizing: border-box; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        body {
-            margin: 0;
-            padding: 24px;
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            color: #1f2937;
-        }
+<style>
+:root {
+  --bg: #080d1b;
+  --panel: #111a2e;
+  --panel2: #16223a;
+  --line: rgba(148,163,184,.15);
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --primary: #818cf8;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --red: #fb7185;
+  --yellow: #fbbf24;
+}
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-        }
+* { box-sizing: border-box; }
 
-        h1 { color: #3730a3; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, Arial, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-        .card {
-            background: white;
-            padding: 20px;
-            margin: 16px 0;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px #0000000d;
-        }
+body::before {
+  content: "";
+  position: fixed;
+  width: 440px;
+  height: 440px;
+  border-radius: 50%;
+  background: rgba(79,70,229,.16);
+  filter: blur(100px);
+  top: -180px;
+  right: -100px;
+  pointer-events: none;
+  animation: floatGlow 9s ease-in-out infinite alternate;
+}
 
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px;
-        }
+body::after {
+  content: "";
+  position: fixed;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(6,182,212,.10);
+  filter: blur(100px);
+  bottom: -140px;
+  left: 180px;
+  pointer-events: none;
+}
 
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+@keyframes floatGlow {
+  from { transform: translate(0,0); }
+  to { transform: translate(-80px,60px); }
+}
 
-        input, button {
-            padding: 10px 12px;
-            border-radius: 7px;
-            border: 1px solid #d1d5db;
-            font-size: 14px;
-        }
+button, input { font: inherit; }
+button { cursor: pointer; }
 
-        input { max-width: 100%; }
+.app {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
 
-        button {
-            cursor: pointer;
-            border: none;
-            background: #4f46e5;
-            color: white;
-            margin: 3px;
-        }
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  padding: 25px 17px;
+  border-right: 1px solid var(--line);
+  background: rgba(10,16,32,.92);
+  backdrop-filter: blur(18px);
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  transition: transform .3s ease;
+}
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px 28px;
+  border-bottom: 1px solid var(--line);
+}
 
-        .revoke { background: #dc2626; }
-        .refresh { background: #0891b2; }
+.brand-icon {
+  width: 43px;
+  height: 43px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg,#6366f1,#06b6d4);
+  box-shadow: 0 0 25px rgba(99,102,241,.32);
+  font-size: 23px;
+}
 
-        .table-wrap { overflow-x: auto; }
+.brand h2 { margin: 0; font-size: 18px; letter-spacing: -.5px; }
+.brand p { margin: 5px 0 0; font-size: 10px; color: var(--muted); }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
+.nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 1.5px;
+  margin: 27px 12px 12px;
+}
 
-        th, td {
-            text-align: left;
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-        }
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
 
-        th { background: #f9fafb; }
+.nav a {
+  color: #aab8cf;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 13px 14px;
+  border-radius: 11px;
+  font-size: 13px;
+  transition: .25s;
+}
 
-        .status {
-            font-weight: bold;
-        }
+.nav a:hover, .nav a.active {
+  color: white;
+  background: linear-gradient(100deg,rgba(99,102,241,.25),rgba(6,182,212,.08));
+  box-shadow: inset 3px 0 #818cf8;
+  transform: translateX(3px);
+}
 
-        .message {
-            margin-top: 12px;
-            white-space: pre-wrap;
-        }
+.nav .ico { width: 20px; text-align: center; font-size: 17px; }
 
-        .muted {
-            color: #6b7280;
-            font-size: 13px;
-        }
+.side-bottom {
+  position: absolute;
+  bottom: 22px;
+  left: 17px;
+  right: 17px;
+}
 
-        a { color: #4338ca; }
-    </style>
+.system-status {
+  padding: 14px;
+  border: 1px solid var(--line);
+  background: rgba(22,34,58,.7);
+  border-radius: 13px;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 10px var(--green);
+  margin-right: 6px;
+}
+
+.system-status p { font-size: 11px; color: var(--muted); margin: 7px 0 0; }
+
+.main {
+  margin-left: 250px;
+  padding: 27px 32px 45px;
+  width: calc(100% - 250px);
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.topbar h1 { margin: 0; font-size: clamp(22px,3vw,29px); letter-spacing: -1px; }
+.topbar p { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
+
+.top-actions { display: flex; align-items: center; gap: 10px; }
+
+.date-pill {
+  color: #cbd5e1;
+  font-size: 11px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 11px 13px;
+  border-radius: 10px;
+}
+
+.btn {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: white;
+  background: var(--panel2);
+  transition: .25s;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn:hover { transform: translateY(-2px); border-color: var(--primary); }
+
+.btn-primary {
+  border: none;
+  background: linear-gradient(110deg,#6366f1,#4f46e5);
+  box-shadow: 0 5px 20px rgba(79,70,229,.22);
+}
+
+.btn-primary:hover { box-shadow: 0 7px 25px rgba(79,70,229,.4); }
+
+.welcome {
+  border: 1px solid rgba(129,140,248,.28);
+  border-radius: 18px;
+  padding: 26px 28px;
+  background:
+    radial-gradient(ellipse at 85% 15%,rgba(34,211,238,.16),transparent 35%),
+    linear-gradient(110deg,rgba(79,70,229,.20),rgba(17,26,46,.95) 65%);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  animation: rise .6s ease both;
+}
+
+.welcome::after {
+  content: "⌁";
+  position: absolute;
+  font-size: 170px;
+  color: rgba(129,140,248,.09);
+  right: 32px;
+  top: -55px;
+  transform: rotate(-20deg);
+}
+
+.welcome h2 { font-size: 22px; margin: 0 0 9px; position: relative; z-index: 1; }
+.welcome p { color: #a9b8d1; font-size: 12px; margin: 0; line-height: 1.8; position: relative; z-index: 1; }
+.welcome .tag { display: inline-block; margin-top: 17px; font-size: 10px; padding: 7px 10px; border-radius: 30px; color: #a5f3fc; background: rgba(6,182,212,.10); border: 1px solid rgba(34,211,238,.22); }
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 27px 0 15px;
+}
+
+.section-head h2 { font-size: 15px; margin: 0; }
+.section-head p { color: var(--muted); font-size: 11px; margin: 5px 0 0; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 15px;
+}
+
+.stat-card {
+  padding: 20px;
+  background: linear-gradient(145deg,rgba(22,34,58,.95),rgba(15,23,42,.95));
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s,border-color .25s,box-shadow .25s;
+  animation: rise .55s ease both;
+}
+
+.stat-card:nth-child(2) { animation-delay: .07s; }
+.stat-card:nth-child(3) { animation-delay: .14s; }
+.stat-card:nth-child(4) { animation-delay: .21s; }
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(129,140,248,.5);
+  box-shadow: 0 12px 35px rgba(0,0,0,.18);
+}
+
+.stat-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.stat-label { font-size: 11px; color: var(--muted); line-height: 1.5; }
+.stat-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; font-size: 19px; }
+.purple { color: #c4b5fd; background: rgba(139,92,246,.15); }
+.cyan { color: #67e8f9; background: rgba(6,182,212,.13); }
+.green { color: #6ee7b7; background: rgba(16,185,129,.13); }
+.orange { color: #fcd34d; background: rgba(245,158,11,.13); }
+.stat-number { font-size: 30px; font-weight: 800; letter-spacing: -1px; margin-top: 17px; }
+.stat-note { font-size: 10px; color: #8fa2bd; margin-top: 8px; }
+.stat-note span { color: var(--green); }
+
+.two-col {
+  display: grid;
+  grid-template-columns: minmax(0,1.45fr) minmax(250px,1fr);
+  gap: 17px;
+}
+
+.panel {
+  background: rgba(17,26,46,.92);
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  padding: 21px;
+  min-width: 0;
+  animation: rise .6s ease both;
+}
+
+.panel h3 { font-size: 13px; margin: 0; }
+.panel-sub { font-size: 10px; color: var(--muted); margin: 7px 0 18px; }
+.chart-wrap { height: 220px; position: relative; }
+
+.quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+
+.quick-link {
+  display: block;
+  color: white;
+  text-decoration: none;
+  padding: 15px 13px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(22,34,58,.7);
+  transition: .25s;
+}
+
+.quick-link:hover { transform: translateY(-3px); border-color: var(--primary); background: rgba(99,102,241,.12); }
+.quick-link .qicon { font-size: 22px; margin-bottom: 13px; }
+.quick-link strong { display: block; font-size: 11px; }
+.quick-link span { display: block; color: var(--muted); font-size: 10px; margin-top: 6px; line-height: 1.5; }
+
+.visitor-panel { margin-top: 20px; }
+
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.search {
+  background: #0b1325;
+  border: 1px solid var(--line);
+  color: white;
+  padding: 11px 13px;
+  border-radius: 9px;
+  width: min(100%,290px);
+  outline: none;
+  font-size: 12px;
+}
+
+.search:focus { border-color: var(--primary); }
+
+.table-wrap { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 730px; }
+th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: #8494ad; font-weight: 600; padding: 13px 12px; border-bottom: 1px solid var(--line); }
+td { font-size: 11px; color: #d6deeb; padding: 15px 12px; border-bottom: 1px solid rgba(148,163,184,.08); }
+tbody tr { transition: background .2s; }
+tbody tr:hover { background: rgba(99,102,241,.06); }
+.name-cell { font-weight: 600; color: white; }
+.id-cell { color: #9ca3ff; font-size: 10px; }
+
+.badge {
+  display: inline-block;
+  padding: 6px 9px;
+  border-radius: 30px;
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.badge-pending { color: #fcd34d; background: rgba(245,158,11,.12); }
+.badge-authorized { color: #6ee7b7; background: rgba(16,185,129,.12); }
+.badge-revoked { color: #fda4af; background: rgba(244,63,94,.12); }
+.badge-neutral { color: #cbd5e1; background: rgba(148,163,184,.12); }
+
+.action-btn {
+  border: 1px solid rgba(129,140,248,.35);
+  color: #c7d2fe;
+  background: rgba(99,102,241,.12);
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+.action-btn:hover { background: rgba(99,102,241,.28); }
+.action-btn.revoke { color: #fda4af; border-color: rgba(251,113,133,.3); background: rgba(244,63,94,.08); }
+.action-btn:disabled { opacity: .5; cursor: wait; }
+
+.message { color: var(--muted); font-size: 11px; margin-top: 12px; white-space: pre-wrap; line-height: 1.6; }
+
+.admin-box {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 15px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(7,13,27,.45);
+}
+
+.admin-box input { flex: 1; min-width: 180px; }
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+  margin-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.mobile-menu { display: none; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(13px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:1100px) {
+  .stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+@media(max-width:760px) {
+  .sidebar { transform: translateX(-100%); box-shadow: 20px 0 60px #0008; }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; width: 100%; padding: 20px 15px 35px; }
+  .mobile-menu { display: inline-block; }
+  .topbar { align-items: flex-start; }
+  .top-actions { flex-wrap: wrap; justify-content: flex-end; }
+  .date-pill { display: none; }
+  .welcome { padding: 22px 18px; }
+  .welcome h2 { font-size: 19px; }
+  .stats { gap: 10px; }
+  .stat-card { padding: 15px; }
+  .stat-number { font-size: 25px; }
+  .stat-icon { width: 33px; height: 33px; }
+  .panel { padding: 15px; }
+  .footer { flex-direction: column; }
+}
+</style>
 </head>
 
 <body>
-<div class="container">
-    <h1>PLMunTrack Admin Dashboard</h1>
-    <p>Visitor Monitoring and Attendance Management System</p>
+<div class="app">
 
-    <div class="card">
-        <h2>Dashboard Summary</h2>
-        <div class="stats">
-            <div>
-                Total Visitors
-                <div class="stat-number" id="totalVisitors">—</div>
-            </div>
-            <div>
-                Pending Approval
-                <div class="stat-number" id="pendingVisitors">—</div>
-            </div>
-            <div>
-                Authorized
-                <div class="stat-number" id="authorizedVisitors">—</div>
-            </div>
-            <div>
-                Revoked
-                <div class="stat-number" id="revokedVisitors">—</div>
-            </div>
-        </div>
-        <button class="refresh" onclick="refreshDashboard()">Refresh Dashboard</button>
-        <div id="dashboardMessage" class="message"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-icon">⌗</div>
+    <div>
+      <h2>PLMunTrack</h2>
+      <p>SMART CAMPUS SYSTEM</p>
+    </div>
+  </div>
+
+  <div class="nav-label">MAIN MENU</div>
+  <nav class="nav">
+    <a href="#dashboard" class="active"><span class="ico">▦</span>Dashboard</a>
+    <a href="#analytics"><span class="ico">◷</span>Analytics</a>
+    <a href="#visitors"><span class="ico">♙</span>Visitor Management</a>
+  </nav>
+
+  <div class="nav-label">SYSTEM TOOLS</div>
+  <nav class="nav">
+    <a href="index.html"><span class="ico">⌂</span>Home / Registration</a>
+    <a href="generator.html"><span class="ico">▦</span>QR Generator</a>
+    <a href="scanner.html"><span class="ico">⌗</span>QR Scanner</a>
+  </nav>
+
+  <div class="side-bottom">
+    <div class="system-status">
+      <span class="status-dot"></span>
+      <span style="font-size:11px;font-weight:600">PLMunTrack</span>
+      <p id="connectionStatus">Checking connection...</p>
+    </div>
+  </div>
+</aside>
+
+<main class="main" id="dashboard">
+  <header class="topbar">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <button class="btn mobile-menu" onclick="toggleSidebar()">☰</button>
+      <div>
+        <h1>Dashboard Overview</h1>
+        <p>Welcome back, Administrator. Here's your campus overview.</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="date-pill" id="currentDate">Loading date...</div>
+      <button class="btn btn-primary" onclick="refreshAll()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <section class="welcome">
+    <h2>Welcome to PLMunTrack <span style="color:#67e8f9">✦</span></h2>
+    <p>Visitor Monitoring & Attendance Management System<br>
+    Monitor campus attendance, manage visitor approvals, and review daily activity in one place.</p>
+    <span class="tag">✦ &nbsp; SMART CAMPUS · REAL-TIME OVERVIEW</span>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h2>Campus at a Glance</h2>
+      <p>Summary from your connected database</p>
+    </div>
+  </div>
+
+  <section class="stats">
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Registered Visitors</div>
+        <div class="stat-icon purple">♙</div>
+      </div>
+      <div class="stat-number" id="totalVisitors">—</div>
+      <div class="stat-note">All visitor records</div>
     </div>
 
-    <div class="card">
-        <h2>Admin Authorization</h2>
-        <p>Enter your admin secret to approve or revoke a visitor.</p>
-
-        <label for="adminSecret">Admin Secret</label><br><br>
-        <input
-            id="adminSecret"
-            type="password"
-            placeholder="Enter admin secret"
-            autocomplete="current-password"
-        >
-        <button type="button" onclick="toggleSecret()">Show / Hide</button>
-
-        <p class="muted">
-            Your secret is not saved in this page. Do not share it with anyone.
-        </p>
-        <div id="authorizationMessage" class="message"></div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Pending Approval</div>
+        <div class="stat-icon orange">◷</div>
+      </div>
+      <div class="stat-number" id="pendingVisitors">—</div>
+      <div class="stat-note">Awaiting admin review</div>
     </div>
 
-    <div class="card">
-        <h2>Visitor Records</h2>
-        <input
-            id="visitorSearch"
-            type="search"
-            placeholder="Search visitor name or ID..."
-            oninput="renderVisitors()"
-        >
-        <button class="refresh" onclick="loadVisitors()">Refresh Visitors</button>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Visitor ID</th>
-                        <th>Full Name</th>
-                        <th>Purpose</th>
-                        <th>Visit Date</th>
-                        <th>Status</th>
-                        <th>Authorization</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="visitorTable">
-                    <tr><td colspan="7">Loading visitor records...</td></tr>
-                </tbody>
-            </table>
-        </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Authorized Visitors</div>
+        <div class="stat-icon green">✓</div>
+      </div>
+      <div class="stat-number" id="authorizedVisitors">—</div>
+      <div class="stat-note">Approved visitor records</div>
     </div>
 
-    <div class="card">
-        <h2>Navigation</h2>
-        <p><a href="index.html">Home / Registration</a></p>
-        <p><a href="generator.html">QR Generator</a></p>
-        <p><a href="scanner.html">QR Scanner</a></p>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Revoked Authorization</div>
+        <div class="stat-icon cyan">⊘</div>
+      </div>
+      <div class="stat-number" id="revokedVisitors">—</div>
+      <div class="stat-note">Authorization revoked</div>
     </div>
+  </section>
+
+  <section class="two-col" id="analytics">
+    <div class="panel">
+      <h3>Visitor Authorization Analytics</h3>
+      <p class="panel-sub">Distribution of registered visitors by approval status</p>
+      <div class="chart-wrap">
+        <canvas id="visitorChart"></canvas>
+      </div>
+      <div id="analyticsMessage" class="message"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Quick Access</h3>
+      <p class="panel-sub">Navigate to your system tools</p>
+      <div class="quick-grid">
+        <a class="quick-link" href="generator.html">
+          <div class="qicon">▦</div>
+          <strong>QR Generator</strong>
+          <span>Generate student QR codes</span>
+        </a>
+        <a class="quick-link" href="scanner.html">
+          <div class="qicon">⌗</div>
+          <strong>QR Scanner</strong>
+          <span>Record attendance scans</span>
+        </a>
+        <a class="quick-link" href="index.html">
+          <div class="qicon">♙</div>
+          <strong>Registration</strong>
+          <span>Open registration page</span>
+        </a>
+        <a class="quick-link" href="#visitors">
+          <div class="qicon">✓</div>
+          <strong>Approvals</strong>
+          <span>Review visitor requests</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel visitor-panel" id="visitors">
+    <div class="section-head" style="margin-top:0">
+      <div>
+        <h2>Visitor Management</h2>
+        <p>Review and manage visitor authorization requests</p>
+      </div>
+      <span class="badge badge-neutral" id="recordCount">0 RECORDS</span>
+    </div>
+
+    <div class="table-toolbar">
+      <input class="search" id="visitorSearch" type="search"
+        placeholder="⌕  Search name or visitor ID..." oninput="renderVisitors()">
+      <button class="btn" onclick="loadVisitors()">↻ Reload Records</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Visitor</th>
+            <th>Visitor ID</th>
+            <th>Purpose</th>
+            <th>Visit Date</th>
+            <th>Approval</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="visitorTable">
+          <tr><td colspan="6">Loading visitor records...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="admin-box">
+      <div style="min-width:150px;flex:1">
+        <div style="font-size:12px;font-weight:700">Admin verification</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:5px">Enter your secret only when approving or revoking.</div>
+      </div>
+      <input class="search" id="adminSecret" type="password"
+        placeholder="Admin secret" autocomplete="current-password">
+      <button class="btn" onclick="toggleSecret()">Show / Hide</button>
+    </div>
+    <div id="authorizationMessage" class="message" role="status"></div>
+    <div id="dashboardMessage" class="message" role="status"></div>
+  </section>
+
+  <footer class="footer">
+    <span>© 2026 PLMunTrack · Pamantasan ng Lungsod ng Muntinlupa</span>
+    <span>QR-Based Visitor Monitoring & Attendance Management</span>
+  </footer>
+</main>
 </div>
 
 <script>
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+  "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
 let visitors = [];
+let visitorChart = null;
+
+document.getElementById("currentDate").textContent =
+  new Intl.DateTimeFormat("en-PH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(new Date());
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
 
 function toggleSecret() {
-    const field = document.getElementById("adminSecret");
-    field.type = field.type === "password" ? "text" : "password";
-}
-
-async function getJSON(url) {
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error("HTTP error: " + response.status);
-    }
-    return await response.json();
-}
-
-async function refreshDashboard() {
-    const message = document.getElementById("dashboardMessage");
-    message.textContent = "Loading dashboard...";
-
-    try {
-        const data = await getJSON(
-            API_URL + "?action=dashboard&t=" + Date.now()
-        );
-
-        if (data.success === false) {
-            throw new Error(data.message || "Could not load dashboard.");
-        }
-
-        const summary = data.summary || data.dashboard || data;
-
-        setNumber("totalVisitors",
-            summary.totalVisitors ?? summary.total ?? visitors.length);
-
-        setNumber("pendingVisitors",
-            summary.pendingVisitors ?? summary.pending ?? countStatus("Pending"));
-
-        setNumber("authorizedVisitors",
-            summary.authorizedVisitors ?? summary.authorized ?? countStatus("Authorized"));
-
-        setNumber("revokedVisitors",
-            summary.revokedVisitors ?? summary.revoked ?? countStatus("Revoked"));
-
-        message.textContent = "Dashboard refreshed.";
-    } catch (error) {
-        message.textContent =
-            "Could not load dashboard. Check the Apps Script URL and deployment.";
-    }
-}
-
-function setNumber(id, value) {
-    document.getElementById(id).textContent = value;
-}
-
-function countStatus(status) {
-    return visitors.filter(v =>
-        String(v.authorizationStatus || v.Authorization_Status || "")
-            .toLowerCase() === status.toLowerCase()
-    ).length;
-}
-
-async function loadVisitors() {
-    const tbody = document.getElementById("visitorTable");
-    tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
-
-    try {
-        const data = await getJSON(
-            API_URL + "?action=visitors&t=" + Date.now()
-        );
-
-        if (data.success === false) {
-            throw new Error(data.message || "Could not load visitors.");
-        }
-
-        visitors = Array.isArray(data)
-            ? data
-            : (data.visitors || data.records || data.data || []);
-
-        renderVisitors();
-        refreshDashboard();
-    } catch (error) {
-        tbody.innerHTML =
-            '<tr><td colspan="7">Unable to load visitors. Check the Apps Script connection.</td></tr>';
-    }
+  const input = document.getElementById("adminSecret");
+  input.type = input.type === "password" ? "text" : "password";
 }
 
 function escapeHTML(value) {
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    })[char]);
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[c]);
+}
+
+function animateNumber(id, target) {
+  const element = document.getElementById(id);
+  const end = Number(target) || 0;
+  const start = Number(element.dataset.current || 0);
+  const duration = 650;
+  const startTime = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = Math.round(start + (end - start) * eased);
+    if (progress < 1) requestAnimationFrame(step);
+    else element.dataset.current = String(end);
+  }
+
+  requestAnimationFrame(step);
+}
+
+async function getJSON(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.json();
+}
+
+function countStatus(status) {
+  return visitors.filter(v =>
+    String(v.authorizationStatus || "").toLowerCase() ===
+    status.toLowerCase()
+  ).length;
+}
+
+async function refreshDashboard() {
+  const message = document.getElementById("dashboardMessage");
+  message.textContent = "Updating dashboard...";
+
+  try {
+    const data = await getJSON(
+      API_URL + "?action=dashboard&t=" + Date.now()
+    );
+
+    if (data.success === false) throw new Error(data.message || "Request failed.");
+
+    const total = data.totalVisitors ?? visitors.length;
+    const pending = data.pendingVisitors ?? countStatus("Pending");
+    const authorized = data.authorizedVisitors ?? countStatus("Authorized");
+    const revoked = data.revokedVisitors ?? countStatus("Revoked");
+
+    animateNumber("totalVisitors", total);
+    animateNumber("pendingVisitors", pending);
+    animateNumber("authorizedVisitors", authorized);
+    animateNumber("revokedVisitors", revoked);
+
+    updateChart(pending, authorized, revoked);
+    document.getElementById("connectionStatus").textContent =
+      "Database response received";
+    message.textContent = "Dashboard updated successfully.";
+  } catch (error) {
+    document.getElementById("connectionStatus").textContent =
+      "Connection needs checking";
+    message.textContent =
+      "Could not update dashboard. Check your Apps Script deployment and URL.";
+    updateChart(countStatus("Pending"), countStatus("Authorized"), countStatus("Revoked"));
+  }
+}
+
+function updateChart(pending, authorized, revoked) {
+  const canvas = document.getElementById("visitorChart");
+  if (!canvas || typeof Chart === "undefined") {
+    document.getElementById("analyticsMessage").textContent =
+      "Chart library unavailable. Visitor records can still be viewed below.";
+    return;
+  }
+
+  if (visitorChart) {
+    visitorChart.data.datasets[0].data = [pending, authorized, revoked];
+    visitorChart.update();
+    return;
+  }
+
+  visitorChart = new Chart(canvas, {
+    type: "doughnut",
+    data: {
+      labels: ["Pending", "Authorized", "Revoked"],
+      datasets: [{
+        data: [pending, authorized, revoked],
+        backgroundColor: ["#fbbf24", "#34d399", "#fb7185"],
+        borderColor: "#111a2e",
+        borderWidth: 5,
+        hoverOffset: 9
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "70%",
+      animation: { duration: 900, animateRotate: true },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            color: "#aab8cf",
+            padding: 18,
+            usePointStyle: true,
+            pointStyle: "circle",
+            font: { family: "Inter", size: 11 }
+          }
+        }
+      }
+    }
+  });
+}
+
+async function loadVisitors() {
+  const tbody = document.getElementById("visitorTable");
+  tbody.innerHTML = '<tr><td colspan="6">Loading records...</td></tr>';
+
+  try {
+    const data = await getJSON(
+      API_URL + "?action=visitors&t=" + Date.now()
+    );
+
+    if (data.success === false) throw new Error(data.message || "Request failed.");
+
+    visitors = Array.isArray(data)
+      ? data
+      : (data.visitors || data.records || []);
+
+    renderVisitors();
+    await refreshDashboard();
+  } catch (error) {
+    tbody.innerHTML =
+      '<tr><td colspan="6">Could not load visitor records. Check the Apps Script URL and deployment.</td></tr>';
+    document.getElementById("connectionStatus").textContent =
+      "Connection needs checking";
+  }
 }
 
 function renderVisitors() {
-    const tbody = document.getElementById("visitorTable");
-    const search = document.getElementById("visitorSearch").value.toLowerCase();
+  const tbody = document.getElementById("visitorTable");
+  const query = document.getElementById("visitorSearch").value.toLowerCase();
 
-    const filtered = visitors.filter(visitor => {
-        const id = visitor.visitorId || visitor.Visitor_ID || "";
-        const name = visitor.fullName || visitor.Full_Name || "";
-        return String(id).toLowerCase().includes(search) ||
-               String(name).toLowerCase().includes(search);
-    });
+  const filtered = visitors.filter(v => {
+    const name = v.fullName || v.Full_Name || "";
+    const id = v.visitorId || v.Visitor_ID || "";
+    return String(name).toLowerCase().includes(query) ||
+           String(id).toLowerCase().includes(query);
+  });
 
-    if (!filtered.length) {
-        tbody.innerHTML =
-            '<tr><td colspan="7">No matching visitor records.</td></tr>';
-        return;
+  document.getElementById("recordCount").textContent =
+    filtered.length + (filtered.length === 1 ? " RECORD" : " RECORDS");
+
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="6">No matching visitor records.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(v => {
+    const id = v.visitorId || v.Visitor_ID || "";
+    const name = v.fullName || v.Full_Name || "";
+    const purpose = v.purpose || v.Purpose || "";
+    const date = v.visitDate || v.Visit_Date || "";
+    const auth = v.authorizationStatus || v.Authorization_Status || "Pending";
+    const normalized = String(auth).toLowerCase();
+
+    let badgeClass = "badge-pending";
+    if (normalized === "authorized") badgeClass = "badge-authorized";
+    if (normalized === "revoked") badgeClass = "badge-revoked";
+
+    let action = '<span style="color:#64748b">No action</span>';
+
+    if (normalized === "pending" || normalized === "revoked") {
+      action = `<button class="action-btn" data-id="${escapeHTML(id)}"
+        onclick="updateAuthorization(this.dataset.id,'Authorized',this)">✓ Authorize</button>`;
+    } else if (normalized === "authorized") {
+      action = `<button class="action-btn revoke" data-id="${escapeHTML(id)}"
+        onclick="updateAuthorization(this.dataset.id,'Revoked',this)">⊘ Revoke</button>`;
     }
 
-    tbody.innerHTML = filtered.map(visitor => {
-        const id = visitor.visitorId || visitor.Visitor_ID || "";
-        const name = visitor.fullName || visitor.Full_Name || "";
-        const purpose = visitor.purpose || visitor.Purpose || "";
-        const date = visitor.visitDate || visitor.Visit_Date || "";
-        const status = visitor.status || visitor.Status || "";
-        const auth = visitor.authorizationStatus ||
-                     visitor.Authorization_Status || "Pending";
-
-        let action = "";
-
-        if (String(auth).toLowerCase() === "pending" ||
-            String(auth).toLowerCase() === "revoked") {
-            action = `<button data-id="${escapeHTML(id)}"
-                onclick="updateAuthorization(this.dataset.id, 'Authorized', this)">
-                Authorize
-            </button>`;
-        }
-
-        if (String(auth).toLowerCase() === "authorized") {
-            action = `<button class="revoke" data-id="${escapeHTML(id)}"
-                onclick="updateAuthorization(this.dataset.id, 'Revoked', this)">
-                Revoke
-            </button>`;
-        }
-
-        return `<tr>
-            <td>${escapeHTML(id)}</td>
-            <td>${escapeHTML(name)}</td>
-            <td>${escapeHTML(purpose)}</td>
-            <td>${escapeHTML(date)}</td>
-            <td>${escapeHTML(status)}</td>
-            <td class="status">${escapeHTML(auth)}</td>
-            <td>${action || "No action"}</td>
-        </tr>`;
-    }).join("");
+    return `<tr>
+      <td class="name-cell">${escapeHTML(name)}</td>
+      <td class="id-cell">${escapeHTML(id)}</td>
+      <td>${escapeHTML(purpose)}</td>
+      <td>${escapeHTML(date)}</td>
+      <td><span class="badge ${badgeClass}">${escapeHTML(auth)}</span></td>
+      <td>${action}</td>
+    </tr>`;
+  }).join("");
 }
 
 async function updateAuthorization(visitorId, authorizationStatus, button) {
-    const secretField = document.getElementById("adminSecret");
-    const secret = secretField.value.trim();
-    const message = document.getElementById("authorizationMessage");
+  const secretInput = document.getElementById("adminSecret");
+  const message = document.getElementById("authorizationMessage");
+  const secret = secretInput.value;
 
-    if (!secret) {
-        message.textContent = "Please enter your admin secret first.";
-        secretField.focus();
-        return;
+  if (!secret.trim()) {
+    message.textContent = "Enter your admin secret before continuing.";
+    secretInput.focus();
+    return;
+  }
+
+  if (!confirm("Set visitor " + visitorId + " to " + authorizationStatus + "?")) {
+    return;
+  }
+
+  button.disabled = true;
+  message.textContent = "Submitting request...";
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8"
+      },
+      body: JSON.stringify({
+        action: "authorizeVisitor",
+        visitorId: visitorId,
+        authorizationStatus: authorizationStatus,
+        adminSecret: secret
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || result.success !== true) {
+      throw new Error(result.message || "Authorization was not confirmed.");
     }
 
-    const confirmation = confirm(
-        "Are you sure you want to set this visitor to " +
-        authorizationStatus + "?"
-    );
+    message.textContent = result.message || "Authorization updated.";
+    secretInput.value = "";
+    await loadVisitors();
+  } catch (error) {
+    message.textContent =
+      "Could not confirm the request. Check the web app deployment and browser connection. Refresh the records before retrying.";
+  } finally {
+    button.disabled = false;
+  }
+}
 
-    if (!confirmation) return;
-
-    button.disabled = true;
-    message.textContent = "Submitting authorization request...";
-
-    try {
-        /*
-         * text/plain avoids the usual JSON preflight request.
-         * The Apps Script server must parse the JSON request body.
-         */
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "text/plain;charset=UTF-8"
-            },
-            body: JSON.stringify({
-                action: "authorizeVisitor",
-                visitorId: visitorId,
-                authorizationStatus: authorizationStatus,
-                adminSecret: secret
-            })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || result.success !== true) {
-            throw new Error(
-                result.message || "The server did not confirm the change."
-            );
-        }
-
-        message.textContent = result.message ||
-            "Authorization updated successfully.";
-
-        await loadVisitors();
-    } catch (error) {
-        message.textContent =
-            "The request could not be confirmed. Check Code.gs and the web app deployment, then refresh the visitor list before trying again. Details: " +
-            error.message;
-    } finally {
-        button.disabled = false;
-        secretField.value = "";
-    }
+function refreshAll() {
+  loadVisitors();
 }
 
 loadVisitors();
 </script>
 </body>
 </html>
-
-
