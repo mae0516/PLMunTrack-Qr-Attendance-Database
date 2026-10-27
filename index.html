@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080d1b">
-  <title>PLMunTrack | Attendance Management System</title>
+  <title>PLMunTrack | Visitor Monitoring and Attendance</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@
       --bg: #080d1b;
       --panel: #111a2d;
       --panel-light: #172239;
-      --border: rgba(148, 163, 184, .15);
+      --border: rgba(148,163,184,.15);
       --text: #f1f5f9;
       --muted: #94a3b8;
       --primary: #6366f1;
@@ -29,7 +30,7 @@
       min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Inter', sans-serif;
+      font-family: Inter, sans-serif;
       overflow-x: hidden;
     }
 
@@ -38,35 +39,16 @@
 
     .ambient {
       position: fixed;
-      width: 420px;
-      height: 420px;
+      width: 380px;
+      height: 380px;
       border-radius: 50%;
       filter: blur(110px);
-      opacity: .15;
+      opacity: .13;
       pointer-events: none;
       z-index: -1;
-      animation: float 12s ease-in-out infinite alternate;
     }
-    .ambient.one { top: -160px; left: -120px; background: #6366f1; }
-    .ambient.two {
-      top: 240px;
-      right: -180px;
-      background: #06b6d4;
-      animation-delay: -5s;
-    }
-
-    @keyframes float {
-      from { transform: translate(0, 0); }
-      to { transform: translate(65px, 45px); }
-    }
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, .15); }
-      50% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
-    }
+    .ambient.one { top: -150px; left: -120px; background: #6366f1; }
+    .ambient.two { top: 250px; right: -180px; background: #06b6d4; }
 
     .topbar {
       position: sticky;
@@ -76,8 +58,8 @@
       align-items: center;
       justify-content: space-between;
       gap: 20px;
-      padding: 17px 6%;
-      background: rgba(8, 13, 27, .88);
+      padding: 16px 6%;
+      background: rgba(8,13,27,.92);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
@@ -88,26 +70,25 @@
       gap: 12px;
       font-size: 19px;
       font-weight: 800;
-      letter-spacing: -.5px;
       flex-shrink: 0;
     }
+
     .brand-icon {
       width: 43px;
       height: 43px;
       display: grid;
       place-items: center;
       border-radius: 14px;
-      background: linear-gradient(135deg, var(--primary), var(--cyan));
-      color: white;
-      box-shadow: 0 8px 24px rgba(99, 102, 241, .25);
+      background: linear-gradient(135deg,var(--primary),var(--cyan));
     }
+
     .brand small {
       display: block;
       margin-top: 4px;
       color: var(--muted);
-      font-size: 10px;
-      font-weight: 500;
-      letter-spacing: 1.4px;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
     }
 
     .nav {
@@ -115,125 +96,113 @@
       align-items: center;
       justify-content: flex-end;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 7px;
     }
+
     .nav a {
       padding: 10px 12px;
       border-radius: 10px;
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
-      transition: .25s;
-    }
-    .nav a:hover {
-      background: var(--panel-light);
-      color: white;
-    }
-    .nav .register-link {
-      color: white;
-      background: linear-gradient(120deg, #0891b2, #06b6d4);
-    }
-    .nav .admin-link {
-      color: white;
-      background: linear-gradient(135deg, #5558e8, #4f46e5);
     }
 
-    .container { width: min(1120px, 88%); margin: auto; }
+    .nav a:hover { background: var(--panel-light); color: white; }
+    .nav .register-link { color: white; background: #0891b2; }
+    .nav .admin-link { color: white; background: #4f46e5; }
+
+    .container { width: min(1120px,88%); margin: auto; }
 
     .hero {
       display: grid;
       grid-template-columns: 1.15fr .85fr;
       align-items: center;
-      gap: 55px;
-      padding: 82px 0 70px;
-      animation: appear .8s ease both;
+      gap: 50px;
+      padding: 78px 0 70px;
     }
+
     .eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 9px;
       padding: 9px 13px;
-      border: 1px solid rgba(99, 102, 241, .3);
+      border: 1px solid rgba(99,102,241,.3);
       border-radius: 50px;
-      background: rgba(99, 102, 241, .1);
+      background: rgba(99,102,241,.1);
       color: #c7d2fe;
-      font-size: 11px;
-      font-weight: 700;
+      font-size: 10px;
+      font-weight: 800;
       letter-spacing: .5px;
     }
+
     .eyebrow i { color: var(--cyan); }
 
     .hero h1 {
       margin: 23px 0 18px;
-      font-size: clamp(38px, 5.3vw, 63px);
+      font-size: clamp(38px,5.3vw,62px);
       line-height: 1.08;
-      letter-spacing: -2.5px;
+      letter-spacing: -2px;
       font-weight: 800;
     }
+
     .gradient-text {
-      background: linear-gradient(100deg, #818cf8, #22d3ee);
+      background: linear-gradient(100deg,#818cf8,#22d3ee);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
+
     .hero p {
       max-width: 540px;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.9;
     }
+
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-top: 28px;
     }
+
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      padding: 13px 18px;
+      gap: 9px;
+      padding: 13px 17px;
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 11px;
       font-size: 12px;
       font-weight: 700;
-      transition: transform .25s, box-shadow .25s, background .25s;
-      cursor: pointer;
-    }
-    .btn:hover { transform: translateY(-3px); }
-    .btn-primary {
-      color: white;
-      background: linear-gradient(120deg, #6366f1, #4f46e5);
-      box-shadow: 0 10px 25px rgba(79, 70, 229, .2);
-    }
-    .btn-primary:hover { box-shadow: 0 12px 30px rgba(79, 70, 229, .4); }
-    .btn-secondary { background: var(--panel); color: #e2e8f0; }
-    .btn-register {
-      background: linear-gradient(120deg, #0891b2, #06b6d4);
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 10px 25px rgba(6, 182, 212, .15);
+      transition: transform .2s;
     }
 
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { color: white; background: #4f46e5; }
+    .btn-secondary { color: #e2e8f0; background: var(--panel); }
+    .btn-register { color: white; background: #0891b2; }
+
     .hero-visual {
-      position: relative;
-      padding: 28px;
-      border: 1px solid rgba(148, 163, 184, .2);
-      border-radius: 25px;
-      background: linear-gradient(145deg, rgba(23, 34, 57, .95), rgba(13, 21, 39, .9));
-      box-shadow: 0 25px 80px rgba(0, 0, 0, .25);
-      animation: float 7s ease-in-out infinite alternate;
+      padding: 27px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: linear-gradient(145deg,#172239,#0d1527);
+      box-shadow: 0 25px 80px rgba(0,0,0,.25);
     }
+
     .visual-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 26px;
+      margin-bottom: 25px;
     }
+
     .visual-top h3 { font-size: 14px; }
-    .live {
+
+    .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 7px;
@@ -241,64 +210,65 @@
       font-size: 10px;
       font-weight: 700;
     }
-    .live-dot {
+
+    .status-dot {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       background: var(--green);
-      animation: pulse 2s infinite;
     }
+
     .qr-frame {
       display: grid;
       place-items: center;
-      width: 172px;
-      height: 172px;
-      margin: 0 auto 23px;
-      border: 1px solid rgba(99, 102, 241, .35);
-      border-radius: 23px;
+      width: 165px;
+      height: 165px;
+      margin: 0 auto 22px;
+      border-radius: 20px;
       background: #f8fafc;
       color: #10172a;
-      box-shadow: 0 0 45px rgba(99, 102, 241, .12);
     }
-    .qr-frame i { font-size: 115px; }
+
+    .qr-frame i { font-size: 105px; }
     .visual-caption { text-align: center; font-size: 13px; font-weight: 700; }
-    .visual-subcaption {
-      margin-top: 7px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 11px;
-    }
+    .visual-subcaption { margin-top: 7px; color: var(--muted); text-align: center; font-size: 11px; }
+
     .mini-stats {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2,1fr);
       gap: 12px;
-      margin-top: 25px;
+      margin-top: 24px;
     }
+
     .mini-stat {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 14px;
+      gap: 10px;
+      padding: 13px;
       border: 1px solid var(--border);
-      border-radius: 13px;
-      background: rgba(8, 13, 27, .45);
+      border-radius: 12px;
+      background: rgba(8,13,27,.45);
     }
+
     .mini-stat-icon {
       display: grid;
       place-items: center;
-      width: 37px;
-      height: 37px;
-      border-radius: 11px;
-      background: rgba(99, 102, 241, .16);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(99,102,241,.16);
       color: #a5b4fc;
       flex-shrink: 0;
     }
-    .mini-stat strong { display: block; font-size: 12px; }
+
+    .mini-stat strong { display: block; font-size: 11px; }
     .mini-stat span { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
 
     section { scroll-margin-top: 90px; }
+    .tools-section { padding: 15px 0 75px; }
+
     .section-heading { margin-bottom: 27px; }
-    .section-heading .overline {
+    .overline {
       margin-bottom: 10px;
       color: #818cf8;
       font-size: 10px;
@@ -306,92 +276,61 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
-    .section-heading h2 { font-size: clamp(23px, 3vw, 32px); letter-spacing: -.8px; }
+
+    .section-heading h2 { font-size: clamp(23px,3vw,32px); letter-spacing: -.8px; }
     .section-heading p { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.8; }
 
-    .tools-section { padding: 15px 0 75px; }
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4,1fr);
       gap: 18px;
     }
+
     .tool-card {
-      position: relative;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      min-height: 245px;
-      padding: 24px;
-      overflow: hidden;
+      min-height: 230px;
+      padding: 23px;
       border: 1px solid var(--border);
-      border-radius: 19px;
-      background: rgba(17, 26, 45, .82);
-      transition: transform .3s, border-color .3s, box-shadow .3s;
-      animation: appear .7s ease both;
+      border-radius: 18px;
+      background: rgba(17,26,45,.85);
+      transition: transform .25s,border-color .25s;
     }
-    .tool-card::after {
-      content: "";
-      position: absolute;
-      width: 130px;
-      height: 130px;
-      right: -65px;
-      bottom: -65px;
-      border-radius: 50%;
-      background: var(--glow, #6366f1);
-      opacity: .1;
-      filter: blur(30px);
-      transition: opacity .3s;
-    }
-    .tool-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(129, 140, 248, .5);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, .2);
-    }
-    .tool-card:hover::after { opacity: .3; }
+
+    .tool-card:hover { transform: translateY(-5px); border-color: #6366f1; }
+
     .tool-icon {
       display: grid;
       place-items: center;
-      width: 48px;
-      height: 48px;
-      margin-bottom: 20px;
-      border-radius: 15px;
-      background: rgba(99, 102, 241, .15);
+      width: 47px;
+      height: 47px;
+      margin-bottom: 19px;
+      border-radius: 14px;
+      background: rgba(99,102,241,.15);
       color: #a5b4fc;
-      font-size: 19px;
+      font-size: 18px;
     }
-    .tool-card h3 { margin-bottom: 10px; font-size: 16px; }
-    .tool-card p { margin-bottom: 22px; color: var(--muted); font-size: 12px; line-height: 1.8; }
-    .tool-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      margin-top: auto;
-      color: #a5b4fc;
-      font-size: 11px;
-      font-weight: 800;
-    }
-    .tool-link i { transition: transform .2s; }
-    .tool-card:hover .tool-link i { transform: translateX(5px); }
+
+    .tool-card h3 { margin-bottom: 10px; font-size: 15px; }
+    .tool-card p { margin-bottom: 20px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .tool-link { display: inline-flex; align-items: center; gap: 8px; margin-top: auto; color: #a5b4fc; font-size: 11px; font-weight: 800; }
 
     .workflow {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4,1fr);
       gap: 14px;
-      padding-bottom: 78px;
+      padding-bottom: 75px;
     }
+
     .workflow-item {
       padding: 20px 17px;
       border: 1px solid var(--border);
       border-radius: 15px;
-      background: rgba(17, 26, 45, .55);
+      background: rgba(17,26,45,.55);
     }
-    .step-number {
-      margin-bottom: 15px;
-      color: #818cf8;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
+
+    .step-number { margin-bottom: 14px; color: #818cf8; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
     .workflow-item h4 { margin-bottom: 8px; font-size: 13px; }
     .workflow-item p { color: var(--muted); font-size: 11px; line-height: 1.8; }
 
@@ -399,12 +338,13 @@
       display: flex;
       align-items: flex-start;
       gap: 13px;
-      margin-bottom: 65px;
+      margin-bottom: 60px;
       padding: 19px;
-      border: 1px solid rgba(6, 182, 212, .2);
+      border: 1px solid rgba(6,182,212,.2);
       border-radius: 15px;
-      background: rgba(6, 182, 212, .06);
+      background: rgba(6,182,212,.06);
     }
+
     .notice i { margin-top: 2px; color: var(--cyan); }
     .notice strong { display: block; margin-bottom: 6px; font-size: 12px; }
     .notice p { color: var(--muted); font-size: 11px; line-height: 1.8; }
@@ -419,40 +359,38 @@
       color: var(--muted);
       font-size: 10px;
     }
+
     footer strong { color: #e2e8f0; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 17px; }
     .footer-links a:hover { color: white; }
 
     @media (max-width: 1050px) {
-      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .tools-grid { grid-template-columns: repeat(2,1fr); }
       .topbar { padding-left: 4%; padding-right: 4%; }
     }
+
     @media (max-width: 850px) {
       .nav { gap: 2px; }
       .nav a { padding: 9px; }
-      .hero { gap: 30px; padding-top: 60px; }
-      .hero-visual { padding: 20px; }
-      .workflow { grid-template-columns: repeat(2, 1fr); }
+      .hero { gap: 30px; padding-top: 55px; }
+      .workflow { grid-template-columns: repeat(2,1fr); }
     }
+
     @media (max-width: 600px) {
       .topbar { align-items: flex-start; flex-direction: column; gap: 12px; }
       .nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
       .nav a { white-space: nowrap; }
-      .hero { grid-template-columns: 1fr; padding: 48px 0 55px; }
-      .hero h1 { letter-spacing: -1.5px; }
+      .hero { grid-template-columns: 1fr; padding: 45px 0 55px; }
+      .hero h1 { letter-spacing: -1px; }
       .hero-visual { max-width: 420px; width: 100%; margin: auto; }
       .tools-grid { grid-template-columns: 1fr; }
-      .tool-card { min-height: 205px; }
+      .tool-card { min-height: 195px; }
       .workflow { grid-template-columns: 1fr 1fr; }
       footer { align-items: flex-start; flex-direction: column; }
     }
+
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: .01ms !important;
-      }
+      *,*::before,*::after { animation: none !important; scroll-behavior: auto !important; transition: none !important; }
     }
   </style>
 </head>
@@ -466,7 +404,7 @@
       <span class="brand-icon"><i class="fa-solid fa-qrcode"></i></span>
       <span>
         PLMunTrack
-        <small>ATTENDANCE MANAGEMENT SYSTEM</small>
+        <small>VISITOR MONITORING &amp; ATTENDANCE</small>
       </span>
     </a>
 
@@ -475,7 +413,7 @@
       <a href="#tools">System Tools</a>
       <a href="#workflow">How It Works</a>
       <a href="register.html" class="register-link">
-        <i class="fa-solid fa-user-plus"></i> Register
+        <i class="fa-solid fa-user-plus"></i> Registration
       </a>
       <a href="admin.html" class="admin-link">
         <i class="fa-solid fa-gauge-high"></i> Admin Dashboard
@@ -497,9 +435,9 @@
         </h1>
 
         <p>
-          Welcome to PLMunTrack, a QR code-based visitor monitoring and
-          attendance management system designed to help organize campus
-          entry records, attendance logs, and visitor monitoring in one place.
+          PLMunTrack is a QR code-based visitor monitoring and attendance
+          management system for organizing campus entry records, attendance
+          logs, visitor authorization, and daily activity in one place.
         </p>
 
         <div class="hero-actions">
@@ -507,18 +445,18 @@
             <i class="fa-solid fa-expand"></i> Open QR Scanner
           </a>
           <a class="btn btn-secondary" href="generator.html">
-            <i class="fa-solid fa-qrcode"></i> Generate QR Code
+            <i class="fa-solid fa-qrcode"></i> QR Generator
           </a>
           <a class="btn btn-register" href="register.html">
-            <i class="fa-solid fa-user-plus"></i> Student / Visitor Registration
+            <i class="fa-solid fa-user-plus"></i> Register Student / Visitor
           </a>
         </div>
       </div>
 
       <div class="hero-visual">
         <div class="visual-top">
-          <h3><i class="fa-solid fa-shield-halved"></i> Campus Access</h3>
-          <span class="live"><span class="live-dot"></span> SYSTEM PORTAL</span>
+          <h3><i class="fa-solid fa-chart-simple"></i> Monitoring Overview</h3>
+          <span class="status-pill"><span class="status-dot"></span> SYSTEM PORTAL</span>
         </div>
 
         <div class="qr-frame">
@@ -526,7 +464,7 @@
         </div>
 
         <div class="visual-caption">QR-Based Monitoring</div>
-        <div class="visual-subcaption">Organized attendance and visitor records</div>
+        <div class="visual-subcaption">Attendance and visitor records</div>
 
         <div class="mini-stats">
           <div class="mini-stat">
@@ -539,7 +477,7 @@
           <div class="mini-stat">
             <div class="mini-stat-icon"><i class="fa-solid fa-chart-line"></i></div>
             <div>
-              <strong>Monitoring</strong>
+              <strong>Analytics</strong>
               <span>Centralized records</span>
             </div>
           </div>
@@ -550,43 +488,37 @@
     <section class="tools-section" id="tools">
       <div class="section-heading">
         <div class="overline">PLMunTrack Platform</div>
-        <h2>Everything you need, in one place.</h2>
-        <p>Choose a system tool to continue.</p>
+        <h2>System Tools</h2>
+        <p>Choose a tool to continue.</p>
       </div>
 
       <div class="tools-grid">
-        <a href="register.html" class="tool-card" style="--glow:#06b6d4">
-          <div class="tool-icon" style="background:rgba(6,182,212,.13);color:#67e8f9">
-            <i class="fa-solid fa-user-plus"></i>
-          </div>
+        <a href="register.html" class="tool-card">
+          <div class="tool-icon"><i class="fa-solid fa-user-plus"></i></div>
           <h3>Student / Visitor Registration</h3>
-          <p>Register a student or submit visitor details. Visitor access requires administrator authorization.</p>
-          <span class="tool-link" style="color:#67e8f9">Open Registration <i class="fa-solid fa-arrow-right"></i></span>
+          <p>Register students or submit visitor details for authorization.</p>
+          <span class="tool-link">Open Registration <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <a href="admin.html" class="tool-card" style="--glow:#6366f1">
+        <a href="admin.html" class="tool-card">
           <div class="tool-icon"><i class="fa-solid fa-gauge-high"></i></div>
           <h3>Admin Dashboard</h3>
-          <p>View system statistics, monitor visitor records, and manage visitor authorization.</p>
+          <p>View visitor records, manage authorization, and review system summaries.</p>
           <span class="tool-link">Open Dashboard <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <a href="generator.html" class="tool-card" style="--glow:#06b6d4">
-          <div class="tool-icon" style="background:rgba(6,182,212,.13);color:#67e8f9">
-            <i class="fa-solid fa-qrcode"></i>
-          </div>
+        <a href="generator.html" class="tool-card">
+          <div class="tool-icon"><i class="fa-solid fa-qrcode"></i></div>
           <h3>QR Generator</h3>
-          <p>Open the QR generator for the supported student or visitor QR workflow.</p>
-          <span class="tool-link" style="color:#67e8f9">Generate QR <i class="fa-solid fa-arrow-right"></i></span>
+          <p>Generate QR codes through the configured student or visitor workflow.</p>
+          <span class="tool-link">Generate QR <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
-        <a href="scanner.html" class="tool-card" style="--glow:#34d399">
-          <div class="tool-icon" style="background:rgba(52,211,153,.13);color:#6ee7b7">
-            <i class="fa-solid fa-camera"></i>
-          </div>
+        <a href="scanner.html" class="tool-card">
+          <div class="tool-icon"><i class="fa-solid fa-camera"></i></div>
           <h3>QR Scanner</h3>
-          <p>Open the scanner to process supported QR tokens and check attendance results.</p>
-          <span class="tool-link" style="color:#6ee7b7">Open Scanner <i class="fa-solid fa-arrow-right"></i></span>
+          <p>Scan supported QR tokens and display the system response.</p>
+          <span class="tool-link">Open Scanner <i class="fa-solid fa-arrow-right"></i></span>
         </a>
       </div>
     </section>
@@ -594,41 +526,44 @@
     <section id="workflow">
       <div class="section-heading">
         <div class="overline">Simple Workflow</div>
-        <h2>How PLMunTrack works</h2>
-        <p>A guided flow for registration, authorization, and attendance tasks.</p>
+        <h2>How PLMunTrack Works</h2>
+        <p>A guided flow for registration, authorization, and attendance recording.</p>
       </div>
 
       <div class="workflow">
         <div class="workflow-item">
           <div class="step-number">STEP 01</div>
           <h4><i class="fa-solid fa-id-card" style="color:#818cf8"></i> Register</h4>
-          <p>Open the registration page and complete the appropriate student or visitor form.</p>
+          <p>Complete the appropriate student or visitor registration form.</p>
         </div>
+
         <div class="workflow-item">
           <div class="step-number">STEP 02</div>
           <h4><i class="fa-solid fa-qrcode" style="color:#67e8f9"></i> Generate QR</h4>
-          <p>Generate a QR token through the configured system workflow.</p>
+          <p>Generate the QR code using the configured system workflow.</p>
         </div>
+
         <div class="workflow-item">
           <div class="step-number">STEP 03</div>
-          <h4><i class="fa-solid fa-shield-halved" style="color:#c4b5fd"></i> Authorize</h4>
-          <p>Visitor access must be authorized before the visitor scan is accepted.</p>
+          <h4><i class="fa-solid fa-shield-halved" style="color:#c4b5fd"></i> Verify Authorization</h4>
+          <p>Check visitor authorization and visit-date rules before accepting entry.</p>
         </div>
+
         <div class="workflow-item">
           <div class="step-number">STEP 04</div>
-          <h4><i class="fa-solid fa-clipboard-check" style="color:#6ee7b7"></i> Record</h4>
-          <p>Use the scanner to process valid tokens and record supported attendance events.</p>
+          <h4><i class="fa-solid fa-clipboard-check" style="color:#6ee7b7"></i> Record Activity</h4>
+          <p>Use the scanner to process supported QR tokens and record attendance events.</p>
         </div>
       </div>
 
       <div class="notice">
         <i class="fa-solid fa-circle-info"></i>
         <div>
-          <strong>Access and data security</strong>
+          <strong>System information</strong>
           <p>
-            Actual results depend on the configured Google Apps Script,
-            Google Sheets data, token validity, and authorization rules.
-            Do not share administrator secrets or sensitive personal information.
+            PLMunTrack depends on its configured Google Apps Script,
+            Google Sheets database, token validity, and authorization rules.
+            Verify that each scan is recorded correctly in the database.
           </p>
         </div>
       </div>
@@ -643,7 +578,7 @@
 
     <div class="footer-links">
       <a href="index.html">Home</a>
-      <a href="register.html">Register</a>
+      <a href="register.html">Registration</a>
       <a href="generator.html">QR Generator</a>
       <a href="scanner.html">QR Scanner</a>
       <a href="admin.html">Admin</a>
