@@ -33,59 +33,48 @@
       background: linear-gradient(135deg, var(--primary-dark), var(--primary));
       color: white;
       padding: 24px 5%;
-      box-shadow: 0 4px 18px rgba(16, 43, 89, 0.15);
+      box-shadow: 0 4px 18px rgba(16,43,89,.15);
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-
-    header p {
-      margin: 5px 0 0;
-      color: #dbeafe;
-      font-size: 14px;
-    }
+    header h1 { margin: 0; font-size: 28px; }
+    header p { margin: 5px 0 0; color: #dbeafe; font-size: 14px; }
 
     main {
-      max-width: 1150px;
+      max-width: 1250px;
       margin: auto;
       padding: 32px 20px;
     }
 
-    .page-heading {
-      margin-bottom: 22px;
-    }
+    .page-heading { margin-bottom: 22px; }
+    .page-heading h2 { margin: 0 0 5px; font-size: 26px; color: var(--primary); }
+    .note { color: var(--muted); font-size: 14px; }
 
-    .page-heading h2 {
-      margin: 0 0 5px;
-      font-size: 26px;
+    .group-title {
+      margin: 28px 0 10px;
+      font-size: 18px;
       color: var(--primary);
-    }
-
-    .note {
-      color: var(--muted);
-      font-size: 14px;
     }
 
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
-      margin: 22px 0;
+      margin: 18px 0;
     }
 
     .card, .section {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(25, 48, 85, 0.05);
+      box-shadow: 0 8px 25px rgba(25,48,85,.05);
     }
 
     .card {
-      padding: 23px;
+      padding: 22px;
       border-top: 4px solid var(--accent);
     }
+
+    .visitor-card { border-top-color: #0891b2; }
 
     .card h3 {
       margin: 0 0 12px;
@@ -100,16 +89,8 @@
       font-weight: 750;
     }
 
-    .section {
-      margin-top: 24px;
-      padding: 25px;
-    }
-
-    .section h2 {
-      margin: 0 0 8px;
-      font-size: 20px;
-      color: var(--primary);
-    }
+    .section { margin-top: 24px; padding: 25px; }
+    .section h2 { margin: 0 0 8px; font-size: 20px; color: var(--primary); }
 
     .actions {
       display: flex;
@@ -132,7 +113,7 @@
       font-weight: 650;
       text-decoration: none;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: .2s ease;
     }
 
     button:hover, .link-button:hover {
@@ -140,10 +121,7 @@
       transform: translateY(-1px);
     }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
+    button:disabled { opacity: .6; cursor: wait; }
 
     .search-box {
       width: 100%;
@@ -152,7 +130,7 @@
       margin: 14px 0 18px;
       border: 1px solid #cbd6e5;
       border-radius: 9px;
-      background: #fff;
+      background: white;
       color: var(--text);
       font: inherit;
     }
@@ -190,9 +168,7 @@
       white-space: nowrap;
     }
 
-    tbody tr:hover {
-      background: #f8faff;
-    }
+    tbody tr:hover { background: #f8faff; }
 
     .status {
       display: inline-block;
@@ -249,6 +225,7 @@
       <p class="note">Attendance and visitor monitoring summary.</p>
     </div>
 
+    <h3 class="group-title">Attendance Summary</h3>
     <div class="cards">
       <div class="card">
         <h3>Registered People</h3>
@@ -266,8 +243,31 @@
       </div>
 
       <div class="card">
-        <h3>Currently Inside</h3>
+        <h3>Currently Inside (All)</h3>
         <div class="number" id="inside">—</div>
+      </div>
+    </div>
+
+    <h3 class="group-title">Visitor Summary</h3>
+    <div class="cards">
+      <div class="card visitor-card">
+        <h3>Total Visitors</h3>
+        <div class="number" id="totalVisitors">—</div>
+      </div>
+
+      <div class="card visitor-card">
+        <h3>Visitors Today</h3>
+        <div class="number" id="visitorsToday">—</div>
+      </div>
+
+      <div class="card visitor-card">
+        <h3>Currently Inside (Visitors)</h3>
+        <div class="number" id="visitorInside">—</div>
+      </div>
+
+      <div class="card visitor-card">
+        <h3>Completed Visits Today</h3>
+        <div class="number" id="completedVisits">—</div>
       </div>
     </div>
 
@@ -276,23 +276,19 @@
       <p class="note">Refresh the summary or open another module.</p>
 
       <div class="actions">
-        <button id="refreshBtn" onclick="loadDashboard()">Refresh Summary</button>
+        <button id="refreshBtn" onclick="refreshAll()">Refresh Summary</button>
         <button id="refreshVisitorsBtn" onclick="loadVisitors()">Refresh Visitors</button>
         <a class="link-button" href="generator.html">QR Generator</a>
         <a class="link-button" href="scanner.html">QR Scanner</a>
         <a class="link-button" href="index.html">Home</a>
       </div>
 
-      <div id="message" role="status" aria-live="polite">
-        Loading dashboard summary...
-      </div>
+      <div id="message" role="status" aria-live="polite">Loading dashboard summary...</div>
     </section>
 
     <section class="section">
       <h2>Visitor Records</h2>
-      <p class="note">
-        Registered visitors from the Visitors sheet.
-      </p>
+      <p class="note">Registered visitors from the Visitors sheet.</p>
 
       <input
         id="visitorSearch"
@@ -318,34 +314,34 @@
           </thead>
           <tbody id="visitorTableBody">
             <tr>
-              <td colspan="8" class="empty">Visitor records have not been loaded yet.</td>
+              <td colspan="8" class="empty">Loading visitor records...</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div id="visitorMessage" role="status" aria-live="polite">
-        Visitor records need to be connected to Google Apps Script.
-      </div>
+      <div id="visitorMessage" role="status" aria-live="polite">Loading visitor records...</div>
     </section>
 
     <section class="section">
-      <h2>Attendance Summary</h2>
+      <h2>About the Summary</h2>
       <p class="note">
-        Registered People counts active records in the People sheet.
-        Time-In and Time-Out count today's attendance records.
-        Currently Inside counts today's records with a Time-In and no Time-Out.
+        Registered People counts active records in People.
+        Today's Time-In and Time-Out count attendance records for today.
+        Currently Inside (All) counts today's attendance records with Time-In and no Time-Out.
+        Total Visitors counts records in Visitors, while Visitors Today counts registrations made today.
+        Currently Inside (Visitors) and Completed Visits Today use visitor attendance records for today.
       </p>
     </section>
   </main>
 
-  <footer>
-    PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa
-  </footer>
+  <footer>PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</footer>
 
   <script>
     const API_URL =
       "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+    let visitorRecords = [];
 
     async function loadDashboard() {
       const message = document.getElementById("message");
@@ -353,14 +349,12 @@
 
       button.disabled = true;
       message.className = "";
-      message.textContent = "Loading attendance summary...";
+      message.textContent = "Loading dashboard summary...";
 
       try {
         const response = await fetch(API_URL + "?action=dashboard");
 
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
-        }
+        if (!response.ok) throw new Error("HTTP " + response.status);
 
         const data = await response.json();
 
@@ -373,22 +367,27 @@
         document.getElementById("totalOut").textContent = data.totalOut ?? 0;
         document.getElementById("inside").textContent = data.inside ?? 0;
 
+        document.getElementById("totalVisitors").textContent = data.totalVisitors ?? 0;
+        document.getElementById("visitorsToday").textContent = data.visitorsToday ?? 0;
+        document.getElementById("visitorInside").textContent = data.visitorCurrentlyInside ?? 0;
+        document.getElementById("completedVisits").textContent = data.completedVisits ?? 0;
+
         message.className = "success";
         message.textContent = "Summary loaded successfully for " + (data.date || "today") + ".";
       } catch (error) {
         message.className = "error";
-        message.textContent = "Unable to load dashboard summary. Check the Apps Script deployment and action=dashboard.";
+        message.textContent =
+          "Unable to load dashboard. Check the Apps Script deployment and action=dashboard.";
         console.error(error);
       } finally {
         button.disabled = false;
       }
     }
 
-    let visitorRecords = [];
-
     async function loadVisitors() {
       const message = document.getElementById("visitorMessage");
       const button = document.getElementById("refreshVisitorsBtn");
+
       button.disabled = true;
       message.className = "";
       message.textContent = "Loading visitor records...";
@@ -396,9 +395,7 @@
       try {
         const response = await fetch(API_URL + "?action=visitors");
 
-        if (!response.ok) {
-          throw new Error("HTTP " + response.status);
-        }
+        if (!response.ok) throw new Error("HTTP " + response.status);
 
         const data = await response.json();
 
@@ -414,7 +411,7 @@
       } catch (error) {
         message.className = "error";
         message.textContent =
-          "Hindi pa ma-load ang visitor records. Idagdag muna ang action=visitors sa Google Apps Script at i-deploy ang bagong version.";
+          "Unable to load visitor records. Check the Apps Script deployment and action=visitors.";
         console.error(error);
       } finally {
         button.disabled = false;
@@ -440,7 +437,7 @@
 
       tbody.replaceChildren();
 
-      if (filtered.length === 0) {
+      if (!filtered.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
         cell.colSpan = 8;
@@ -481,10 +478,15 @@
       });
     }
 
-    document.getElementById("visitorSearch").addEventListener("input", renderVisitors);
+    async function refreshAll() {
+      await Promise.all([loadDashboard(), loadVisitors()]);
+    }
 
-    loadDashboard();
-    loadVisitors();
+    document.getElementById("visitorSearch")
+      .addEventListener("input", renderVisitors);
+
+    refreshAll();
   </script>
 </body>
 </html>
+
