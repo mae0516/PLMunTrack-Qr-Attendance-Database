@@ -7,7 +7,6 @@
     <meta name="theme-color" content="#4f46e5">
     <meta name="description" content="PLMunTrack QR Attendance and Visitor Scanner">
     <link rel="manifest" href="/manifest.json">
-
     <title>PLMunTrack - QR Scanner</title>
 
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -22,8 +21,6 @@
             --text: #f8fafc;
             --muted: #94a3b8;
             --border: #293851;
-            --success: #22c55e;
-            --danger: #ef4444;
         }
 
         * { box-sizing: border-box; }
@@ -36,17 +33,8 @@
             color: var(--text);
         }
 
-        .container {
-            width: 100%;
-            max-width: 850px;
-            margin: auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
+        .container { width: 100%; max-width: 850px; margin: auto; }
+        .header { text-align: center; margin-bottom: 25px; }
         .logo {
             display: inline-block;
             padding: 10px 16px;
@@ -57,15 +45,10 @@
             margin-bottom: 12px;
         }
 
-        h1 {
-            margin: 5px 0 10px;
-            font-size: 30px;
-        }
-
-        .subtitle {
-            color: var(--muted);
-            font-size: 14px;
-        }
+        h1 { margin: 5px 0 10px; font-size: 30px; }
+        h2 { font-size: 19px; margin-top: 0; }
+        .subtitle, .hint, .footer { color: var(--muted); }
+        .subtitle { font-size: 14px; }
 
         .layout {
             display: grid;
@@ -80,11 +63,6 @@
             padding: 20px;
             min-width: 0;
             margin-bottom: 20px;
-        }
-
-        h2 {
-            font-size: 19px;
-            margin-top: 0;
         }
 
         #reader {
@@ -117,10 +95,7 @@
             border: 1px solid var(--border);
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         label {
             display: block;
@@ -141,11 +116,7 @@
 
         input:focus { border-color: var(--cyan); }
 
-        .hint {
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-        }
+        .hint { font-size: 13px; line-height: 1.6; }
 
         .message {
             margin-top: 15px;
@@ -227,16 +198,11 @@
 
         .attendance-status { color: #67e8f9; }
 
-        .install-section {
-            display: none;
-            margin-bottom: 20px;
-        }
-
+        .install-section { display: none; margin-bottom: 20px; }
         .install-section.show { display: block; }
 
         .footer {
             text-align: center;
-            color: var(--muted);
             font-size: 12px;
             margin-top: 25px;
         }
@@ -250,7 +216,6 @@
 
 <body>
 <div class="container">
-
     <header class="header">
         <div class="logo">PLMunTrack</div>
         <h1>QR Code Scanner</h1>
@@ -261,9 +226,7 @@
 
     <section class="card install-section" id="installSection">
         <h2>Install PLMunTrack</h2>
-        <p class="hint">
-            Install PLMunTrack on this device for quick access like an app.
-        </p>
+        <p class="hint">Install PLMunTrack on this device for quick access.</p>
         <button id="installBtn" type="button">Install App</button>
     </section>
 
@@ -284,8 +247,8 @@
             </div>
 
             <p class="hint">
-                Allow camera permission when asked. On a cellphone, open this
-                page over HTTPS and use the rear camera to scan QR codes.
+                Open the deployed website over HTTPS on your cellphone.
+                Allow camera permission and use the rear camera to scan.
             </p>
         </section>
 
@@ -304,15 +267,11 @@
 
                 <div class="button-row">
                     <button type="submit" id="submitBtn">Submit Token</button>
-                    <button type="button" class="secondary" id="clearBtn">
-                        Clear
-                    </button>
+                    <button type="button" class="secondary" id="clearBtn">Clear</button>
                 </div>
             </form>
 
-            <div id="scanMessage" class="message">
-                Waiting for a QR scan.
-            </div>
+            <div id="scanMessage" class="message">Waiting for a QR scan.</div>
         </section>
     </div>
 
@@ -345,8 +304,7 @@
             </div>
             <div class="detail">
                 <span class="detail-label">Attendance / Visit Status</span>
-                <span class="detail-value attendance-status"
-                      id="attendanceStatus">—</span>
+                <span class="detail-value attendance-status" id="attendanceStatus">—</span>
             </div>
         </div>
 
@@ -382,8 +340,8 @@
 
     function firstValue(data, keys, fallback = "—") {
         for (const key of keys) {
-            if (data && data[key] !== undefined &&
-                data[key] !== null && String(data[key]).trim() !== "") {
+            if (data && data[key] !== undefined && data[key] !== null &&
+                String(data[key]).trim() !== "") {
                 return String(data[key]);
             }
         }
@@ -391,54 +349,37 @@
     }
 
     function showResult(data) {
-        const card = document.getElementById("resultCard");
-        const badge = document.getElementById("resultBadge");
-
         document.getElementById("personName").textContent =
-            firstValue(data, ["fullName", "Full_Name", "name",
-                "visitorName", "studentName"]);
-
+            firstValue(data, ["fullName", "Full_Name", "name", "visitorName", "studentName"]);
         document.getElementById("personId").textContent =
-            firstValue(data, ["studentNumber", "Student_Number",
-                "visitorId", "Visitor_ID", "id"]);
-
+            firstValue(data, ["studentNumber", "Student_Number", "visitorId", "Visitor_ID", "id"]);
         document.getElementById("personType").textContent =
-            firstValue(data, ["personType", "Person_Type", "type",
-                "person_type"]);
-
+            firstValue(data, ["personType", "Person_Type", "type", "person_type"]);
         document.getElementById("scanDate").textContent =
-            firstValue(data, ["date", "Date", "visitDate",
-                "Visit_Date", "Token_Date"]);
-
+            firstValue(data, ["date", "Date", "visitDate", "Visit_Date", "Token_Date"]);
         document.getElementById("scanTime").textContent =
-            firstValue(data, ["time", "Time", "scanTime",
-                "timeIn", "Time_In", "timeOut", "Time_Out"]);
-
+            firstValue(data, ["time", "Time", "scanTime", "timeIn", "Time_In", "timeOut", "Time_Out"]);
         document.getElementById("attendanceStatus").textContent =
-            firstValue(data, ["attendanceStatus", "status", "Status",
-                "action", "visitStatus", "Authorization_Status"]);
-
+            firstValue(data, ["attendanceStatus", "status", "Status", "action", "visitStatus"]);
         document.getElementById("resultMessage").textContent =
             firstValue(data, ["message", "Message"], "Scan completed.");
 
+        const badge = document.getElementById("resultBadge");
         badge.textContent = "SUCCESS";
         badge.className = "status-badge";
-        card.classList.add("show");
+        document.getElementById("resultCard").classList.add("show");
     }
 
     function showError(message) {
-        const card = document.getElementById("resultCard");
-        const badge = document.getElementById("resultBadge");
-
         ["personName", "personId", "personType", "scanDate", "scanTime"]
             .forEach(id => document.getElementById(id).textContent = "—");
-
         document.getElementById("attendanceStatus").textContent = "FAILED";
         document.getElementById("resultMessage").textContent = message;
 
+        const badge = document.getElementById("resultBadge");
         badge.textContent = "ERROR";
         badge.className = "status-badge error";
-        card.classList.add("show");
+        document.getElementById("resultCard").classList.add("show");
     }
 
     async function submitToken(rawToken) {
@@ -448,7 +389,6 @@
             setMessage(scanMessage, "Please enter a QR token.", "error");
             return;
         }
-
         if (processing) return;
 
         processing = true;
@@ -467,44 +407,32 @@
                 cache: "no-store"
             });
 
-            if (!response.ok) {
-                throw new Error("Server response: HTTP " + response.status);
-            }
+            if (!response.ok) throw new Error("Server response: HTTP " + response.status);
 
             const text = await response.text();
             let data;
-
             try {
                 data = JSON.parse(text);
             } catch (_) {
-                throw new Error(
-                    "The server did not return JSON. Check the Apps Script deployment URL."
-                );
+                throw new Error("The server did not return JSON. Check the Apps Script deployment URL.");
             }
 
             if (data.success !== true) {
-                throw new Error(data.message || data.error ||
-                    "The QR token was not accepted.");
+                throw new Error(data.message || data.error || "The QR token was not accepted.");
             }
 
             lastScannedToken = token;
             lastScanAt = Date.now();
-
             showResult(data);
 
             const status = firstValue(data, ["status", "Status"], "Success");
-            const name = firstValue(data,
-                ["fullName", "Full_Name", "name"], "Record");
-
+            const name = firstValue(data, ["fullName", "Full_Name", "name"], "Record");
             setMessage(scanMessage, name + " — " + status + ".", "success");
-            setMessage(cameraMessage,
-                "Scan successful: " + status + ".", "success");
-
+            setMessage(cameraMessage, "Scan successful: " + status + ".", "success");
             document.getElementById("tokenInput").value = "";
 
         } catch (error) {
-            const message = error.message ||
-                "Unable to process this QR token.";
+            const message = error.message || "Unable to process this QR token.";
             setMessage(scanMessage, message, "error");
             setMessage(cameraMessage, message, "error");
             showError(message);
@@ -519,44 +447,27 @@
 
         try {
             if (!window.isSecureContext) {
-                throw new Error(
-                    "Camera access requires HTTPS. Open the deployed PLMunTrack website."
-                );
+                throw new Error("Camera access requires HTTPS. Open the deployed PLMunTrack website.");
             }
-
-            if (!scanner) {
-                scanner = new Html5Qrcode("reader");
-            }
+            if (!scanner) scanner = new Html5Qrcode("reader");
 
             setMessage(cameraMessage, "Starting camera...");
 
             await scanner.start(
                 { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 240, height: 240 },
-                    aspectRatio: 1.0
-                },
+                { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
                 async decodedText => {
                     if (processing) return;
-
-                    if (decodedText === lastScannedToken &&
-                        Date.now() - lastScanAt < 2500) {
-                        return;
-                    }
+                    if (decodedText === lastScannedToken && Date.now() - lastScanAt < 2500) return;
 
                     try {
-                        if (scanner && cameraRunning) {
-                            await scanner.pause(true);
-                        }
+                        if (scanner && cameraRunning) await scanner.pause(true);
                     } catch (_) {}
 
                     await submitToken(decodedText);
 
                     try {
-                        if (scanner && cameraRunning) {
-                            scanner.resume();
-                        }
+                        if (scanner && cameraRunning) scanner.resume();
                     } catch (_) {}
                 },
                 () => {}
@@ -565,17 +476,13 @@
             cameraRunning = true;
             startBtn.disabled = true;
             stopBtn.disabled = false;
-            setMessage(cameraMessage,
-                "Camera is running. Point it at a QR code.");
+            setMessage(cameraMessage, "Camera is running. Point it at a QR code.");
 
         } catch (error) {
             cameraRunning = false;
             startBtn.disabled = false;
             stopBtn.disabled = true;
-            setMessage(cameraMessage,
-                error.message ||
-                "Cannot start camera. Allow camera permission or use Manual QR Token.",
-                "error");
+            setMessage(cameraMessage, error.message || "Cannot start camera. Allow camera permission.", "error");
         }
     }
 
@@ -587,8 +494,7 @@
             cameraRunning = false;
             startBtn.disabled = false;
             stopBtn.disabled = true;
-            setMessage(cameraMessage,
-                "Camera stopped. Start it again to scan.");
+            setMessage(cameraMessage, "Camera stopped. Start it again to scan.");
         } catch (_) {
             setMessage(cameraMessage, "Unable to stop the camera.", "error");
         }
@@ -599,17 +505,15 @@
         setMessage(scanMessage, "Token field cleared.");
     }
 
-    document.getElementById("tokenForm").addEventListener("submit",
-        async event => {
-            event.preventDefault();
-            await submitToken(document.getElementById("tokenInput").value);
-        });
+    document.getElementById("tokenForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        await submitToken(document.getElementById("tokenInput").value);
+    });
 
     document.getElementById("clearBtn").addEventListener("click", clearToken);
     startBtn.addEventListener("click", startCamera);
     stopBtn.addEventListener("click", stopCamera);
 
-    // Install prompt: supported browsers can offer app installation.
     window.addEventListener("beforeinstallprompt", event => {
         event.preventDefault();
         installPrompt = event;
@@ -619,7 +523,7 @@
     document.getElementById("installBtn").addEventListener("click", async () => {
         if (!installPrompt) {
             setMessage(cameraMessage,
-                "If installation is unavailable, open the browser menu and look for Install app or Add to Home screen.");
+                "Open your browser menu and look for Install app or Add to Home screen.");
             return;
         }
 
@@ -632,6 +536,15 @@
     window.addEventListener("appinstalled", () => {
         document.getElementById("installSection").classList.remove("show");
     });
+
+    // Register the service worker for PWA support.
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/service-worker.js")
+                .then(() => console.log("PLMunTrack service worker registered."))
+                .catch(error => console.error("Service worker registration failed:", error));
+        });
+    }
 </script>
 </body>
 </html>
