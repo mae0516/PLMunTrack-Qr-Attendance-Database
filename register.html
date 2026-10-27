@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PLMunTrack | Registration</title>
 
+  <!-- QR CODE LIBRARY -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
   <style>
     * { box-sizing: border-box; }
 
@@ -75,9 +78,50 @@
       margin-top: 14px;
       font-size: 14px;
       line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .success {
+      color: #86efac;
+    }
+
+    .error {
+      color: #fca5a5;
     }
 
     a { color: #67e8f9; }
+
+    #visitorQrResult {
+      margin-top: 24px;
+      padding: 20px;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      text-align: center;
+      background: #080d1b;
+    }
+
+    #visitorQrCode {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 180px;
+      min-height: 180px;
+      padding: 12px;
+      margin: 12px auto;
+      background: white;
+      border-radius: 10px;
+    }
+
+    #visitorQrCode img,
+    #visitorQrCode canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .visitor-details {
+      text-align: left;
+      overflow-wrap: anywhere;
+    }
 
     [hidden] { display: none !important; }
   </style>
@@ -148,6 +192,25 @@
       <button type="submit">Register Visitor</button>
       <div id="visitorMessage" class="message" role="status"></div>
     </form>
+
+    <!-- AUTOMATIC VISITOR QR RESULT -->
+    <div id="visitorQrResult" hidden>
+      <h2>Registration Successful!</h2>
+      <p class="success">Your visitor registration has been submitted.</p>
+
+      <h3>Your Visitor QR Code</h3>
+      <div id="visitorQrCode" aria-label="Visitor QR Code"></div>
+
+      <div id="visitorQrDetails" class="visitor-details"></div>
+
+      <p>
+        Save or download this QR code. Show it to the guard when you arrive.
+      </p>
+
+      <button type="button" id="downloadVisitorQr">
+        Download QR Code
+      </button>
+    </div>
   </div>
 
   <p><a href="index.html">← Back to Home</a></p>
@@ -178,7 +241,7 @@
 
   const auth = getAuth(app);
 
-  // EXISTING GOOGLE APPS SCRIPT URL
+  // GOOGLE APPS SCRIPT WEB APP URL
   const API_URL =
     "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
@@ -188,6 +251,13 @@
   const studentLoading = document.getElementById("studentLoading");
   const studentMessage = document.getElementById("studentMessage");
   const visitorForm = document.getElementById("visitorForm");
+  const visitorMessage = document.getElementById("visitorMessage");
+  const visitorQrResult = document.getElementById("visitorQrResult");
+  const visitorQrCode = document.getElementById("visitorQrCode");
+  const visitorQrDetails = document.getElementById("visitorQrDetails");
+  const downloadVisitorQr = document.getElementById("downloadVisitorQr");
+
+  let currentVisitorToken = "";
 
   // STUDENT LOGIN CHECK
   onAuthStateChanged(auth, (user) => {
@@ -207,23 +277,123 @@
 
   // DEFAULT VISIT DATE: LOCAL DATE
   const dateInput = document.getElementById("visitDate");
-  const now = new Date();
 
-  const today =
-    now.getFullYear() + "-" +
-    String(now.getMonth() + 1).padStart(2, "0") + "-" +
-    String(now.getDate()).padStart(2, "0");
+  function getLocalDate() {
+    const now = new Date();
 
-  dateInput.min = today;
-  dateInput.value = today;
+    return now.getFullYear() + "-" +
+      String(now.getMonth() + 1).padStart(2, "0") + "-" +
+      String(now.getDate()).padStart(2, "0");
+  }
 
-  // SUBMIT TO EXISTING APPS SCRIPT
+  dateInput.min = getLocalDate();
+  dateInput.value = getLocalDate();
+
+  // DISPLAY VISITOR QR CODE
+  function displayVisitorQr(result) {
+    // The current Apps Script returns the token as "token".
+    // "qrToken" is accepted too for compatibility.
+    const token = String(result.token || result.qrToken || "").trim();
+
+    if (!token) {
+      throw new Error(
+        "Registration succeeded, but the server did not return a QR token. " +
+        "Please contact the system administrator."
+      );
+    }
+
+    if (typeof QRCode === "undefined") {
+      throw new Error(
+        "The QR Code library did not load. Check your internet connection."
+      );
+    }
+
+    currentVisitorToken = token;
+
+    // Clear any previous QR code before creating a new one.
+    visitorQrCode.replaceChildren();
+
+    new QRCode(visitorQrCode, {
+      text: token,
+      width: 200,
+      height: 200,
+      colorDark: "#080d1b",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    // Use textContent to safely display server-returned values.
+    visitorQrDetails.replaceChildren();
+
+    const details = [
+      ["Visitor ID", result.visitorId || "Not provided"],
+      ["Name", result.fullName || document.getElementById("visitorName").value.trim()],
+      ["Visit Date", result.visitDate || dateInput.value],
+      ["Authorization", result.authorizationStatus || result.status || "Unknown"]
+    ];
+
+    details.forEach(([label, value]) => {
+      const p = document.createElement("p");
+      const strong = document.createElement("strong");
+
+      strong.textContent = label + ": ";
+      p.appendChild(strong);
+      p.appendChild(document.createTextNode(String(value)));
+      visitorQrDetails.appendChild(p);
+    });
+
+    visitorQrResult.hidden = false;
+    visitorQrResult.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+
+  // DOWNLOAD QR CODE AS PNG
+  downloadVisitorQr.addEventListener("click", function () {
+    if (!currentVisitorToken) {
+      visitorMessage.textContent = "No visitor QR code is available to download.";
+      return;
+    }
+
+    const canvas = visitorQrCode.querySelector("canvas");
+    const image = visitorQrCode.querySelector("img");
+    let imageUrl = "";
+
+    if (canvas) {
+      imageUrl = canvas.toDataURL("image/png");
+    } else if (image && image.src) {
+      imageUrl = image.src;
+    }
+
+    if (!imageUrl) {
+      visitorMessage.textContent =
+        "The QR image is not ready yet. Please try again.";
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = "PLMunTrack-Visitor-QR.png";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  });
+
+  // SUBMIT REGISTRATION TO APPS SCRIPT
   async function submitRegistration(data, button, output) {
     button.disabled = true;
+    output.classList.remove("error", "success");
     output.textContent = "Submitting registration...";
 
+    if (data.action === "registerVisitor") {
+      visitorQrResult.hidden = true;
+      visitorQrCode.replaceChildren();
+      visitorQrDetails.replaceChildren();
+      currentVisitorToken = "";
+    }
+
     try {
-      // Recheck login for student registration.
       if (data.action === "registerStudent" && !auth.currentUser) {
         throw new Error("Please log in before registering as a student.");
       }
@@ -246,25 +416,29 @@
         throw new Error(result.message || "Registration failed.");
       }
 
-      output.textContent =
-        result.message || "Registration submitted successfully.";
-
       if (data.action === "registerVisitor") {
-        output.textContent +=
-          "\nVisitor ID: " + (result.visitorId || "Not provided") +
-          "\nAuthorization: " +
-          (result.authorizationStatus || "Pending") +
-          "\nPlease wait for admin authorization before scanning.";
+        output.classList.add("success");
+        output.textContent =
+          result.message || "Visitor registered successfully.";
+
+        // Display QR only after successful registration.
+        displayVisitorQr(result);
+
+        // Clear the form after the successful result is displayed.
+        visitorForm.reset();
+        dateInput.value = getLocalDate();
+        dateInput.min = getLocalDate();
+
       } else {
-        output.textContent +=
+        output.classList.add("success");
+        output.textContent =
+          (result.message || "Student registration submitted successfully.") +
           "\nStudent Number: " +
           (result.studentNumber || data.studentNumber);
       }
 
-      output.textContent +=
-        "\n\nPlease keep this page open until the result appears.";
-
     } catch (error) {
+      output.classList.add("error");
       output.textContent =
         "Could not confirm registration: " + error.message +
         "\nCheck your internet connection and Apps Script deployment.";
@@ -325,11 +499,12 @@
     submitRegistration(
       data,
       visitorForm.querySelector("button"),
-      document.getElementById("visitorMessage")
+      visitorMessage
     );
   });
 </script>
 
 </body>
 </html>
+
 
