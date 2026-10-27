@@ -7,7 +7,9 @@
     <title>PLMunTrack | Dashboard</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -35,7 +37,9 @@
             font-weight: bold;
         }
 
-        .brand span { color: #67e8f9; }
+        .brand span {
+            color: #67e8f9;
+        }
 
         .header-actions {
             display: flex;
@@ -61,13 +65,19 @@
             font-size: 14px;
         }
 
+        .logout:hover {
+            background: #3b4c68;
+        }
+
         main {
             max-width: 1100px;
             margin: auto;
             padding: 35px 20px;
         }
 
-        .welcome { margin-bottom: 30px; }
+        .welcome {
+            margin-bottom: 30px;
+        }
 
         .welcome h1 {
             margin-bottom: 10px;
@@ -81,7 +91,10 @@
 
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(220px, 1fr)
+            );
             gap: 18px;
         }
 
@@ -90,6 +103,8 @@
             border: 1px solid #293851;
             border-radius: 16px;
             background: #111c31;
+            display: flex;
+            flex-direction: column;
         }
 
         .card .icon {
@@ -103,6 +118,7 @@
         }
 
         .card p {
+            flex: 1;
             min-height: 45px;
             color: #94a3b8;
             font-size: 14px;
@@ -121,7 +137,9 @@
             font-weight: bold;
         }
 
-        .card a:hover { background: #6366f1; }
+        .card a:hover {
+            background: #6366f1;
+        }
 
         footer {
             padding: 25px;
@@ -135,13 +153,25 @@
             margin: 20px auto;
             padding: 0 20px;
             color: #fca5a5;
+            overflow-wrap: anywhere;
         }
 
         @media (max-width: 600px) {
-            header { padding: 18px 5%; }
-            .brand { font-size: 19px; }
-            #accountInfo { max-width: 150px; }
-            .welcome h1 { font-size: 26px; }
+            header {
+                padding: 18px 5%;
+            }
+
+            .brand {
+                font-size: 19px;
+            }
+
+            #accountInfo {
+                max-width: 150px;
+            }
+
+            .welcome h1 {
+                font-size: 26px;
+            }
         }
     </style>
 </head>
@@ -152,7 +182,12 @@
 
         <div class="header-actions">
             <span id="accountInfo"></span>
-            <button class="logout" id="logoutButton" type="button">
+
+            <button
+                class="logout"
+                id="logoutButton"
+                type="button"
+            >
                 Log Out
             </button>
         </div>
@@ -162,44 +197,81 @@
         <section class="welcome">
             <h1>My Dashboard</h1>
             <p>
-                Welcome to PLMunTrack. Manage your registration and
-                attendance using the options below.
+                Welcome to PLMunTrack. Manage your registration,
+                QR code, and attendance using the options below.
             </p>
         </section>
 
         <section class="cards">
+
             <article class="card">
                 <div class="icon">📝</div>
                 <h2>Registration</h2>
-                <p>Register a student or visitor.</p>
-                <a href="register.html">Open Registration</a>
+                <p>
+                    Register a student or visitor using the
+                    registration page.
+                </p>
+                <a href="register.html">
+                    Open Registration
+                </a>
             </article>
 
             <article class="card">
-                <div class="icon">📷</div>
-                <h2>QR Scanner</h2>
-                <p>Scan a valid QR code to record attendance.</p>
-                <a href="scanner.html">Open Scanner</a>
+                <div class="icon">📱</div>
+                <h2>Student QR Scanner</h2>
+                <p>
+                    Open the student scanner on your phone
+                    to scan QR codes using your camera.
+                </p>
+                <a href="student-scanner.html">
+                    Open Student Scanner
+                </a>
             </article>
 
             <article class="card">
                 <div class="icon">▦</div>
                 <h2>My QR Code</h2>
-                <p>Open the existing QR generator page.</p>
-                <a href="generator.html">Open QR Generator</a>
+                <p>
+                    Open the existing QR generator page
+                    to access your QR code.
+                </p>
+                <a href="generator.html">
+                    Open QR Generator
+                </a>
             </article>
+
+            <article class="card">
+                <div class="icon">🛡️</div>
+                <h2>Guard Station</h2>
+                <p>
+                    Open the separate scanner used at the
+                    campus entrance by authorized personnel.
+                </p>
+                <a href="guard-scanner.html">
+                    Open Guard Scanner
+                </a>
+            </article>
+
         </section>
     </main>
 
-    <div id="pageMessage" role="status" aria-live="polite"></div>
+    <div
+        id="pageMessage"
+        role="status"
+        aria-live="polite"
+    ></div>
 
     <footer>
-        PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
+        PLMunTrack © 2026 |
+        Pamantasan ng Lungsod ng Muntinlupa
     </footer>
 
     <script type="module">
-        import { initializeApp, getApp, getApps }
-            from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import {
+            initializeApp,
+            getApp,
+            getApps
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
         import {
             getAuth,
@@ -216,12 +288,20 @@
             appId: "1:156534335192:web:35d43ff8446786840919ad"
         };
 
-        const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        const app = getApps().length
+            ? getApp()
+            : initializeApp(firebaseConfig);
+
         const auth = getAuth(app);
 
-        const accountInfo = document.getElementById("accountInfo");
-        const pageMessage = document.getElementById("pageMessage");
-        const logoutButton = document.getElementById("logoutButton");
+        const accountInfo =
+            document.getElementById("accountInfo");
+
+        const pageMessage =
+            document.getElementById("pageMessage");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
 
         onAuthStateChanged(auth, (user) => {
             if (!user) {
@@ -229,20 +309,28 @@
                 return;
             }
 
-            accountInfo.textContent = user.email || "Signed-in user";
+            accountInfo.textContent =
+                user.email || "Signed-in user";
+
             document.body.classList.remove("loading");
         });
 
         logoutButton.addEventListener("click", async () => {
             logoutButton.disabled = true;
+            pageMessage.textContent = "";
 
             try {
                 await signOut(auth);
                 window.location.replace("login.html");
             } catch (error) {
-                console.error("Sign-out failed:", error.code);
+                console.error(
+                    "Sign-out failed:",
+                    error.code
+                );
+
                 pageMessage.textContent =
                     "Unable to log out. Please check your connection and try again.";
+
                 logoutButton.disabled = false;
             }
         });
