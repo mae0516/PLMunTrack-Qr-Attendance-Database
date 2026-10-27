@@ -4,32 +4,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PLMunTrack | Dashboard</title>
+  <title>PLMunTrack | Admin Dashboard</title>
 
   <style>
     :root {
-      --bg: #090d1b;
-      --panel: #11182b;
-      --panel2: #151e35;
-      --border: #27324d;
-      --purple: #7467f0;
-      --cyan: #67e8f9;
-      --text: #f5f7ff;
-      --muted: #9ba8c4;
-      --red: #fb7185;
+      --bg: #0b1020;
+      --panel: #151c30;
+      --panel2: #1b2540;
+      --text: #f1f5f9;
+      --muted: #9aa8c2;
+      --primary: #6366f1;
+      --cyan: #06b6d4;
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --border: rgba(255,255,255,.09);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      margin: 0;
+      min-height: 100vh;
       background: var(--bg);
       color: var(--text);
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    body.loading #app {
-      display: none;
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+      font: inherit;
     }
 
     .layout {
@@ -40,501 +52,655 @@
     .sidebar {
       width: 250px;
       flex-shrink: 0;
-      padding: 27px 18px;
-      background: #0e1426;
+      background: #10172a;
       border-right: 1px solid var(--border);
+      padding: 26px 16px;
     }
 
     .brand {
-      padding: 0 12px 30px;
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.7px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 8px 35px;
     }
 
-    .brand span { color: var(--cyan); }
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .brand h2 {
+      font-size: 19px;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
 
     .nav-label {
-      padding: 12px;
-      color: #71809f;
+      margin: 22px 12px 10px;
+      color: #71809d;
       font-size: 11px;
-      font-weight: 800;
+      font-weight: bold;
       letter-spacing: 1.5px;
+      text-transform: uppercase;
     }
 
     .nav-link {
       display: flex;
       align-items: center;
       gap: 12px;
+      padding: 13px 14px;
       margin: 5px 0;
-      padding: 13px 12px;
-      border: 1px solid transparent;
-      border-radius: 12px;
-      color: var(--muted);
-      text-decoration: none;
+      border-radius: 10px;
+      color: #b9c5dc;
       font-size: 14px;
       transition: .2s;
     }
 
     .nav-link:hover,
     .nav-link.active {
-      color: white;
-      background: linear-gradient(100deg, #6558dc35, #21c6d315);
-      border-color: #6558dc55;
+      background: rgba(99,102,241,.18);
+      color: #fff;
     }
 
-    .nav-icon { width: 22px; text-align: center; }
+    .nav-link.active {
+      border: 1px solid rgba(99,102,241,.28);
+    }
 
-    .sidebar-note {
-      margin: 35px 5px 0;
-      padding: 15px;
+    .sidebar-bottom {
+      margin-top: 45px;
+      padding: 14px;
       border: 1px solid var(--border);
-      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      border-radius: 12px;
+    }
+
+    .sidebar-bottom p {
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
-    .sidebar-note strong {
-      display: block;
-      margin-bottom: 5px;
-      color: var(--cyan);
-    }
-
-    .content {
+    .main {
       min-width: 0;
       flex: 1;
+      padding: 30px;
     }
 
     .topbar {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 15px;
-      padding: 20px 32px;
-      border-bottom: 1px solid var(--border);
-      background: #0e1426aa;
-    }
-
-    .topbar small {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .account {
-      display: flex;
       align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    #accountInfo {
-      max-width: 230px;
-      color: var(--muted);
-      font-size: 12px;
-      overflow-wrap: anywhere;
-    }
-
-    .avatar {
-      display: grid;
-      place-items: center;
-      width: 38px;
-      height: 38px;
-      flex-shrink: 0;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--purple), #19baca);
-      font-weight: 800;
-    }
-
-    .logout {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--panel2);
-      color: white;
-      cursor: pointer;
-    }
-
-    .logout:hover { border-color: var(--cyan); }
-    .logout:disabled { opacity: .6; cursor: wait; }
-
-    main {
-      width: 100%;
-      max-width: 1450px;
-      margin: auto;
-      padding: 32px;
-    }
-
-    .welcome {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 27px;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
     }
 
     .eyebrow {
       color: var(--cyan);
       font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 2px;
+      letter-spacing: 1.7px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 9px;
     }
 
     h1 {
-      margin: 10px 0;
-      font-size: clamp(26px, 3vw, 36px);
-      letter-spacing: -1px;
+      font-size: clamp(24px, 3vw, 32px);
+      margin-bottom: 8px;
     }
 
-    .welcome p {
-      max-width: 650px;
-      margin: 0;
+    .subtitle {
       color: var(--muted);
       font-size: 14px;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
-    .date-chip {
-      padding: 12px 15px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--cyan);
-      background: var(--panel);
-      white-space: nowrap;
-      font-size: 12px;
-    }
-
-    .section-title {
-      margin: 30px 0 15px;
-      font-size: 16px;
-      font-weight: 750;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    .stat {
-      position: relative;
-      overflow: hidden;
-      padding: 21px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: linear-gradient(145deg, var(--panel), #11182b);
-    }
-
-    .stat::after {
-      position: absolute;
-      top: -25px;
-      right: -20px;
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      background: #7467f01c;
-      content: "";
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .stat-value {
-      margin: 12px 0 7px;
-      font-size: 30px;
-      font-weight: 800;
-    }
-
-    .stat-foot {
-      color: #71809f;
-      font-size: 11px;
-    }
-
-    .stat-icon {
-      float: right;
-      font-size: 24px;
-    }
-
-    .tools {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 17px;
-    }
-
-    .tool-card {
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      padding: 23px;
-      border: 1px solid var(--border);
-      border-radius: 17px;
-      background: var(--panel);
-      transition: transform .2s, border-color .2s;
-    }
-
-    .tool-card:hover {
-      transform: translateY(-3px);
-      border-color: #6558dcaa;
-    }
-
-    .tool-top {
+    .profile {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 10px 14px;
+      border-radius: 13px;
+      max-width: 100%;
     }
 
-    .tool-icon {
+    .avatar {
       display: grid;
       place-items: center;
-      width: 49px;
-      height: 49px;
-      flex-shrink: 0;
-      border: 1px solid #7467f044;
-      border-radius: 14px;
-      background: #7467f018;
-      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: rgba(6,182,212,.15);
+      color: #67e8f9;
+      font-weight: bold;
     }
 
-    .tool-card h2 {
-      margin: 0;
-      font-size: 17px;
-    }
-
-    .tool-card p {
-      flex: 1;
-      min-height: 45px;
-      margin: 17px 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-    }
-
-    .tool-card a {
-      display: block;
-      padding: 12px;
-      border: 1px solid #7467f055;
-      border-radius: 10px;
-      background: #7467f01a;
-      color: #dcd8ff;
-      text-align: center;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .tool-card a:hover {
-      background: var(--purple);
-      color: white;
-    }
-
-    #pageMessage {
-      margin-top: 18px;
-      color: var(--red);
+    .profile-email {
       font-size: 13px;
       overflow-wrap: anywhere;
     }
 
-    footer {
-      padding: 22px 32px;
-      border-top: 1px solid var(--border);
-      color: #71809f;
-      text-align: center;
+    .profile-role {
+      color: var(--muted);
       font-size: 11px;
+      margin-top: 5px;
     }
 
-    @media (max-width: 900px) {
-      .sidebar { width: 215px; }
-      main { padding: 25px 20px; }
-      .topbar { padding: 18px 20px; }
-      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 25px 0 16px;
     }
 
-    @media (max-width: 650px) {
-      .layout { display: block; }
+    .section-heading h2 {
+      font-size: 18px;
+    }
+
+    .date-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      min-width: 0;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .stat-title {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .stat-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: rgba(99,102,241,.16);
+      font-size: 18px;
+    }
+
+    .stat-value {
+      font-size: 31px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-foot {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .green { color: var(--green); }
+    .cyan { color: var(--cyan); }
+    .orange { color: var(--orange); }
+    .red { color: var(--red); }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .panel {
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      min-width: 0;
+    }
+
+    .panel h2 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    .panel-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .quick-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-link {
+      padding: 16px;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: .2s;
+    }
+
+    .quick-link:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .quick-link .quick-icon {
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
+
+    .quick-link h3 {
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .quick-link p {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .status-row:last-child {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 9px;
+      border-radius: 20px;
+      background: rgba(34,197,94,.12);
+      color: #86efac;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .status-badge.warning {
+      background: rgba(245,158,11,.12);
+      color: #fcd34d;
+    }
+
+    .status-badge.error {
+      background: rgba(239,68,68,.12);
+      color: #fca5a5;
+    }
+
+    .message {
+      display: none;
+      padding: 13px 15px;
+      margin-bottom: 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.info {
+      color: #bfdbfe;
+      background: rgba(59,130,246,.12);
+      border: 1px solid rgba(59,130,246,.25);
+    }
+
+    .message.error {
+      color: #fecaca;
+      background: rgba(239,68,68,.12);
+      border: 1px solid rgba(239,68,68,.25);
+    }
+
+    .message.success {
+      color: #bbf7d0;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.25);
+    }
+
+    .refresh-button,
+    .logout-button {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 9px;
+      padding: 10px 13px;
+      font-size: 12px;
+    }
+
+    .refresh-button:hover,
+    .logout-button:hover {
+      border-color: var(--primary);
+    }
+
+    .footer {
+      margin-top: 25px;
+      padding: 18px 0;
+      color: #71809d;
+      font-size: 11px;
+      border-top: 1px solid var(--border);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .layout {
+        display: block;
+      }
+
       .sidebar {
         width: 100%;
-        padding: 17px 14px;
-        border-right: 0;
-        border-bottom: 1px solid var(--border);
+        padding: 16px;
       }
-      .brand { padding: 0 8px 15px; }
-      .nav-label, .sidebar-note { display: none; }
+
+      .brand {
+        margin-bottom: 18px;
+      }
+
+      .nav-label,
+      .sidebar-bottom {
+        display: none;
+      }
+
       .sidebar nav {
         display: flex;
-        gap: 7px;
-        overflow-x: auto;
+        flex-wrap: wrap;
+        gap: 5px;
       }
+
       .nav-link {
-        flex-shrink: 0;
-        margin: 0;
         padding: 10px;
+        margin: 0;
         font-size: 12px;
       }
-      .nav-icon { width: auto; }
-      .topbar { padding: 15px; }
-      #accountInfo { max-width: 115px; }
-      main { padding: 23px 15px; }
-      .welcome { align-items: flex-start; flex-direction: column; }
-      .stats { grid-template-columns: 1fr; }
-      .tools { grid-template-columns: 1fr; }
-      footer { padding: 20px 12px; }
+
+      .main {
+        padding: 20px 15px;
+      }
+
+      .profile {
+        width: 100%;
+      }
+
+      .stats {
+        gap: 10px;
+      }
+
+      .stat-card {
+        padding: 14px;
+      }
+
+      .stat-value {
+        font-size: 25px;
+      }
+
+      .quick-links {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 
-<body class="loading">
-  <div id="app" class="layout">
+<body>
+  <div class="layout">
     <aside class="sidebar">
-      <div class="brand">PLMun<span>Track</span></div>
+      <div class="brand">
+        <div class="brand-icon">P</div>
+        <div>
+          <h2>PLMunTrack</h2>
+          <p>Attendance Management</p>
+        </div>
+      </div>
 
-      <div class="nav-label">WORKSPACE</div>
-      <nav aria-label="Main navigation">
-        <a class="nav-link active" href="dashboard.html">
-          <span class="nav-icon">▦</span> Dashboard
-        </a>
-        <a class="nav-link" href="register.html">
-          <span class="nav-icon">📝</span> Registration
-        </a>
-        <a class="nav-link" href="student-scanner.html">
-          <span class="nav-icon">📱</span> Student Scanner
-        </a>
-        <a class="nav-link" href="generator.html">
-          <span class="nav-icon">▧</span> My QR Code
-        </a>
-        <a class="nav-link" href="guard-scanner.html">
-          <span class="nav-icon">🛡️</span> Guard Station
-        </a>
+      <div class="nav-label">Main Menu</div>
+      <nav>
+        <a class="nav-link active" href="dashboard.html">▦ Dashboard</a>
+        <a class="nav-link" href="register.html">＋ Registration</a>
+        <a class="nav-link" href="student-scanner.html">▣ Student Scanner</a>
+        <a class="nav-link" href="generator.html">▤ My QR Code</a>
+        <a class="nav-link" href="guard-scanner.html">⌗ Guard Station</a>
       </nav>
 
-      <div class="sidebar-note">
-        <strong>🔐 Secure workspace</strong>
-        Sign in to access the PLMunTrack dashboard.
+      <div class="nav-label">System</div>
+      <nav>
+        <a class="nav-link" href="index.html">⌂ Home Page</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <p><strong>PLMunTrack System</strong></p>
+        <p>QR Code-Based Visitor Monitoring and Attendance Management</p>
       </div>
     </aside>
 
-    <div class="content">
+    <main class="main">
       <header class="topbar">
         <div>
-          <strong>Dashboard</strong><br>
-          <small>Campus attendance management</small>
+          <div class="eyebrow">Admin Control Center</div>
+          <h1>Dashboard Overview</h1>
+          <p class="subtitle">
+            Monitor attendance, campus access, and visitor activity.
+          </p>
         </div>
 
-        <div class="account">
-          <div class="avatar">P</div>
-          <span id="accountInfo">Checking account…</span>
-          <button class="logout" id="logoutButton" type="button">
-            Log Out
-          </button>
+        <div class="profile">
+          <div class="avatar" id="userAvatar">A</div>
+          <div style="min-width:0; flex:1;">
+            <div class="profile-email" id="userEmail">Checking account...</div>
+            <div class="profile-role">Administrator</div>
+          </div>
+          <button class="logout-button" id="logoutButton">Log out</button>
         </div>
       </header>
 
-      <main>
-        <section class="welcome">
-          <div>
-            <div class="eyebrow">PLMUNTRACK WORKSPACE</div>
-            <h1>Welcome back! 👋</h1>
-            <p>
-              Manage registration, QR codes, and campus scanning
-              from one organized workspace.
-            </p>
+      <div id="pageMessage" class="message info" role="status">
+        Checking system connection...
+      </div>
+
+      <div class="section-heading">
+        <h2>Today's Statistics</h2>
+        <div>
+          <span class="date-label" id="todayDate"></span>
+          &nbsp;
+          <button class="refresh-button" id="refreshButton">↻ Refresh</button>
+        </div>
+      </div>
+
+      <section class="stats">
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Total Registered People</span>
+            <span class="stat-icon">👥</span>
           </div>
-          <div class="date-chip" id="todayDate">Loading date…</div>
+          <div class="stat-value" id="totalPeople">—</div>
+          <div class="stat-foot">Students and personnel in the database</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Time-In Today</span>
+            <span class="stat-icon">🟢</span>
+          </div>
+          <div class="stat-value green" id="totalIn">—</div>
+          <div class="stat-foot">Attendance records with a time-in</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Currently Inside</span>
+            <span class="stat-icon">🏫</span>
+          </div>
+          <div class="stat-value cyan" id="inside">—</div>
+          <div class="stat-foot">People with time-in and no time-out</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Time-Out Today</span>
+            <span class="stat-icon">🚪</span>
+          </div>
+          <div class="stat-value orange" id="totalOut">—</div>
+          <div class="stat-foot">Completed attendance departures</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Total Visitors Today</span>
+            <span class="stat-icon">🪪</span>
+          </div>
+          <div class="stat-value" id="visitorsToday">—</div>
+          <div class="stat-foot">Visitor registrations for today</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Visitors Currently Inside</span>
+            <span class="stat-icon">🚶</span>
+          </div>
+          <div class="stat-value cyan" id="visitorCurrentlyInside">—</div>
+          <div class="stat-foot">Visitors who have not checked out</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Pending Visitors</span>
+            <span class="stat-icon">⏳</span>
+          </div>
+          <div class="stat-value orange" id="pendingVisitors">—</div>
+          <div class="stat-foot">Visitors waiting for authorization</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-title">Authorized Visitors</span>
+            <span class="stat-icon">✅</span>
+          </div>
+          <div class="stat-value green" id="authorizedVisitors">—</div>
+          <div class="stat-foot">Visitors approved in the system</div>
+        </article>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel">
+          <h2>Quick Access</h2>
+          <p class="panel-description">
+            Open the main PLMunTrack system features.
+          </p>
+
+          <div class="quick-links">
+            <a class="quick-link" href="register.html">
+              <div class="quick-icon">👤</div>
+              <h3>Registration</h3>
+              <p>Register students and visitors.</p>
+            </a>
+
+            <a class="quick-link" href="student-scanner.html">
+              <div class="quick-icon">📷</div>
+              <h3>Student Scanner</h3>
+              <p>Scan student QR codes for attendance.</p>
+            </a>
+
+            <a class="quick-link" href="generator.html">
+              <div class="quick-icon">▦</div>
+              <h3>QR Generator</h3>
+              <p>Generate a daily student QR code.</p>
+            </a>
+
+            <a class="quick-link" href="guard-scanner.html">
+              <div class="quick-icon">🛡️</div>
+              <h3>Guard Station</h3>
+              <p>Manage campus entry and exit scans.</p>
+            </a>
+          </div>
         </section>
 
-        <div class="section-title">Overview</div>
+        <section class="panel">
+          <h2>System Status</h2>
+          <p class="panel-description">
+            Current authentication and database connection status.
+          </p>
 
-        <section class="stats" aria-label="Dashboard overview">
-          <article class="stat">
-            <span class="stat-icon">📝</span>
-            <div class="stat-label">Registration</div>
-            <div class="stat-value">Ready</div>
-            <div class="stat-foot">Open the registration page</div>
-          </article>
+          <div class="status-row">
+            <span>Firebase Authentication</span>
+            <span class="status-badge warning" id="authStatus">Checking</span>
+          </div>
 
-          <article class="stat">
-            <span class="stat-icon">📷</span>
-            <div class="stat-label">QR Scanner</div>
-            <div class="stat-value">Ready</div>
-            <div class="stat-foot">Access the scanner tools</div>
-          </article>
+          <div class="status-row">
+            <span>Google Apps Script</span>
+            <span class="status-badge warning" id="apiStatus">Checking</span>
+          </div>
 
-          <article class="stat">
-            <span class="stat-icon">🛡️</span>
-            <div class="stat-label">Access Control</div>
-            <div class="stat-value">Sign-in</div>
-            <div class="stat-foot">Firebase account required for this page</div>
-          </article>
+          <div class="status-row">
+            <span>Dashboard Statistics</span>
+            <span class="status-badge warning" id="statsStatus">Loading</span>
+          </div>
+
+          <div class="status-row">
+            <span>Last Updated</span>
+            <span id="lastUpdated" class="date-label">Not yet updated</span>
+          </div>
         </section>
+      </div>
 
-        <div class="section-title">Quick Access</div>
-
-        <section class="tools">
-          <article class="tool-card">
-            <div class="tool-top">
-              <div class="tool-icon">📝</div>
-              <h2>Registration</h2>
-            </div>
-            <p>
-              Open the registration page for student and visitor
-              registration workflows.
-            </p>
-            <a href="register.html">Open Registration →</a>
-          </article>
-
-          <article class="tool-card">
-            <div class="tool-top">
-              <div class="tool-icon">📱</div>
-              <h2>Student QR Scanner</h2>
-            </div>
-            <p>
-              Open the student scanner page to scan QR codes using
-              a supported device and camera.
-            </p>
-            <a href="student-scanner.html">Open Student Scanner →</a>
-          </article>
-
-          <article class="tool-card">
-            <div class="tool-top">
-              <div class="tool-icon">▦</div>
-              <h2>My QR Code</h2>
-            </div>
-            <p>
-              Open the existing QR generator page to access your
-              current QR code workflow.
-            </p>
-            <a href="generator.html">Open QR Generator →</a>
-          </article>
-
-          <article class="tool-card">
-            <div class="tool-top">
-              <div class="tool-icon">🛡️</div>
-              <h2>Guard Station</h2>
-            </div>
-            <p>
-              Open the campus entrance scanner. Access should be
-              restricted to authorized guard accounts.
-            </p>
-            <a href="guard-scanner.html">Open Guard Scanner →</a>
-          </article>
-        </section>
-
-        <div id="pageMessage" role="status" aria-live="polite"></div>
-      </main>
-
-      <footer>
-        PLMunTrack © 2026 · Pamantasan ng Lungsod ng Muntinlupa
+      <footer class="footer">
+        PLMunTrack — QR Code-Based Visitor Monitoring and Attendance Management System
+        with Real-Time Analytics for Pamantasan ng Lungsod ng Muntinlupa.
       </footer>
-    </div>
+    </main>
   </div>
 
   <script type="module">
-    import {
-      initializeApp,
-      getApp,
-      getApps
-    } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { initializeApp, getApp, getApps }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
     import {
       getAuth,
@@ -542,6 +708,7 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
+    // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAKAPZZdsY6mkkcCT8LSFpHAYMy3TEDRog",
       authDomain: "plmuntrack.firebaseapp.com",
@@ -551,59 +718,188 @@
       appId: "1:156534335192:web:35d43ff8446786840919ad"
     };
 
+    // Google Apps Script Web App URL
+    const PLMUNTRACK_API =
+      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
     const app = getApps().length
       ? getApp()
       : initializeApp(firebaseConfig);
 
     const auth = getAuth(app);
-    const accountInfo = document.getElementById("accountInfo");
-    const pageMessage = document.getElementById("pageMessage");
-    const logoutButton = document.getElementById("logoutButton");
 
-    document.getElementById("todayDate").textContent =
-      new Intl.DateTimeFormat("en-PH", {
+    const $ = (id) => document.getElementById(id);
+
+    function setMessage(message, type = "info") {
+      const element = $("pageMessage");
+      element.textContent = message;
+      element.className = `message show ${type}`;
+    }
+
+    function setBadge(id, text, type = "") {
+      const element = $(id);
+      element.textContent = text;
+      element.className = "status-badge";
+
+      if (type) {
+        element.classList.add(type);
+      }
+    }
+
+    function formatNumber(value) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "0";
+      }
+
+      return number.toLocaleString("en-US");
+    }
+
+    function updateDate() {
+      $("todayDate").textContent = new Intl.DateTimeFormat("en-PH", {
+        timeZone: "Asia/Manila",
         weekday: "short",
         year: "numeric",
         month: "short",
         day: "numeric"
       }).format(new Date());
+    }
 
-    let authResolved = false;
+    function readNumber(data, keys) {
+      for (const key of keys) {
+        if (data[key] !== undefined && data[key] !== null &&
+            data[key] !== "") {
+          const value = Number(data[key]);
 
-    onAuthStateChanged(auth, (user) => {
-      authResolved = true;
+          if (Number.isFinite(value)) {
+            return value;
+          }
+        }
+      }
 
+      return 0;
+    }
+
+    async function loadDashboard() {
+      $("refreshButton").disabled = true;
+      $("refreshButton").textContent = "Loading...";
+      setBadge("statsStatus", "Loading", "warning");
+
+      try {
+        const response = await fetch(
+          `${PLMUNTRACK_API}?action=dashboard`,
+          { method: "GET", cache: "no-store" }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Server returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.success === false || data.error) {
+          throw new Error(data.error || "The API returned an error.");
+        }
+
+        // Map values returned by the Apps Script dashboard endpoint.
+        $("totalPeople").textContent = formatNumber(
+          readNumber(data, ["totalPeople", "total_people", "totalRegisteredPeople"])
+        );
+
+        $("totalIn").textContent = formatNumber(
+          readNumber(data, ["totalIn", "total_in", "timeInToday"])
+        );
+
+        $("totalOut").textContent = formatNumber(
+          readNumber(data, ["totalOut", "total_out", "timeOutToday"])
+        );
+
+        $("inside").textContent = formatNumber(
+          readNumber(data, ["inside", "currentlyInside", "currently_inside"])
+        );
+
+        $("visitorsToday").textContent = formatNumber(
+          readNumber(data, ["visitorsToday", "visitors_today", "totalVisitors"])
+        );
+
+        $("visitorCurrentlyInside").textContent = formatNumber(
+          readNumber(data, [
+            "visitorCurrentlyInside",
+            "visitor_currently_inside"
+          ])
+        );
+
+        $("pendingVisitors").textContent = formatNumber(
+          readNumber(data, ["pendingVisitors", "pending_visitors"])
+        );
+
+        $("authorizedVisitors").textContent = formatNumber(
+          readNumber(data, ["authorizedVisitors", "authorized_visitors"])
+        );
+
+        setBadge("apiStatus", "Connected");
+        setBadge("statsStatus", "Updated");
+        $("lastUpdated").textContent = new Intl.DateTimeFormat("en-PH", {
+          timeZone: "Asia/Manila",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit"
+        }).format(new Date());
+
+        setMessage(
+          "Dashboard statistics loaded from the PLMunTrack API.",
+          "success"
+        );
+      } catch (error) {
+        console.error("Dashboard loading error:", error);
+
+        setBadge("apiStatus", "Connection issue", "error");
+        setBadge("statsStatus", "Unavailable", "error");
+
+        setMessage(
+          "Hindi makuha ang live statistics. Pakitingnan kung tama ang Apps Script Web App URL, kung deployed ito bilang Web App, at kung may action=dashboard ang Code.gs. Details: " +
+          error.message,
+          "error"
+        );
+      } finally {
+        $("refreshButton").disabled = false;
+        $("refreshButton").textContent = "↻ Refresh";
+      }
+    }
+
+    // Display the signed-in Firebase account.
+    onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.replace("login.html");
         return;
       }
 
-      accountInfo.textContent = user.email || "Signed-in user";
-      document.body.classList.remove("loading");
-    }, (error) => {
-      console.error("Authentication state check failed:", error.code);
+      const email = user.email || "Signed-in administrator";
 
-      if (!authResolved) {
-        pageMessage.textContent =
-          "Unable to verify your login. Please refresh the page or sign in again.";
-        document.body.classList.remove("loading");
-      }
+      $("userEmail").textContent = email;
+      $("userAvatar").textContent = email.charAt(0).toUpperCase();
+      setBadge("authStatus", "Verified");
+
+      updateDate();
+      await loadDashboard();
     });
 
-    logoutButton.addEventListener("click", async () => {
-      logoutButton.disabled = true;
-      pageMessage.textContent = "";
+    $("refreshButton").addEventListener("click", loadDashboard);
+
+    $("logoutButton").addEventListener("click", async () => {
+      $("logoutButton").disabled = true;
 
       try {
         await signOut(auth);
         window.location.replace("login.html");
       } catch (error) {
-        console.error("Sign-out failed:", error.code);
-        pageMessage.textContent =
-          "Unable to log out. Please check your connection and try again.";
-        logoutButton.disabled = false;
+        console.error("Logout error:", error);
+        setMessage("Hindi matagumpay ang pag-log out. Subukan ulit.", "error");
+        $("logoutButton").disabled = false;
       }
     });
   </script>
 </body>
 </html>
+
