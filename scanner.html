@@ -17,32 +17,19 @@
       --bg:#080d1b; --panel:#111a2d; --panel2:#172239;
       --border:rgba(148,163,184,.16); --text:#f1f5f9;
       --muted:#94a3b8; --primary:#6366f1; --cyan:#06b6d4;
-      --green:#34d399; --red:#fb7185; --amber:#fbbf24;
+      --green:#34d399; --red:#fb7185;
     }
     * { box-sizing:border-box; margin:0; padding:0; }
     body {
       min-height:100vh; background:var(--bg); color:var(--text);
-      font-family:Inter,sans-serif; overflow-x:hidden;
+      font-family:Inter,sans-serif;
     }
     a { text-decoration:none; color:inherit; }
     button,input { font:inherit; }
-    .ambient {
-      position:fixed; z-index:-1; width:400px; height:400px;
-      border-radius:50%; filter:blur(110px); opacity:.14;
-      pointer-events:none; animation:float 12s ease-in-out infinite alternate;
-    }
-    .ambient.one { top:-160px; left:-130px; background:#6366f1; }
-    .ambient.two { right:-170px; bottom:-100px; background:#06b6d4; }
-    @keyframes float { to { transform:translate(55px,40px); } }
-    @keyframes appear {
-      from { opacity:0; transform:translateY(15px); }
-      to { opacity:1; transform:translateY(0); }
-    }
     .topbar {
-      position:sticky; top:0; z-index:10; display:flex; align-items:center;
-      justify-content:space-between; gap:18px; padding:15px 6%;
-      background:rgba(8,13,27,.85); backdrop-filter:blur(18px);
-      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:15px; padding:15px 6%;
+      background:#0b1222; border-bottom:1px solid var(--border);
     }
     .brand { display:flex; align-items:center; gap:12px; font-weight:800; }
     .brand-icon {
@@ -50,45 +37,37 @@
       border-radius:13px; background:linear-gradient(135deg,var(--primary),var(--cyan));
     }
     .brand small {
-      display:block; margin-top:4px; font-size:9px; letter-spacing:1.4px;
-      color:var(--muted); font-weight:500;
+      display:block; margin-top:4px; font-size:9px;
+      letter-spacing:1.4px; color:var(--muted);
     }
     nav { display:flex; flex-wrap:wrap; gap:7px; }
-    nav a {
-      padding:10px 12px; border-radius:9px; color:var(--muted);
-      font-size:11px; font-weight:700;
-    }
+    nav a { padding:10px 12px; border-radius:9px; color:var(--muted); font-size:11px; font-weight:700; }
     nav a:hover,nav a.active { background:var(--panel2); color:white; }
     .container { width:min(1100px,90%); margin:auto; padding:42px 0 65px; }
-    .heading { margin-bottom:26px; animation:appear .6s ease both; }
-    .eyebrow {
-      display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
-      border:1px solid rgba(6,182,212,.25); border-radius:30px;
-      color:#67e8f9; background:rgba(6,182,212,.07);
-      font-size:10px; font-weight:800; letter-spacing:1px;
-    }
-    h1 { margin:18px 0 10px; font-size:clamp(29px,5vw,43px); letter-spacing:-1.5px; }
+    h1 { margin:18px 0 10px; font-size:clamp(29px,5vw,43px); }
     .gradient {
       background:linear-gradient(100deg,#818cf8,#22d3ee);
       -webkit-background-clip:text; background-clip:text; color:transparent;
     }
-    .heading p { max-width:700px; color:var(--muted); font-size:13px; line-height:1.8; }
-    .layout { display:grid; grid-template-columns:1.05fr .95fr; gap:20px; align-items:start; }
+    .heading { margin-bottom:26px; }
+    .eyebrow {
+      display:inline-block; padding:8px 12px; border-radius:30px;
+      color:#67e8f9; background:rgba(6,182,212,.08);
+      border:1px solid rgba(6,182,212,.25);
+      font-size:10px; font-weight:800; letter-spacing:1px;
+    }
+    .heading p,.desc { color:var(--muted); font-size:12px; line-height:1.8; }
+    .layout { display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start; }
     .panel {
       min-width:0; padding:24px; border:1px solid var(--border);
-      border-radius:19px; background:rgba(17,26,45,.92);
-      animation:appear .7s ease both;
+      border-radius:19px; background:var(--panel);
     }
     .panel h2 { display:flex; align-items:center; gap:10px; margin-bottom:8px; font-size:16px; }
-    .desc { margin-bottom:20px; color:var(--muted); font-size:11px; line-height:1.8; }
-    .camera-box {
-      min-height:280px; overflow:hidden; border:1px solid var(--border);
-      border-radius:15px; background:#070b14;
-    }
-    #reader { width:100%; border:0!important; }
+    .desc { margin-bottom:20px; }
+    .camera-box { min-height:250px; overflow:hidden; border:1px solid var(--border); border-radius:15px; background:#070b14; }
+    #reader { width:100%; }
     #reader video { border-radius:12px; object-fit:cover; }
-    #reader img { max-width:100%; }
-    #reader__dashboard { padding:12px!important; color:var(--text)!important; }
+    #reader__dashboard { padding:12px!important; color:white!important; }
     #reader__dashboard button {
       margin:5px; padding:10px 13px; border:0; border-radius:9px;
       background:#4f46e5; color:white; cursor:pointer;
@@ -97,30 +76,27 @@
       max-width:100%; padding:9px; border-radius:8px;
       background:#172239; color:white; border:1px solid var(--border);
     }
-    #reader__status_span { color:#cbd5e1!important; }
     .camera-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px; }
     .btn {
-      display:inline-flex; align-items:center; justify-content:center; gap:9px;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
       padding:12px 15px; border:1px solid var(--border); border-radius:10px;
       color:white; font-size:11px; font-weight:800; cursor:pointer;
-      transition:transform .2s,opacity .2s;
     }
-    .btn:hover { transform:translateY(-2px); }
-    .btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
     .primary { background:linear-gradient(120deg,#6366f1,#4f46e5); border:0; }
     .secondary { background:var(--panel2); }
     .field { margin-bottom:15px; }
     label { display:block; margin-bottom:8px; font-size:11px; font-weight:700; color:#dbeafe; }
     input {
-      width:100%; padding:12px 13px; border:1px solid var(--border);
-      border-radius:10px; background:#0b1325; color:white; outline:none; font-size:12px;
+      width:100%; min-width:0; padding:12px 13px;
+      border:1px solid var(--border); border-radius:10px;
+      background:#0b1325; color:white; outline:none; font-size:12px;
     }
-    input:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
-    input::placeholder { color:#64748b; }
+    input:focus { border-color:#818cf8; }
     .manual-row { display:grid; grid-template-columns:1fr auto; gap:9px; }
     .status {
-      display:none; margin-top:15px; padding:12px 13px; border-radius:10px;
-      font-size:11px; line-height:1.7; overflow-wrap:anywhere;
+      display:none; margin-top:15px; padding:12px 13px;
+      border-radius:10px; font-size:11px; line-height:1.7; overflow-wrap:anywhere;
     }
     .status.show { display:block; }
     .status.info { color:#bae6fd; background:rgba(6,182,212,.08); border:1px solid rgba(6,182,212,.2); }
@@ -129,7 +105,7 @@
     .result {
       display:none; margin-top:18px; padding:18px;
       border:1px solid rgba(52,211,153,.22); border-radius:14px;
-      background:rgba(52,211,153,.06); animation:appear .4s ease both;
+      background:rgba(52,211,153,.06);
     }
     .result.show { display:block; }
     .result-head { display:flex; align-items:center; gap:12px; margin-bottom:15px; }
@@ -156,27 +132,20 @@
       padding:22px 6%; border-top:1px solid var(--border);
       color:var(--muted); font-size:10px;
     }
-    footer a:hover { color:white; }
     @media(max-width:800px) {
-      .topbar { align-items:flex-start; flex-direction:column; }
       .layout { grid-template-columns:1fr; }
+      .topbar { align-items:flex-start; flex-direction:column; }
     }
     @media(max-width:480px) {
       .panel { padding:17px; }
-      .camera-actions { grid-template-columns:1fr; }
-      .manual-row { grid-template-columns:1fr; }
+      .camera-actions,.manual-row { grid-template-columns:1fr; }
       .result-row { flex-direction:column; gap:5px; }
       .result-row strong { text-align:left; }
     }
-    @media(prefers-reduced-motion:reduce) {
-      *,*::before,*::after { animation:none!important; transition:none!important; }
-    }
   </style>
 </head>
-<body>
-  <div class="ambient one"></div>
-  <div class="ambient two"></div>
 
+<body>
   <header class="topbar">
     <a href="index.html" class="brand">
       <span class="brand-icon"><i class="fa-solid fa-qrcode"></i></span>
@@ -194,48 +163,37 @@
     <div class="heading">
       <div class="eyebrow"><i class="fa-solid fa-camera"></i> ATTENDANCE SCANNER</div>
       <h1>QR <span class="gradient">Code Scanner</span></h1>
-      <p>
-        Scan a PLMunTrack QR token to send it to Google Apps Script for validation.
-        Attendance results shown below come from the server response.
-      </p>
+      <p>Scan a PLMunTrack QR token to validate it using Google Apps Script.</p>
     </div>
 
     <div class="layout">
       <section class="panel">
         <h2><i class="fa-solid fa-camera" style="color:#a5b4fc"></i> Camera Scanner</h2>
-        <p class="desc">Allow camera access when prompted. Use the manual field if you are testing without a camera.</p>
+        <p class="desc">Allow camera access when prompted. You can also test using the manual token field.</p>
 
-        <div class="camera-box">
-          <div id="reader"></div>
-        </div>
+        <div class="camera-box"><div id="reader"></div></div>
 
         <div class="camera-actions">
-          <button class="btn primary" id="startBtn" type="button">
-            <i class="fa-solid fa-play"></i> Start Camera
-          </button>
-          <button class="btn secondary" id="stopBtn" type="button" disabled>
-            <i class="fa-solid fa-stop"></i> Stop Camera
-          </button>
+          <button class="btn primary" id="startBtn" type="button"><i class="fa-solid fa-play"></i> Start Camera</button>
+          <button class="btn secondary" id="stopBtn" type="button" disabled><i class="fa-solid fa-stop"></i> Stop Camera</button>
         </div>
 
-        <div class="status info show" id="cameraStatus" role="status" aria-live="polite">
-          Camera is stopped. Click Start Camera to begin.
-        </div>
+        <div class="status info show" id="cameraStatus" role="status">Camera is stopped. Click Start Camera to begin.</div>
 
         <div class="tips">
-          <strong><i class="fa-solid fa-lightbulb"></i> Camera tip</strong>
-          Camera access normally requires HTTPS or localhost. Use the deployed Cloudflare Pages website or localhost during development.
+          <strong>Camera tip</strong>
+          Camera access normally requires HTTPS or localhost.
         </div>
       </section>
 
       <section class="panel">
         <h2><i class="fa-solid fa-clipboard-check" style="color:#67e8f9"></i> Scan Result</h2>
-        <p class="desc">The scanner submits the token to the server. Do not type personal information here.</p>
+        <p class="desc">The server validates the token and returns the scan result.</p>
 
         <div class="field">
           <label for="manualToken">QR TOKEN</label>
           <div class="manual-row">
-            <input id="manualToken" type="text" placeholder="Scan a QR or paste its token" autocomplete="off">
+            <input id="manualToken" type="text" placeholder="Paste the exact QR token here" autocomplete="off">
             <button class="btn secondary" id="submitManualBtn" type="button">Submit</button>
           </div>
         </div>
@@ -250,18 +208,17 @@
               <p id="resultSubtitle">Server response received</p>
             </div>
           </div>
-
           <div class="result-row"><span>Name</span><strong id="outName">—</strong></div>
           <div class="result-row"><span>Reference ID</span><strong id="outId">—</strong></div>
           <div class="result-row"><span>Person Type</span><strong id="outType">—</strong></div>
           <div class="result-row"><span>Date</span><strong id="outDate">—</strong></div>
           <div class="result-row"><span>Time</span><strong id="outTime">—</strong></div>
-          <div class="result-row"><span>Attendance Status</span><strong id="outStatus">—</strong></div>
+          <div class="result-row"><span>Attendance / Visit Status</span><strong id="outStatus">—</strong></div>
         </div>
 
         <div class="tips">
           <strong><i class="fa-solid fa-shield-halved"></i> Validation rules</strong>
-          Expired, invalid, or unauthorized visitor tokens should be rejected by the Apps Script server. A displayed result alone does not override server-side validation.
+          Only the server can approve or reject a token. The page displays the server response.
         </div>
       </section>
     </div>
@@ -269,12 +226,12 @@
 
   <footer>
     <span><strong>PLMunTrack</strong> · QR Scanner</span>
-    <span><a href="index.html">Home</a> &nbsp;·&nbsp; <a href="generator.html">QR Generator</a></span>
+    <span><a href="index.html">Home</a> · <a href="generator.html">QR Generator</a></span>
     <span>© <span id="year"></span> PLMunTrack</span>
   </footer>
 
   <script>
-    // Keep this URL matched with the current Apps Script deployment.
+    // Use the current deployed Apps Script URL.
     const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
     const startBtn = document.getElementById("startBtn");
@@ -297,43 +254,50 @@
       element.textContent = message;
     }
 
-    function clearResult() {
-      resultCard.classList.remove("show");
-    }
-
     function getValue(data, keys, fallback = "—") {
+      if (!data || typeof data !== "object") return fallback;
+
       for (const key of keys) {
-        if (data && data[key] !== undefined && data[key] !== null && data[key] !== "") {
+        if (data[key] !== undefined && data[key] !== null && data[key] !== "") {
           return String(data[key]);
         }
       }
-      if (data && data.data && typeof data.data === "object") {
+
+      if (data.data && typeof data.data === "object") {
         for (const key of keys) {
           if (data.data[key] !== undefined && data.data[key] !== null && data.data[key] !== "") {
             return String(data.data[key]);
           }
         }
       }
+
       return fallback;
     }
 
     function displayResult(data) {
       document.getElementById("resultTitle").textContent =
         getValue(data, ["title", "message"], "Scan processed");
+
       document.getElementById("resultSubtitle").textContent =
         getValue(data, ["result", "description"], "Server response received");
+
       document.getElementById("outName").textContent =
-        getValue(data, ["fullName", "Full_Name", "name", "visitorName"]);
+        getValue(data, ["fullName", "Full_Name", "name", "visitorName", "studentName"]);
+
       document.getElementById("outId").textContent =
         getValue(data, ["studentNumber", "Student_Number", "visitorId", "Visitor_ID", "id"]);
+
       document.getElementById("outType").textContent =
-        getValue(data, ["personType", "Person_Type", "type", "person_type"]);
+        getValue(data, ["personType", "Person_Type", "type", "person_type"], "—");
+
       document.getElementById("outDate").textContent =
-        getValue(data, ["date", "Date", "visitDate", "Visit_Date"]);
+        getValue(data, ["date", "Date", "visitDate", "Visit_Date", "Token_Date"]);
+
       document.getElementById("outTime").textContent =
-        getValue(data, ["time", "Time", "timeIn", "Time_In", "timeOut", "Time_Out"]);
+        getValue(data, ["time", "Time", "timeIn", "Time_In", "timeOut", "Time_Out", "scanTime"]);
+
       document.getElementById("outStatus").textContent =
-        getValue(data, ["attendanceStatus", "Status", "status", "action", "attendance"]);
+        getValue(data, ["attendanceStatus", "authorizationStatus", "Authorization_Status", "Status", "status", "action", "attendance"]);
 
       resultCard.classList.add("show");
     }
@@ -342,7 +306,7 @@
       const token = String(rawToken || "").trim();
 
       if (!token) {
-        setStatus(scanStatus, "Please scan a QR code or enter a QR token.", "error");
+        setStatus(scanStatus, "Please scan a QR code or enter its token.", "error");
         return;
       }
 
@@ -357,7 +321,9 @@
       try {
         const url = new URL(API_URL);
         url.searchParams.set("action", "scan");
-        url.searchParams.set("qrToken", token);
+
+        // Apps Script scan action expects the parameter named "token".
+        url.searchParams.set("token", token);
 
         const response = await fetch(url.toString(), {
           method: "GET",
@@ -368,7 +334,18 @@
           throw new Error("Server returned HTTP " + response.status + ".");
         }
 
-        const data = await response.json();
+        const responseText = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(responseText);
+        } catch (_) {
+          throw new Error("The server did not return JSON. Check the Apps Script deployment and doGet response.");
+        }
+
+        if (!data || typeof data !== "object") {
+          throw new Error("The server response was empty or invalid.");
+        }
 
         if (data.success === false || data.error) {
           setStatus(scanStatus, data.message || data.error || "The server rejected this QR token.", "error");
@@ -376,13 +353,13 @@
         }
 
         displayResult(data);
-        setStatus(scanStatus, data.message || "Server response received. Review the attendance result below.", "success");
+        setStatus(scanStatus, data.message || "Server response received. Review the result below.", "success");
         lastScannedToken = token;
         manualToken.value = "";
       } catch (error) {
         setStatus(
           scanStatus,
-          "Could not validate the QR token. " + error.message +
+          "Could not validate the QR token. " + (error.message || "Unknown error") +
           " Check the Apps Script URL, deployment access, and response format.",
           "error"
         );
@@ -393,11 +370,15 @@
       }
     }
 
+    function clearResult() {
+      resultCard.classList.remove("show");
+    }
+
     async function startCamera() {
       if (cameraRunning) return;
 
       if (typeof Html5Qrcode === "undefined") {
-        setStatus(cameraStatus, "The camera library did not load. Check your internet connection and refresh.", "error");
+        setStatus(cameraStatus, "Camera library did not load. Check your internet connection and refresh.", "error");
         return;
       }
 
@@ -411,19 +392,14 @@
           async (decodedText) => {
             if (processing || decodedText === lastScannedToken) return;
 
-            // Pause the camera during validation to avoid duplicate attendance scans.
             try {
-              if (scanner && cameraRunning) {
-                await scanner.pause(true);
-              }
+              if (scanner && cameraRunning) await scanner.pause(true);
             } catch (_) {}
 
             await submitToken(decodedText);
 
             try {
-              if (scanner && cameraRunning) {
-                scanner.resume();
-              }
+              if (scanner && cameraRunning) scanner.resume();
             } catch (_) {}
           },
           () => {}
@@ -477,11 +453,10 @@
     });
 
     window.addEventListener("beforeunload", () => {
-      if (scanner && cameraRunning) {
-        scanner.stop().catch(() => {});
-      }
+      if (scanner && cameraRunning) scanner.stop().catch(() => {});
     });
   </script>
 </body>
 </html>
+
 
