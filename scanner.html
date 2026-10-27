@@ -2,305 +2,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#4f46e5">
-    <meta name="description" content="PLMunTrack QR Attendance and Visitor Scanner">
-    <link rel="manifest" href="/manifest.json">
-    <title>PLMunTrack - QR Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLMunTrack - QR Attendance Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 
-    <style>
-        :root {
-            --bg:#0b1120;--panel:#111c31;--panel2:#17243b;
-            --primary:#6366f1;--cyan:#06b6d4;--text:#f8fafc;
-            --muted:#94a3b8;--border:#293851;
-        }
-        *{box-sizing:border-box}
-        body{margin:0;padding:24px 14px;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-        .container{width:100%;max-width:850px;margin:auto}
-        .header{text-align:center;margin-bottom:25px}
-        .logo{display:inline-block;padding:10px 16px;border-radius:12px;background:#202b55;color:#a5b4fc;font-weight:bold;margin-bottom:12px}
-        h1{margin:5px 0 10px;font-size:30px}
-        h2{font-size:19px;margin-top:0}
-        .subtitle,.hint,.footer{color:var(--muted)}
-        .subtitle{font-size:14px}
-        .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:20px}
-        #reader{width:100%;max-width:500px;margin:auto;overflow:hidden;border-radius:12px;background:#fff}
-        .button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
-        button{border:0;border-radius:10px;padding:12px 16px;color:white;background:var(--primary);cursor:pointer;font-weight:bold;flex:1}
-        button.secondary{background:var(--panel2);border:1px solid var(--border)}
-        button:disabled{opacity:.5;cursor:not-allowed}
-        .hint{font-size:13px;line-height:1.6}
-        .message{margin-top:15px;padding:12px;border-radius:10px;background:var(--panel2);color:#cbd5e1;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
-        .message.success{color:#bbf7d0;border:1px solid #166534;background:#10291f}
-        .message.error{color:#fecaca;border:1px solid #7f1d1d;background:#301619}
-        .result{display:none}
-        .result.show{display:block}
-        .result-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
-        .result-title h2{margin:0}
-        .status-badge{padding:7px 11px;border-radius:20px;font-size:12px;font-weight:bold;background:#164e35;color:#bbf7d0}
-        .status-badge.error{background:#511b22;color:#fecaca}
-        .details{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
-        .detail{background:#0b1425;border:1px solid var(--border);padding:13px;border-radius:10px;min-width:0}
-        .detail-label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
-        .detail-value{display:block;font-size:15px;font-weight:bold;overflow-wrap:anywhere}
-        .attendance-status{color:#67e8f9}
-        .install-section{display:none;margin-bottom:20px}
-        .install-section.show{display:block}
-        .footer{text-align:center;font-size:12px;margin-top:25px}
-        @media(max-width:480px){h1{font-size:25px}.card{padding:15px}}
-    </style>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #1e293b;
+      border-radius: 16px;
+    }
+
+    h1, h2 { text-align: center; }
+    h1 { color: #818cf8; }
+    .hint { color: #cbd5e1; line-height: 1.6; }
+
+    #reader {
+      width: 100%;
+      margin: 20px auto;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 18px;
+      padding: 16px;
+      background: #0f172a;
+      border-radius: 10px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .success { color: #4ade80; }
+    .error { color: #fca5a5; }
+    .label { color: #cbd5e1; }
+  </style>
 </head>
 
 <body>
-<div class="container">
-    <header class="header">
-        <div class="logo">PLMunTrack</div>
-        <h1>QR Code Scanner</h1>
-        <div class="subtitle">Visitor Monitoring and Attendance Management System</div>
-    </header>
+  <main class="container">
+    <h1>PLMunTrack</h1>
+    <h2>QR Attendance Scanner</h2>
 
-    <section class="card install-section" id="installSection">
-        <h2>Install PLMunTrack</h2>
-        <p class="hint">Install PLMunTrack on this device for quick access.</p>
-        <button id="installBtn" type="button">Install App</button>
-    </section>
+    <p class="hint">
+      I-scan ang iyong valid QR code para sa attendance.
+      Ipapakita rito ang resulta ng scan.
+    </p>
 
-    <section class="card">
-        <h2>📷 Automatic QR Scanner</h2>
-        <p class="hint">Start the camera and scan a valid PLMunTrack QR code. The token will be submitted automatically.</p>
-        <div id="reader"></div>
+    <div id="reader"></div>
+    <button id="startBtn" type="button">Start Scanner</button>
 
-        <div class="button-row">
-            <button id="startBtn" type="button">Start Camera</button>
-            <button id="stopBtn" class="secondary" type="button" disabled>Stop Camera</button>
-        </div>
+    <div id="result" aria-live="polite">
+      Handa nang mag-scan.
+    </div>
+  </main>
 
-        <div class="message" id="cameraMessage">Click Start Camera to begin scanning.</div>
-    </section>
+  <script>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
-    <section class="card result" id="resultCard">
-        <div class="result-title">
-            <h2>Scan Details</h2>
-            <span id="resultBadge" class="status-badge">SUCCESS</span>
-        </div>
-        <div class="details">
-            <div class="detail"><span class="detail-label">Name</span><span class="detail-value" id="personName">—</span></div>
-            <div class="detail"><span class="detail-label">Student / Visitor ID</span><span class="detail-value" id="personId">—</span></div>
-            <div class="detail"><span class="detail-label">Person Type</span><span class="detail-value" id="personType">—</span></div>
-            <div class="detail"><span class="detail-label">Date</span><span class="detail-value" id="scanDate">—</span></div>
-            <div class="detail"><span class="detail-label">Time</span><span class="detail-value" id="scanTime">—</span></div>
-            <div class="detail"><span class="detail-label">Attendance / Visit Status</span><span class="detail-value attendance-status" id="attendanceStatus">—</span></div>
-        </div>
-        <div class="message" id="resultMessage"></div>
-    </section>
-
-    <footer class="footer">PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa</footer>
-</div>
-
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+    const resultBox = document.getElementById("result");
+    const startBtn = document.getElementById("startBtn");
 
     let scanner = null;
-    let cameraRunning = false;
     let processing = false;
-    let lastScannedToken = "";
-    let lastScanAt = 0;
-    let installPrompt = null;
+    let scannerRunning = false;
 
-    const cameraMessage = document.getElementById("cameraMessage");
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
-
-    function setMessage(element, message, type = "") {
-        element.textContent = message;
-        element.className = "message" + (type ? " " + type : "");
+    function showMessage(message, type = "") {
+      resultBox.className = type;
+      resultBox.textContent = message;
     }
 
-    function firstValue(data, keys, fallback = "—") {
-        for (const key of keys) {
-            if (data && data[key] !== undefined && data[key] !== null &&
-                String(data[key]).trim() !== "") {
-                return String(data[key]);
-            }
+    function showAttendance(data) {
+      resultBox.className = "success";
+      resultBox.replaceChildren();
+
+      const heading = document.createElement("h3");
+      heading.textContent = data.status || "SCAN SUCCESSFUL";
+      resultBox.appendChild(heading);
+
+      const fields = [
+        ["Name", data.fullName || data.name],
+        ["ID", data.studentNumber || data.visitorId],
+        ["Type", data.personType || data.type],
+        ["Date", data.date || data.visitDate],
+        ["Time", data.time],
+        ["Attendance", data.status],
+        ["Message", data.message]
+      ];
+
+      fields.forEach(([label, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          const line = document.createElement("p");
+          const strong = document.createElement("strong");
+          strong.textContent = label + ": ";
+          line.append(strong, document.createTextNode(String(value)));
+          resultBox.appendChild(line);
         }
-        return fallback;
+      });
     }
 
-    function showResult(data) {
-        document.getElementById("personName").textContent =
-            firstValue(data, ["fullName", "Full_Name", "name", "visitorName", "studentName"]);
-        document.getElementById("personId").textContent =
-            firstValue(data, ["studentNumber", "Student_Number", "visitorId", "Visitor_ID", "id"]);
-        document.getElementById("personType").textContent =
-            firstValue(data, ["personType", "Person_Type", "type", "person_type"]);
-        document.getElementById("scanDate").textContent =
-            firstValue(data, ["date", "Date", "visitDate", "Visit_Date", "Token_Date"]);
-        document.getElementById("scanTime").textContent =
-            firstValue(data, ["time", "Time", "scanTime", "timeIn", "Time_In", "timeOut", "Time_Out"]);
-        document.getElementById("attendanceStatus").textContent =
-            firstValue(data, ["status", "Status", "attendanceStatus", "action", "visitStatus"]);
-        document.getElementById("resultMessage").textContent =
-            firstValue(data, ["message", "Message"], "Scan completed.");
+    async function verifyQR(qrText) {
+      if (processing) return;
+      processing = true;
 
-        const badge = document.getElementById("resultBadge");
-        badge.textContent = "SUCCESS";
-        badge.className = "status-badge";
-        document.getElementById("resultCard").classList.add("show");
+      showMessage("QR detected. Checking registration and recording attendance...");
+
+      try {
+        const url = API_URL + "?action=scan&token=" +
+          encodeURIComponent(qrText);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error("Server returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          showAttendance(data);
+        } else {
+          showMessage(
+            data.message || "QR verification failed.",
+            "error"
+          );
+        }
+      } catch (error) {
+        showMessage(
+          "Hindi makakonekta sa server. I-check ang Apps Script deployment at scan action. " +
+          error.message,
+          "error"
+        );
+      } finally {
+        processing = false;
+        startBtn.textContent = "Scan Again";
+        startBtn.disabled = false;
+      }
     }
 
-    function showError(message) {
-        ["personName", "personId", "personType", "scanDate", "scanTime"]
-            .forEach(id => document.getElementById(id).textContent = "—");
-        document.getElementById("attendanceStatus").textContent = "FAILED";
-        document.getElementById("resultMessage").textContent = message;
+    startBtn.addEventListener("click", async () => {
+      if (scannerRunning) return;
 
-        const badge = document.getElementById("resultBadge");
-        badge.textContent = "ERROR";
-        badge.className = "status-badge error";
-        document.getElementById("resultCard").classList.add("show");
-    }
+      if (typeof Html5Qrcode === "undefined") {
+        showMessage("Hindi ma-load ang QR scanner library. Check your internet connection.", "error");
+        return;
+      }
 
-    async function submitToken(rawToken) {
-        const token = String(rawToken || "").trim();
-        if (!token || processing) return;
+      startBtn.disabled = true;
 
-        processing = true;
-        setMessage(cameraMessage, "QR detected. Submitting attendance...");
+      try {
+        if (!scanner) {
+          scanner = new Html5Qrcode("reader");
+        }
 
-        try {
-            const url = new URL(API_URL);
-            url.searchParams.set("action", "scan");
-            url.searchParams.set("token", token);
-            url.searchParams.set("_", String(Date.now()));
+        const cameras = await Html5Qrcode.getCameras();
 
-            const response = await fetch(url.toString(), {
-                method: "GET",
-                redirect: "follow",
-                cache: "no-store"
-            });
+        if (!cameras.length) {
+          throw new Error("Walang camera na nakita.");
+        }
 
-            if (!response.ok) throw new Error("Server response: HTTP " + response.status);
+        const camera = cameras[0];
 
-            const text = await response.text();
-            let data;
+        await scanner.start(
+          camera.id,
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          async (decodedText) => {
+            if (processing) return;
+
             try {
-                data = JSON.parse(text);
-            } catch (_) {
-                throw new Error("The server did not return JSON. Check the Apps Script deployment URL.");
+              await scanner.stop();
+              scannerRunning = false;
+              await verifyQR(decodedText);
+            } catch (error) {
+              scannerRunning = false;
+              showMessage("Hindi maihinto ang scanner nang maayos.", "error");
             }
+          },
+          () => {}
+        );
 
-            if (data.success !== true) {
-                throw new Error(data.message || data.error || "The QR token was not accepted.");
-            }
+        scannerRunning = true;
+        showMessage("Camera is on. Itapat ang QR code sa scan box.");
+        startBtn.textContent = "Scanner Running";
+        startBtn.disabled = false;
 
-            lastScannedToken = token;
-            lastScanAt = Date.now();
-            showResult(data);
-
-            const status = firstValue(data, ["status", "Status"], "Success");
-            const name = firstValue(data, ["fullName", "Full_Name", "name"], "Record");
-            setMessage(cameraMessage, name + " — " + status + ". Attendance submitted.", "success");
-
-        } catch (error) {
-            const message = error.message || "Unable to process this QR token.";
-            setMessage(cameraMessage, message, "error");
-            showError(message);
-        } finally {
-            processing = false;
-        }
-    }
-
-    async function startCamera() {
-        if (cameraRunning) return;
-
-        try {
-            if (!window.isSecureContext) {
-                throw new Error("Camera access requires HTTPS. Open the deployed PLMunTrack website.");
-            }
-
-            if (!scanner) scanner = new Html5Qrcode("reader");
-            setMessage(cameraMessage, "Starting camera...");
-
-            await scanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
-                async decodedText => {
-                    if (processing) return;
-                    if (decodedText === lastScannedToken && Date.now() - lastScanAt < 3000) return;
-
-                    try {
-                        if (scanner && cameraRunning) await scanner.pause(true);
-                    } catch (_) {}
-
-                    await submitToken(decodedText);
-
-                    try {
-                        if (scanner && cameraRunning) scanner.resume();
-                    } catch (_) {}
-                },
-                () => {}
-            );
-
-            cameraRunning = true;
-            startBtn.disabled = true;
-            stopBtn.disabled = false;
-            setMessage(cameraMessage, "Camera is running. Point it at a QR code.");
-        } catch (error) {
-            cameraRunning = false;
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            setMessage(cameraMessage, error.message || "Cannot start camera. Allow camera permission.", "error");
-        }
-    }
-
-    async function stopCamera() {
-        if (!scanner || !cameraRunning) return;
-        try {
-            await scanner.stop();
-            cameraRunning = false;
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            setMessage(cameraMessage, "Camera stopped. Start it again to scan.");
-        } catch (_) {
-            setMessage(cameraMessage, "Unable to stop the camera.", "error");
-        }
-    }
-
-    startBtn.addEventListener("click", startCamera);
-    stopBtn.addEventListener("click", stopCamera);
-
-    window.addEventListener("beforeinstallprompt", event => {
-        event.preventDefault();
-        installPrompt = event;
-        document.getElementById("installSection").classList.add("show");
+      } catch (error) {
+        scannerRunning = false;
+        showMessage(
+          "Hindi mabuksan ang camera. Payagan ang camera access at subukan muli.",
+          "error"
+        );
+        startBtn.textContent = "Start Scanner";
+        startBtn.disabled = false;
+      }
     });
-
-    document.getElementById("installBtn").addEventListener("click", async () => {
-        if (!installPrompt) {
-            setMessage(cameraMessage, "Open your browser menu and look for Install app or Add to Home screen.");
-            return;
-        }
-        installPrompt.prompt();
-        await installPrompt.userChoice;
-        installPrompt = null;
-        document.getElementById("installSection").classList.remove("show");
-    });
-
-    window.addEventListener("appinstalled", () => {
-        document.getElementById("installSection").classList.remove("show");
-    });
-
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-            navigator.serviceWorker.register("/service-worker.js")
-                .then(() => console.log("PLMunTrack service worker registered."))
-                .catch(error => console.error("Service worker registration failed:", error));
-        });
-    }
-</script>
+  </script>
 </body>
 </html>
-
-
