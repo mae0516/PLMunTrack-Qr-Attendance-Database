@@ -4,379 +4,115 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PLMunTrack - Guard Scanner</title>
-
-  <script src="https://unpkg.com/html5-qrcode"></script>
-
+  <title>PLMunTrack | Login</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+      margin: 0; min-height: 100vh; display: flex;
+      align-items: center; justify-content: center; padding: 20px;
+      font-family: Arial, sans-serif; color: #f8fafc; background: #0b1120;
     }
-
-    .container {
-      max-width: 650px;
-      margin: 0 auto;
+    .login-card {
+      width: 100%; max-width: 410px; padding: 32px;
+      border: 1px solid #293851; border-radius: 20px;
+      background: #111c31; box-shadow: 0 20px 50px #0004;
     }
-
-    .card {
-      background: #1e293b;
-      padding: 22px;
-      margin-bottom: 18px;
-      border-radius: 14px;
-      border: 1px solid #334155;
+    .logo {
+      width: 58px; height: 58px; display: grid; place-items: center;
+      margin: 0 auto 18px; border-radius: 16px;
+      background: #3730a3; font-size: 25px; font-weight: bold;
     }
-
-    h1, h2 {
-      margin-top: 0;
-    }
-
-    h1 {
-      color: #818cf8;
-      font-size: 26px;
-    }
-
-    p {
-      color: #cbd5e1;
-      line-height: 1.5;
-    }
-
-    #reader {
-      width: 100%;
-      overflow: hidden;
-      border-radius: 10px;
-    }
-
+    h1 { margin: 0; text-align: center; font-size: 27px; }
+    .subtitle { margin: 10px 0 28px; color: #94a3b8; text-align: center; font-size: 14px; line-height: 1.6; }
+    label { display: block; margin: 16px 0 8px; font-size: 14px; color: #cbd5e1; }
     input {
-      width: 100%;
-      padding: 13px;
-      margin: 8px 0 12px;
-      border-radius: 8px;
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: white;
-      font-size: 15px;
+      width: 100%; padding: 13px; border: 1px solid #334155;
+      border-radius: 10px; background: #0b1425; color: white; font-size: 15px;
     }
-
     button {
-      width: 100%;
-      padding: 13px;
-      margin: 5px 0;
-      border: none;
-      border-radius: 8px;
-      background: #4f46e5;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
+      width: 100%; margin-top: 23px; padding: 14px; border: 0;
+      border-radius: 10px; background: #6366f1; color: white;
+      font-size: 15px; font-weight: bold; cursor: pointer;
     }
-
-    button:hover {
-      background: #4338ca;
-    }
-
-    button.secondary {
-      background: #475569;
-    }
-
-    .result-row {
-      padding: 12px 0;
-      border-bottom: 1px solid #334155;
-      overflow-wrap: anywhere;
-    }
-
-    .result-row:last-child {
-      border-bottom: none;
-    }
-
-    .result-label {
-      color: #94a3b8;
-      display: block;
-      font-size: 13px;
-      margin-bottom: 5px;
-    }
-
-    .result-value {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    #message {
-      padding: 12px;
-      border-radius: 8px;
-      background: #334155;
-      margin-bottom: 14px;
-      overflow-wrap: anywhere;
-    }
-
-    .success {
-      color: #86efac;
-    }
-
-    .error {
-      color: #fca5a5;
-    }
-
-    .warning {
-      color: #fde68a;
-    }
-
-    .small {
-      font-size: 12px;
-      color: #94a3b8;
-    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .register-link { margin-top: 22px; color: #94a3b8; text-align: center; font-size: 14px; }
+    a { color: #67e8f9; text-decoration: none; }
+    #message { margin-top: 18px; font-size: 13px; line-height: 1.5; text-align: center; }
   </style>
 </head>
-
 <body>
-  <main class="container">
-    <section class="card">
-      <h1>PLMunTrack</h1>
-      <h2>Guard Station Scanner</h2>
-      <p>
-        I-scan ang registered student o authorized visitor QR
-        upang maitala ang attendance.
-      </p>
-      <div id="message" role="status" aria-live="polite">
-        Handa na. Simulan ang scanner kapag handa ka na.
-      </div>
-      <div id="reader"></div>
+  <main class="login-card">
+    <div class="logo">P</div>
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Sign in to your PLMunTrack account</p>
 
-      <button id="startButton" type="button" onclick="startScanner()">
-        Start Camera Scanner
-      </button>
+    <form id="loginForm">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" autocomplete="username"
+             placeholder="Enter your email" required>
 
-      <button class="secondary" type="button" onclick="stopScanner()">
-        Stop Camera Scanner
-      </button>
-    </section>
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password"
+             placeholder="Enter your password" required>
 
-    <section class="card">
-      <h2>Manual QR Input</h2>
-      <p class="small">
-        Gamitin ito kung hindi gumagana ang camera. Ipasok ang buong
-        QR token, hindi ang pangalan o student number.
-      </p>
+      <button type="submit" id="loginButton">Log In</button>
+    </form>
 
-      <label for="qrToken">QR Token</label>
-      <input
-        type="text"
-        id="qrToken"
-        placeholder="I-paste ang buong QR token"
-        autocomplete="off"
-      >
-
-      <button type="button" onclick="submitManualToken()">
-        Submit QR Token
-      </button>
-    </section>
-
-    <section class="card">
-      <h2>Scan Result</h2>
-
-      <div class="result-row">
-        <span class="result-label">Full Name</span>
-        <span class="result-value" id="fullName">—</span>
-      </div>
-
-      <div class="result-row">
-        <span class="result-label">Student Number / Visitor ID</span>
-        <span class="result-value" id="studentNumber">—</span>
-      </div>
-
-      <div class="result-row">
-        <span class="result-label">Person Type</span>
-        <span class="result-value" id="personType">—</span>
-      </div>
-
-      <div class="result-row">
-        <span class="result-label">Date</span>
-        <span class="result-value" id="attendanceDate">—</span>
-      </div>
-
-      <div class="result-row">
-        <span class="result-label">Time</span>
-        <span class="result-value" id="attendanceTime">—</span>
-      </div>
-
-      <div class="result-row">
-        <span class="result-label">Attendance Status</span>
-        <span class="result-value" id="attendanceStatus">—</span>
-      </div>
-
-      <p class="small">
-        Paalala: ang matagumpay na scan ay maaaring mag-record ng
-        Time-In o Time-Out. Huwag i-scan nang paulit-ulit ang parehong
-        QR habang nagte-test.
-      </p>
-    </section>
+    <p class="register-link">
+      Don't have an account? <a href="register.html">Register here</a>
+    </p>
+    <p id="message" role="status" aria-live="polite"></p>
   </main>
 
-  <script>
-    const API_URL =
-      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword }
+      from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-    let html5QrCode = null;
-    let isProcessing = false;
-    let lastScannedToken = "";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAKAPZZdsY6mkkcCT8LSFpHAYMy3TEDRog",
+      authDomain: "plmuntrack.firebaseapp.com",
+      projectId: "plmuntrack",
+      storageBucket: "plmuntrack.firebasestorage.app",
+      messagingSenderId: "156534335192",
+      appId: "1:156534335192:web:35d43ff8446786840919ad"
+    };
 
-    function setMessage(text, type = "") {
-      const element = document.getElementById("message");
-      element.textContent = text;
-      element.className = type;
-    }
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const message = document.getElementById("message");
 
-    function resetResult() {
-      document.getElementById("fullName").textContent = "—";
-      document.getElementById("studentNumber").textContent = "—";
-      document.getElementById("personType").textContent = "—";
-      document.getElementById("attendanceDate").textContent = "—";
-      document.getElementById("attendanceTime").textContent = "—";
-      document.getElementById("attendanceStatus").textContent = "—";
-    }
-
-    function showResult(data) {
-      document.getElementById("fullName").textContent =
-        data.fullName || "—";
-
-      document.getElementById("studentNumber").textContent =
-        data.studentNumber || data.visitorId || "—";
-
-      document.getElementById("personType").textContent =
-        data.personType || "—";
-
-      document.getElementById("attendanceDate").textContent =
-        data.date || data.visitDate || "—";
-
-      document.getElementById("attendanceTime").textContent =
-        data.time || "—";
-
-      document.getElementById("attendanceStatus").textContent =
-        data.status || data.authorizationStatus || "—";
-    }
-
-    async function processToken(token) {
-      token = String(token || "").trim();
-
-      if (!token) {
-        setMessage("Walang QR token. Subukan ulit.", "error");
-        return;
-      }
-
-      if (isProcessing) return;
-
-      isProcessing = true;
-      lastScannedToken = token;
-
-      setMessage("Pinoproseso ang QR code...", "warning");
-      resetResult();
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      message.style.color = "#cbd5e1";
+      message.textContent = "Signing in...";
 
       try {
-        const url = API_URL +
-          "?action=scan&token=" + encodeURIComponent(token);
-
-        const response = await fetch(url, {
-          method: "GET",
-          redirect: "follow"
-        });
-
-        if (!response.ok) {
-          throw new Error("Hindi maabot ang server. HTTP " + response.status);
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          throw new Error(data.message || "Hindi tinanggap ang QR code.");
-        }
-
-        showResult(data);
-        setMessage(
-          data.message || "Matagumpay na na-proseso ang QR code.",
-          "success"
-        );
-
-        document.getElementById("qrToken").value = "";
-
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        await signInWithEmailAndPassword(auth, email, password);
+        message.style.color = "#86efac";
+        message.textContent = "Login successful. Opening dashboard...";
+        window.location.href = "dashboard.html";
       } catch (error) {
-        setMessage(
-          error.message || "May error sa pagproseso ng QR code.",
-          "error"
-        );
+        console.error("Firebase sign-in error:", error.code);
+        message.style.color = "#fca5a5";
+
+        if (["auth/invalid-credential", "auth/wrong-password", "auth/user-not-found"].includes(error.code)) {
+          message.textContent = "Incorrect email or password.";
+        } else if (error.code === "auth/invalid-email") {
+          message.textContent = "Please enter a valid email address.";
+        } else if (error.code === "auth/too-many-requests") {
+          message.textContent = "Too many attempts. Please try again later.";
+        } else {
+          message.textContent = "Login failed. Check your internet connection and Firebase settings.";
+        }
       } finally {
-        isProcessing = false;
-      }
-    }
-
-    async function startScanner() {
-      if (html5QrCode) {
-        setMessage("Naka-start na ang camera scanner.", "warning");
-        return;
-      }
-
-      try {
-        html5QrCode = new Html5Qrcode("reader");
-
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-          },
-          async (decodedText) => {
-            if (isProcessing || decodedText === lastScannedToken) {
-              return;
-            }
-
-            await stopScanner();
-            await processToken(decodedText);
-          },
-          () => {}
-        );
-
-        setMessage("Camera scanner is active.", "success");
-
-      } catch (error) {
-        html5QrCode = null;
-        setMessage(
-          "Hindi mabuksan ang camera. Payagan ang camera access o gamitin ang Manual QR Input.",
-          "error"
-        );
-      }
-    }
-
-    async function stopScanner() {
-      if (!html5QrCode) return;
-
-      const scanner = html5QrCode;
-      html5QrCode = null;
-
-      try {
-        if (scanner.isScanning) {
-          await scanner.stop();
-        }
-
-        await scanner.clear();
-      } catch (error) {
-        console.warn("Scanner stop message:", error.message);
-      }
-    }
-
-    async function submitManualToken() {
-      const token = document.getElementById("qrToken").value.trim();
-      await processToken(token);
-    }
-
-    document.getElementById("qrToken").addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        submitManualToken();
+        button.disabled = false;
       }
     });
   </script>
