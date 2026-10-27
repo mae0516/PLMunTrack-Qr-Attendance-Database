@@ -2,293 +2,409 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLMunTrack - Admin Dashboard</title>
-<style>
-:root{--primary:#173b7a;--dark:#102b59;--accent:#3478f6;--bg:#f3f6fb;--text:#172b4d;--muted:#687891;--border:#dce4ef;--success:#15803d}
-*{box-sizing:border-box}
-body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
-header{background:linear-gradient(135deg,var(--dark),var(--primary));color:white;padding:24px 5%}
-header h1{margin:0;font-size:28px}
-header p{margin:5px 0 0;color:#dbeafe;font-size:14px}
-main{max-width:1250px;margin:auto;padding:32px 20px}
-.page-heading h2{margin:0;color:var(--primary)}
-.note{color:var(--muted);font-size:14px}
-.group-title{margin:28px 0 10px;font-size:18px;color:var(--primary)}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:18px 0}
-.card,.section{background:white;border:1px solid var(--border);border-radius:15px;box-shadow:0 8px 25px #1930550d}
-.card{padding:22px;border-top:4px solid var(--accent)}
-.visitor-card{border-top-color:#0891b2}
-.card h3{margin:0 0 12px;color:var(--muted);font-size:14px}
-.number{color:var(--primary);font-size:34px;font-weight:750}
-.section{margin-top:24px;padding:25px}
-.section h2{margin:0 0 8px;font-size:20px;color:var(--primary)}
-.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-button,.link-button{display:inline-flex;justify-content:center;align-items:center;padding:10px 14px;border:0;border-radius:8px;background:var(--accent);color:white;font:inherit;font-size:13px;font-weight:650;text-decoration:none;cursor:pointer}
-button:hover,.link-button:hover{background:var(--dark)}
-button:disabled{opacity:.6;cursor:wait}
-.authorize{background:#15803d}
-.revoke{background:#b91c1c}
-.search-box{width:100%;max-width:450px;padding:12px 14px;margin:14px 0 18px;border:1px solid #cbd6e5;border-radius:9px;font:inherit}
-.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
-table{width:100%;min-width:1100px;border-collapse:collapse;background:white}
-th,td{padding:13px 15px;text-align:left;border-bottom:1px solid #e8edf5;font-size:13px;overflow-wrap:anywhere}
-th{background:#edf3ff;color:var(--primary);white-space:nowrap}
-.status{display:inline-block;padding:4px 9px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px;font-weight:700}
-.pending{background:#fef3c7;color:#92400e}
-.denied{background:#fee2e2;color:#991b1b}
-#message,#visitorMessage{margin-top:14px;font-size:14px;white-space:pre-line;overflow-wrap:anywhere}
-.success{color:var(--success)}.error{color:#b91c1c}
-.empty{padding:25px;text-align:center;color:var(--muted)}
-footer{padding:25px;text-align:center;color:var(--muted);font-size:13px}
-@media(max-width:600px){header{padding:22px 18px}main{padding:22px 14px}.section{padding:18px 14px}.actions>*{flex:1 1 100%}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack - Admin Dashboard</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        h1 { color: #3730a3; }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin: 16px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #0000000d;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input, button {
+            padding: 10px 12px;
+            border-radius: 7px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        input { max-width: 100%; }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: #4f46e5;
+            color: white;
+            margin: 3px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .revoke { background: #dc2626; }
+        .refresh { background: #0891b2; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th { background: #f9fafb; }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .message {
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        a { color: #4338ca; }
+    </style>
 </head>
+
 <body>
-<header>
-<h1>PLMunTrack</h1>
-<p>Admin Dashboard | Visitor Monitoring and Attendance Management</p>
-</header>
+<div class="container">
+    <h1>PLMunTrack Admin Dashboard</h1>
+    <p>Visitor Monitoring and Attendance Management System</p>
 
-<main>
-<div class="page-heading">
-<h2>Dashboard Overview</h2>
-<p class="note">Attendance and visitor monitoring summary.</p>
+    <div class="card">
+        <h2>Dashboard Summary</h2>
+        <div class="stats">
+            <div>
+                Total Visitors
+                <div class="stat-number" id="totalVisitors">—</div>
+            </div>
+            <div>
+                Pending Approval
+                <div class="stat-number" id="pendingVisitors">—</div>
+            </div>
+            <div>
+                Authorized
+                <div class="stat-number" id="authorizedVisitors">—</div>
+            </div>
+            <div>
+                Revoked
+                <div class="stat-number" id="revokedVisitors">—</div>
+            </div>
+        </div>
+        <button class="refresh" onclick="refreshDashboard()">Refresh Dashboard</button>
+        <div id="dashboardMessage" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Admin Authorization</h2>
+        <p>Enter your admin secret to approve or revoke a visitor.</p>
+
+        <label for="adminSecret">Admin Secret</label><br><br>
+        <input
+            id="adminSecret"
+            type="password"
+            placeholder="Enter admin secret"
+            autocomplete="current-password"
+        >
+        <button type="button" onclick="toggleSecret()">Show / Hide</button>
+
+        <p class="muted">
+            Your secret is not saved in this page. Do not share it with anyone.
+        </p>
+        <div id="authorizationMessage" class="message"></div>
+    </div>
+
+    <div class="card">
+        <h2>Visitor Records</h2>
+        <input
+            id="visitorSearch"
+            type="search"
+            placeholder="Search visitor name or ID..."
+            oninput="renderVisitors()"
+        >
+        <button class="refresh" onclick="loadVisitors()">Refresh Visitors</button>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Visitor ID</th>
+                        <th>Full Name</th>
+                        <th>Purpose</th>
+                        <th>Visit Date</th>
+                        <th>Status</th>
+                        <th>Authorization</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="visitorTable">
+                    <tr><td colspan="7">Loading visitor records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Navigation</h2>
+        <p><a href="index.html">Home / Registration</a></p>
+        <p><a href="generator.html">QR Generator</a></p>
+        <p><a href="scanner.html">QR Scanner</a></p>
+    </div>
 </div>
-
-<h3 class="group-title">Attendance Summary</h3>
-<div class="cards">
-<div class="card"><h3>Registered People</h3><div class="number" id="totalPeople">—</div></div>
-<div class="card"><h3>Today's Time-In</h3><div class="number" id="totalIn">—</div></div>
-<div class="card"><h3>Today's Time-Out</h3><div class="number" id="totalOut">—</div></div>
-<div class="card"><h3>Currently Inside (All)</h3><div class="number" id="inside">—</div></div>
-</div>
-
-<h3 class="group-title">Visitor Summary</h3>
-<div class="cards">
-<div class="card visitor-card"><h3>Total Visitors</h3><div class="number" id="totalVisitors">—</div></div>
-<div class="card visitor-card"><h3>Visitors Today</h3><div class="number" id="visitorsToday">—</div></div>
-<div class="card visitor-card"><h3>Currently Inside (Visitors)</h3><div class="number" id="visitorInside">—</div></div>
-<div class="card visitor-card"><h3>Completed Visits Today</h3><div class="number" id="completedVisits">—</div></div>
-</div>
-
-<section class="section">
-<h2>Dashboard Actions</h2>
-<p class="note">Refresh the summary or open another module.</p>
-<div class="actions">
-<button id="refreshBtn" onclick="loadDashboard()">Refresh Summary</button>
-<button id="refreshVisitorsBtn" onclick="loadVisitors()">Refresh Visitors</button>
-<a class="link-button" href="generator.html">QR Generator</a>
-<a class="link-button" href="scanner.html">QR Scanner</a>
-<a class="link-button" href="index.html">Home</a>
-</div>
-<div id="message" role="status">Loading dashboard summary...</div>
-</section>
-
-<section class="section">
-<h2>Visitor Records</h2>
-<p class="note">Review visitor details and check authorization before allowing entry.</p>
-<input id="visitorSearch" class="search-box" type="search" placeholder="Search name, email, purpose, or office..." aria-label="Search visitor records">
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Visitor ID</th><th>Full Name</th><th>Email</th><th>Purpose</th>
-<th>Person / Office</th><th>Registration Date</th><th>Time</th>
-<th>Visitor Status</th><th>Authorization Status</th><th>Action</th>
-</tr>
-</thead>
-<tbody id="visitorTableBody">
-<tr><td colspan="10" class="empty">Loading visitor records...</td></tr>
-</tbody>
-</table>
-</div>
-<div id="visitorMessage" role="status">Loading visitor records...</div>
-</section>
-
-<section class="section">
-<h2>About the Summary</h2>
-<p class="note">Registered People counts active records in People. Time-In and Time-Out count today's attendance records. Currently Inside counts records with Time-In and no Time-Out. Visitor totals are based on the Visitors sheet and today's visitor attendance.</p>
-</section>
-</main>
-
-<footer>PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</footer>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
-let visitorRecords = [];
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
-async function getJSON(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("HTTP " + response.status);
-  return response.json();
+let visitors = [];
+
+function toggleSecret() {
+    const field = document.getElementById("adminSecret");
+    field.type = field.type === "password" ? "text" : "password";
 }
 
-async function loadDashboard() {
-  const message = document.getElementById("message");
-  const button = document.getElementById("refreshBtn");
-  button.disabled = true;
-  message.className = "";
-  message.textContent = "Loading dashboard summary...";
+async function getJSON(url) {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error("HTTP error: " + response.status);
+    }
+    return await response.json();
+}
 
-  try {
-    const data = await getJSON(API_URL + "?action=dashboard");
-    if (!data.success) throw new Error(data.message || "Dashboard unavailable");
+async function refreshDashboard() {
+    const message = document.getElementById("dashboardMessage");
+    message.textContent = "Loading dashboard...";
 
-    document.getElementById("totalPeople").textContent = data.totalPeople ?? 0;
-    document.getElementById("totalIn").textContent = data.totalIn ?? 0;
-    document.getElementById("totalOut").textContent = data.totalOut ?? 0;
-    document.getElementById("inside").textContent = data.inside ?? 0;
-    document.getElementById("totalVisitors").textContent = data.totalVisitors ?? 0;
-    document.getElementById("visitorsToday").textContent = data.visitorsToday ?? 0;
-    document.getElementById("visitorInside").textContent = data.visitorCurrentlyInside ?? 0;
-    document.getElementById("completedVisits").textContent = data.completedVisits ?? 0;
+    try {
+        const data = await getJSON(
+            API_URL + "?action=dashboard&t=" + Date.now()
+        );
 
-    message.className = "success";
-    message.textContent = "Summary loaded successfully for " + (data.date || "today") + ".";
-  } catch (error) {
-    message.className = "error";
-    message.textContent = "Unable to load dashboard. Check the Apps Script deployment.";
-    console.error(error);
-  } finally {
-    button.disabled = false;
-  }
+        if (data.success === false) {
+            throw new Error(data.message || "Could not load dashboard.");
+        }
+
+        const summary = data.summary || data.dashboard || data;
+
+        setNumber("totalVisitors",
+            summary.totalVisitors ?? summary.total ?? visitors.length);
+
+        setNumber("pendingVisitors",
+            summary.pendingVisitors ?? summary.pending ?? countStatus("Pending"));
+
+        setNumber("authorizedVisitors",
+            summary.authorizedVisitors ?? summary.authorized ?? countStatus("Authorized"));
+
+        setNumber("revokedVisitors",
+            summary.revokedVisitors ?? summary.revoked ?? countStatus("Revoked"));
+
+        message.textContent = "Dashboard refreshed.";
+    } catch (error) {
+        message.textContent =
+            "Could not load dashboard. Check the Apps Script URL and deployment.";
+    }
+}
+
+function setNumber(id, value) {
+    document.getElementById(id).textContent = value;
+}
+
+function countStatus(status) {
+    return visitors.filter(v =>
+        String(v.authorizationStatus || v.Authorization_Status || "")
+            .toLowerCase() === status.toLowerCase()
+    ).length;
 }
 
 async function loadVisitors() {
-  const message = document.getElementById("visitorMessage");
-  const button = document.getElementById("refreshVisitorsBtn");
-  button.disabled = true;
-  message.className = "";
-  message.textContent = "Loading visitor records...";
+    const tbody = document.getElementById("visitorTable");
+    tbody.innerHTML = '<tr><td colspan="7">Loading...</td></tr>';
 
-  try {
-    const data = await getJSON(API_URL + "?action=visitors");
-    if (!data.success || !Array.isArray(data.visitors)) {
-      throw new Error(data.message || "Visitor records unavailable");
+    try {
+        const data = await getJSON(
+            API_URL + "?action=visitors&t=" + Date.now()
+        );
+
+        if (data.success === false) {
+            throw new Error(data.message || "Could not load visitors.");
+        }
+
+        visitors = Array.isArray(data)
+            ? data
+            : (data.visitors || data.records || data.data || []);
+
+        renderVisitors();
+        refreshDashboard();
+    } catch (error) {
+        tbody.innerHTML =
+            '<tr><td colspan="7">Unable to load visitors. Check the Apps Script connection.</td></tr>';
     }
-    visitorRecords = data.visitors;
-    renderVisitors();
-    message.className = "success";
-    message.textContent = visitorRecords.length + " visitor record(s) loaded.";
-  } catch (error) {
-    message.className = "error";
-    message.textContent = "Unable to load visitor records. Check Apps Script action=visitors.";
-    console.error(error);
-  } finally {
-    button.disabled = false;
-  }
 }
 
-function makeCell(row, value) {
-  const cell = document.createElement("td");
-  cell.textContent = value || "—";
-  row.appendChild(cell);
-  return cell;
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
 function renderVisitors() {
-  const tbody = document.getElementById("visitorTableBody");
-  const query = document.getElementById("visitorSearch").value.trim().toLowerCase();
+    const tbody = document.getElementById("visitorTable");
+    const search = document.getElementById("visitorSearch").value.toLowerCase();
 
-  const filtered = visitorRecords.filter(v => [
-    v.visitorId, v.fullName, v.email, v.purpose, v.personToVisit,
-    v.registrationDate, v.registrationTime, v.status, v.authorizationStatus
-  ].some(value => String(value ?? "").toLowerCase().includes(query)));
+    const filtered = visitors.filter(visitor => {
+        const id = visitor.visitorId || visitor.Visitor_ID || "";
+        const name = visitor.fullName || visitor.Full_Name || "";
+        return String(id).toLowerCase().includes(search) ||
+               String(name).toLowerCase().includes(search);
+    });
 
-  tbody.replaceChildren();
+    if (!filtered.length) {
+        tbody.innerHTML =
+            '<tr><td colspan="7">No matching visitor records.</td></tr>';
+        return;
+    }
 
-  if (!filtered.length) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 10;
-    cell.className = "empty";
-    cell.textContent = query ? "No matching visitors found." : "No visitor records found.";
-    row.appendChild(cell);
-    tbody.appendChild(row);
-    return;
-  }
+    tbody.innerHTML = filtered.map(visitor => {
+        const id = visitor.visitorId || visitor.Visitor_ID || "";
+        const name = visitor.fullName || visitor.Full_Name || "";
+        const purpose = visitor.purpose || visitor.Purpose || "";
+        const date = visitor.visitDate || visitor.Visit_Date || "";
+        const status = visitor.status || visitor.Status || "";
+        const auth = visitor.authorizationStatus ||
+                     visitor.Authorization_Status || "Pending";
 
-  filtered.forEach(visitor => {
-    const row = document.createElement("tr");
-    [
-      visitor.visitorId, visitor.fullName, visitor.email, visitor.purpose,
-      visitor.personToVisit, visitor.registrationDate, visitor.registrationTime
-    ].forEach(value => makeCell(row, value));
+        let action = "";
 
-    const visitorStatusCell = makeCell(row, "");
-    const visitorBadge = document.createElement("span");
-    visitorBadge.className = "status";
-    visitorBadge.textContent = visitor.status || "Registered";
-    visitorStatusCell.appendChild(visitorBadge);
+        if (String(auth).toLowerCase() === "pending" ||
+            String(auth).toLowerCase() === "revoked") {
+            action = `<button data-id="${escapeHTML(id)}"
+                onclick="updateAuthorization(this.dataset.id, 'Authorized', this)">
+                Authorize
+            </button>`;
+        }
 
-    const authCell = makeCell(row, "");
-    const authBadge = document.createElement("span");
-    const auth = String(visitor.authorizationStatus || "Pending").trim();
-    authBadge.className = "status " +
-      (/authori[sz]ed|approved/i.test(auth) ? "" :
-      /denied|rejected|revoked/i.test(auth) ? "denied" : "pending");
-    authBadge.textContent = auth;
-    authCell.appendChild(authBadge);
+        if (String(auth).toLowerCase() === "authorized") {
+            action = `<button class="revoke" data-id="${escapeHTML(id)}"
+                onclick="updateAuthorization(this.dataset.id, 'Revoked', this)">
+                Revoke
+            </button>`;
+        }
 
-    const actionCell = makeCell(row, "");
-    const approved = /authori[sz]ed|approved/i.test(auth);
-    const actionButton = document.createElement("button");
-    actionButton.textContent = approved ? "Revoke Authorization" : "Authorize";
-    actionButton.className = approved ? "revoke" : "authorize";
-    actionButton.disabled = !visitor.visitorId;
-    actionButton.title = "Requires the matching authorization action in Apps Script.";
-    actionButton.addEventListener("click", () => updateAuthorization(
-      visitor.visitorId, approved ? "Revoked" : "Authorized", actionButton
-    ));
-    actionCell.appendChild(actionButton);
-    tbody.appendChild(row);
-  });
+        return `<tr>
+            <td>${escapeHTML(id)}</td>
+            <td>${escapeHTML(name)}</td>
+            <td>${escapeHTML(purpose)}</td>
+            <td>${escapeHTML(date)}</td>
+            <td>${escapeHTML(status)}</td>
+            <td class="status">${escapeHTML(auth)}</td>
+            <td>${action || "No action"}</td>
+        </tr>`;
+    }).join("");
 }
 
-async function updateAuthorization(visitorId, status, button) {
-  const message = document.getElementById("visitorMessage");
+async function updateAuthorization(visitorId, authorizationStatus, button) {
+    const secretField = document.getElementById("adminSecret");
+    const secret = secretField.value.trim();
+    const message = document.getElementById("authorizationMessage");
 
-  if (!confirm("Change visitor " + visitorId + " authorization to " + status + "?")) return;
+    if (!secret) {
+        message.textContent = "Please enter your admin secret first.";
+        secretField.focus();
+        return;
+    }
 
-  button.disabled = true;
-  message.className = "";
-  message.textContent = "Sending authorization request...";
+    const confirmation = confirm(
+        "Are you sure you want to set this visitor to " +
+        authorizationStatus + "?"
+    );
 
-  try {
-    /*
-      IMPORTANT:
-      This request only works if Code.gs implements action=authorizeVisitor
-      and validates the requested status before updating Visitors sheet.
-    */
-    const url = API_URL + "?action=authorizeVisitor&visitorId=" +
-      encodeURIComponent(visitorId) + "&authorizationStatus=" +
-      encodeURIComponent(status);
+    if (!confirmation) return;
 
-    const data = await getJSON(url);
-    if (!data.success) throw new Error(data.message || "Authorization update failed.");
+    button.disabled = true;
+    message.textContent = "Submitting authorization request...";
 
-    message.className = "success";
-    message.textContent = data.message || "Authorization updated.";
-    await loadVisitors();
-  } catch (error) {
-    message.className = "error";
-    message.textContent =
-      "Authorization was not confirmed. Your Apps Script must support action=authorizeVisitor. " +
-      "Check Code.gs before relying on this button.";
-    console.error(error);
-  } finally {
-    button.disabled = false;
-  }
+    try {
+        /*
+         * text/plain avoids the usual JSON preflight request.
+         * The Apps Script server must parse the JSON request body.
+         */
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify({
+                action: "authorizeVisitor",
+                visitorId: visitorId,
+                authorizationStatus: authorizationStatus,
+                adminSecret: secret
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.success !== true) {
+            throw new Error(
+                result.message || "The server did not confirm the change."
+            );
+        }
+
+        message.textContent = result.message ||
+            "Authorization updated successfully.";
+
+        await loadVisitors();
+    } catch (error) {
+        message.textContent =
+            "The request could not be confirmed. Check Code.gs and the web app deployment, then refresh the visitor list before trying again. Details: " +
+            error.message;
+    } finally {
+        button.disabled = false;
+        secretField.value = "";
+    }
 }
 
-document.getElementById("visitorSearch").addEventListener("input", renderVisitors);
-
-async function refreshAll() {
-  await Promise.all([loadDashboard(), loadVisitors()]);
-}
-refreshAll();
+loadVisitors();
 </script>
 </body>
 </html>
