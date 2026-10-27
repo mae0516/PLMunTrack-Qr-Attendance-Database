@@ -227,3 +227,145 @@ footer {
         gap: 8px;
     }
 }
+
+/* ===== Visitor Registration ===== */
+
+.visitor-section {
+    width: min(650px, 92%);
+    margin: 45px auto;
+}
+
+.visitor-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.visitor-header .visitor-icon {
+    width: 68px;
+    height: 68px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 18px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1, #06b6d4);
+    font-size: 30px;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+}
+
+.visitor-header h1 {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    margin-bottom: 10px;
+    color: #f1f5f9;
+}
+
+.visitor-header h1 span {
+    color: #22d3ee;
+}
+
+.visitor-header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.visitor-form-card {
+    padding: 32px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #19263d, #111b2e);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.25);
+}
+
+.visitor-form-card .form-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.visitor-form-card .form-heading h2 {
+    font-size: 1.2rem;
+    color: #f8fafc;
+}
+
+.visitor-form-card .form-heading p {
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.visitor-form-card label {
+    display: block;
+    margin: 18px 0 8px;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.visitor-form-card input,
+.visitor-form-card select,
+.visitor-form-card textarea {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    background: #0b1426;
+    color: #f1f5f9;
+    font: inherit;
+    transition: 0.2s ease;
+}
+
+.visitor-form-card input:focus,
+.visitor-form-card select:focus,
+.visitor-form-card textarea:focus {
+    outline: none;
+    border-color: #22d3ee;
+    box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+}
+
+.visitor-form-card input::placeholder,
+.visitor-form-card textarea::placeholder {
+    color: #64748b;
+}
+
+.visitor-form-card textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.visitor-submit-btn {
+    width: 100%;
+    margin-top: 26px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6366f1, #0891b2);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.visitor-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(34, 211, 238, 0.18);
+}
+
+.visitor-note {
+    margin-top: 18px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+    .visitor-section {
+        margin: 28px auto;
+    }
+
+    .visitor-form-card {
+        padding: 22px;
+    }
+}
+
