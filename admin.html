@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLMunTrack - Admin Dashboard</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+    }
+
+    header {
+      background: #1e293b;
+      padding: 20px;
+      border-bottom: 1px solid #334155;
+    }
+
+    header h1 {
+      margin: 0;
+      color: #818cf8;
+      font-size: 24px;
+    }
+
+    header p {
+      margin-bottom: 0;
+      color: #cbd5e1;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .card, .section {
+      padding: 20px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 14px;
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 14px;
+      color: #cbd5e1;
+    }
+
+    .number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #818cf8;
+    }
+
+    .section { margin-top: 24px; }
+    .section h2 { margin-top: 0; font-size: 19px; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    button, .link-button {
+      display: inline-block;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #4f46e5;
+      color: white;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    button:hover, .link-button:hover {
+      background: #4338ca;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #message {
+      margin-top: 14px;
+      color: #cbd5e1;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .note {
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .success { color: #86efac !important; }
+    .error { color: #fca5a5 !important; }
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>PLMunTrack</h1>
+    <p>Admin Dashboard | Visitor Monitoring and Attendance Management</p>
+  </header>
+
+  <main>
+    <h2>Dashboard Overview</h2>
+    <p class="note">
+      Attendance summary for today. Click Refresh Summary to load the latest data.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Registered People</h3>
+        <div class="number" id="totalPeople">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Today's Time-In</h3>
+        <div class="number" id="totalIn">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Today's Time-Out</h3>
+        <div class="number" id="totalOut">—</div>
+      </div>
+
+      <div class="card">
+        <h3>Currently Inside</h3>
+        <div class="number" id="inside">—</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Dashboard Actions</h2>
+
+      <div class="actions">
+        <button id="refreshBtn" onclick="loadDashboard()">
+          Refresh Summary
+        </button>
+
+        <a class="link-button" href="generator.html">QR Generator</a>
+        <a class="link-button" href="scanner.html">QR Scanner</a>
+        <a class="link-button" href="index.html">Home</a>
+      </div>
+
+      <div id="message" role="status" aria-live="polite">
+        Loading dashboard summary...
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Attendance Summary</h2>
+
+      <p class="note">
+        Registered People counts active records in the People sheet.
+        Today's Time-In counts attendance rows with a Time-In for today.
+        Today's Time-Out counts rows with a Time-Out for today.
+        Currently Inside counts today's rows with a Time-In and no Time-Out.
+      </p>
+    </div>
+  </main>
+
+  <footer>
+    PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa
+  </footer>
+
+  <script>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+    async function loadDashboard() {
+      const message = document.getElementById("message");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      refreshBtn.disabled = true;
+      message.className = "";
+      message.textContent = "Loading attendance summary...";
+
+      try {
+        const response = await fetch(
+          API_URL + "?action=dashboard"
+        );
+
+        if (!response.ok) {
+          throw new Error("Server returned HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(
+            data.message || "Dashboard summary is unavailable."
+          );
+        }
+
+        document.getElementById("totalPeople").textContent =
+          data.totalPeople ?? 0;
+
+        document.getElementById("totalIn").textContent =
+          data.totalIn ?? 0;
+
+        document.getElementById("totalOut").textContent =
+          data.totalOut ?? 0;
+
+        document.getElementById("inside").textContent =
+          data.inside ?? 0;
+
+        message.className = "success";
+        message.textContent =
+          "Summary loaded successfully for " +
+          (data.date || "today") + ".";
+
+      } catch (error) {
+        message.className = "error";
+        message.textContent =
+          "Hindi pa makuha ang dashboard data. " +
+          "Kailangan munang idagdag ang action=dashboard sa " +
+          "Google Apps Script doGet(e) at i-deploy ang bagong version.";
+
+        document.getElementById("totalPeople").textContent = "—";
+        document.getElementById("totalIn").textContent = "—";
+        document.getElementById("totalOut").textContent = "—";
+        document.getElementById("inside").textContent = "—";
+
+        console.error(error);
+
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
