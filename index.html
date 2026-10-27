@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>PLMunTrack</h1>
+        <p>QR Code-Based Visitor Monitoring and Attendance Management System</p>
+    </header>
+
+    <main>
+        <section class="welcome-card">
+            <h2>Welcome to PLMunTrack</h2>
+            <p>Manage attendance, monitor visitors, and view attendance records.</p>
+
+            <div class="menu">
+                <button id="studentBtn">Student / Faculty</button>
+                <button id="visitorBtn">Visitor</button>
+                <button id="adminBtn">Admin Dashboard</button>
+            </div>
+
+            <section id="studentForm" hidden>
+                <h2>Student Registration</h2>
+
+                <form id="registrationForm">
+                    <label for="studentNumber">Student Number</label>
+                    <input id="studentNumber" name="studentNumber"
+                           type="text" required>
+
+                    <label for="fullName">Full Name</label>
+                    <input id="fullName" name="fullName"
+                           type="text" required>
+
+                    <label for="email">Email</label>
+                    <input id="email" name="email"
+                           type="email" required>
+
+                    <label for="course">Course</label>
+                    <input id="course" name="course"
+                           type="text" placeholder="e.g. BSIT">
+
+                    <label for="yearSection">Year and Section</label>
+                    <input id="yearSection" name="yearSection"
+                           type="text" placeholder="e.g. BSIT3K">
+
+                    <button type="submit">Register Student</button>
+                </form>
+            </section>
+
+            <p id="message">Select a module to get started.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

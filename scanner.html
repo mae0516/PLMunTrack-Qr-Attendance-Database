@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack - Attendance Scanner</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .scanner-card {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .scanner-card label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
+
+        .scanner-card input,
+        .scanner-card select {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .scanner-card button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>PLMunTrack</h1>
+    <p>Attendance Scanner</p>
+</header>
+
+<main>
+    <section class="scanner-card">
+        <a class="back-link" href="index.html">← Back to Home</a>
+
+        <h2>QR Attendance Scanner</h2>
+        <p>For this test, enter the token stored in your QR_Tokens sheet.</p>
+
+        <form id="scanForm">
+            <label for="qrToken">QR Token</label>
+            <input
+                type="text"
+                id="qrToken"
+                placeholder="Paste your QR token here"
+                required
+            >
+
+            <button type="submit" id="scanButton">
+                Validate and Record Attendance
+            </button>
+        </form>
+
+        <div id="result" role="status">
+            Ready to scan.
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</p>
+</footer>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+const scanForm = document.getElementById("scanForm");
+const qrInput = document.getElementById("qrToken");
+const scanButton = document.getElementById("scanButton");
+const result = document.getElementById("result");
+
+scanForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const token = qrInput.value.trim();
+
+    if (!token) {
+        result.textContent = "Please enter a QR token.";
+        return;
+    }
+
+    scanButton.disabled = true;
+    scanButton.textContent = "Validating...";
+    result.textContent = "Connecting to PLMunTrack...";
+
+    try {
+        const url = API_URL
+            + "?action=scan&token="
+            + encodeURIComponent(token);
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+            result.innerHTML = "";
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Attendance Recorded";
+
+            const details = document.createElement("p");
+            details.textContent = data.message || "Scan successful.";
+
+            result.appendChild(heading);
+            result.appendChild(details);
+
+            if (data.studentNumber) {
+                const student = document.createElement("p");
+                student.textContent = "Student Number: " + data.studentNumber;
+                result.appendChild(student);
+            }
+
+            if (data.name) {
+                const name = document.createElement("p");
+                name.textContent = "Name: " + data.name;
+                result.appendChild(name);
+            }
+
+            if (data.type) {
+                const type = document.createElement("p");
+                type.textContent = "Type: " + data.type;
+                result.appendChild(type);
+            }
+
+            if (data.date) {
+                const date = document.createElement("p");
+                date.textContent = "Date: " + data.date;
+                result.appendChild(date);
+            }
+
+            if (data.time) {
+                const time = document.createElement("p");
+                time.textContent = "Time: " + data.time;
+                result.appendChild(time);
+            }
+
+            qrInput.value = "";
+        } else {
+            result.textContent =
+                "Scan failed: " + (data.message || "Invalid QR token.");
+        }
+
+    } catch (error) {
+        result.textContent =
+            "Connection error. Check the Web App URL, deployment, and internet connection.";
+        console.error(error);
+    } finally {
+        scanButton.disabled = false;
+        scanButton.textContent = "Validate and Record Attendance";
+    }
+});
+</script>
+</body>
+</html>
+

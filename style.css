@@ -1,0 +1,229 @@
+
+/* ===== PLMunTrack Professional Theme ===== */
+:root {
+    --primary: #173b7a;
+    --primary-dark: #102b59;
+    --accent: #3478f6;
+    --background: #f3f6fb;
+    --surface: #ffffff;
+    --text: #172b4d;
+    --muted: #687891;
+    --border: #dce4ef;
+    --success: #15803d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    text-align: center;
+    padding: 36px 20px 40px;
+    box-shadow: 0 4px 18px rgba(16, 43, 89, 0.15);
+}
+
+header h1 {
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 750;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+}
+
+header p {
+    color: #dbeafe;
+    font-size: 14px;
+}
+
+/* Main layout */
+main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 20px;
+}
+
+.welcome-card {
+    background: var(--surface);
+    width: 100%;
+    max-width: 850px;
+    padding: 38px;
+    border: 1px solid #e8edf5;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(25, 48, 85, 0.08);
+}
+
+.welcome-card > h2 {
+    color: var(--primary);
+    font-size: 27px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.welcome-card > p {
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+/* Navigation buttons */
+.menu {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 28px 0 32px;
+}
+
+button {
+    font-family: inherit;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 13px 18px;
+    min-height: 48px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+button:hover {
+    background: #245fd0;
+    box-shadow: 0 5px 12px rgba(52, 120, 246, 0.2);
+    transform: translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 2px;
+}
+
+/* Registration section */
+#studentForm {
+    margin-top: 24px;
+    padding: 28px;
+    background: #f9fbff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+#studentForm[hidden] {
+    display: none;
+}
+
+#studentForm h2 {
+    color: var(--primary);
+    font-size: 22px;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+#registrationForm {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+}
+
+#registrationForm label {
+    display: block;
+    font-size: 13px;
+    font-weight: 650;
+    color: #334766;
+    margin-top: 6px;
+}
+
+#registrationForm input {
+    width: 100%;
+    min-width: 0;
+    padding: 12px 13px;
+    border: 1px solid #cbd6e5;
+    border-radius: 9px;
+    background: white;
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#registrationForm input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(52, 120, 246, 0.12);
+    outline: none;
+}
+
+#registrationForm input::placeholder {
+    color: #94a3b8;
+}
+
+#registrationForm button {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+}
+
+/* Status message */
+#message {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
+    overflow-wrap: anywhere;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 18px 20px 28px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* Mobile layout */
+@media (max-width: 600px) {
+    header {
+        padding: 28px 16px 32px;
+    }
+
+    main {
+        padding: 25px 14px;
+    }
+
+    .welcome-card {
+        padding: 24px 18px;
+        border-radius: 15px;
+    }
+
+    .welcome-card > h2 {
+        font-size: 23px;
+    }
+
+    .menu {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: 22px 0;
+    }
+
+    #studentForm {
+        padding: 20px 15px;
+    }
+
+    #registrationForm {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}

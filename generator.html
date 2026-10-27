@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack | QR Code Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        .generator-card {
+            max-width: 620px;
+            margin: 0 auto;
+            text-align: left;
+        }
+        .generator-card h2 { color: #173b7a; margin-bottom: 8px; }
+        .generator-card .intro { color: #687891; margin-bottom: 24px; }
+        .generator-card label {
+            display: block;
+            margin: 16px 0 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .generator-card input,
+        .generator-card select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd6e5;
+            border-radius: 9px;
+            font: inherit;
+        }
+        .generator-card button { width: 100%; margin-top: 20px; }
+        #qrResult {
+            display: none;
+            margin-top: 28px;
+            padding: 24px;
+            border: 1px solid #dce4ef;
+            border-radius: 14px;
+            background: #fff;
+            text-align: center;
+        }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        #qrcode img, #qrcode canvas { max-width: 100%; height: auto; }
+        .notice { color: #687891; font-size: 13px; margin-top: 12px; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #245fd0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>PLMunTrack</h1>
+    <p>Daily QR Code Generator</p>
+</header>
+
+<main>
+    <section class="welcome-card generator-card">
+        <a class="back-link" href="index.html">← Back to Home</a>
+
+        <h2>Generate Student QR Code</h2>
+        <p class="intro">Generate a daily QR token for a registered, active student.</p>
+
+        <form id="qrForm">
+            <label for="studentNumber">Student Number</label>
+            <input id="studentNumber" type="text"
+                   placeholder="Enter registered student number" required>
+
+            <label for="qrType">QR Code Type</label>
+            <select id="qrType" required>
+                <option value="IN">Time-In</option>
+                <option value="OUT">Time-Out</option>
+            </select>
+
+            <button id="generateBtn" type="submit">Generate QR Code</button>
+        </form>
+
+        <div id="qrResult">
+            <h2>Daily QR Code</h2>
+            <p id="qrDetails"></p>
+            <div id="qrcode"></div>
+            <button type="button" id="downloadBtn">Download QR Code</button>
+            <p class="notice">
+                Keep your QR code private. The server must validate the token
+                and its date when attendance is scanned.
+            </p>
+        </div>
+
+        <p id="statusMessage" class="notice" role="status">
+            Ready to generate a QR code.
+        </p>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 PLMunTrack | Pamantasan ng Lungsod ng Muntinlupa</p>
+</footer>
+
+<script>
+    // Your deployed Google Apps Script Web App URL
+    const API_URL =
+        "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+    const qrForm = document.getElementById("qrForm");
+    const studentNumberInput = document.getElementById("studentNumber");
+    const qrTypeInput = document.getElementById("qrType");
+    const qrResult = document.getElementById("qrResult");
+    const qrDetails = document.getElementById("qrDetails");
+    const qrContainer = document.getElementById("qrcode");
+    const statusMessage = document.getElementById("statusMessage");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const generateBtn = document.getElementById("generateBtn");
+
+    let generatedToken = "";
+
+    qrForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const studentNumber = studentNumberInput.value.trim();
+        const type = qrTypeInput.value;
+
+        if (!studentNumber) {
+            statusMessage.textContent = "Enter a student number.";
+            return;
+        }
+
+        qrResult.style.display = "none";
+        qrContainer.replaceChildren();
+        generatedToken = "";
+        generateBtn.disabled = true;
+        generateBtn.textContent = "Connecting...";
+
+        statusMessage.textContent = "Checking student and requesting daily token...";
+
+        try {
+            const url = API_URL
+                + "?action=generateQR"
+                + "&studentNumber=" + encodeURIComponent(studentNumber)
+                + "&type=" + encodeURIComponent(type)
+                + "&_=" + Date.now();
+
+            const response = await fetch(url);
+            const result = await response.json();
+
+            if (!result.success) {
+                throw new Error(result.message || "QR token could not be generated.");
+            }
+
+            if (!result.token) {
+                throw new Error("The server did not return a QR token.");
+            }
+
+            if (typeof QRCode === "undefined") {
+                throw new Error("QR library did not load. Check your internet connection.");
+            }
+
+            generatedToken = result.token;
+
+            new QRCode(qrContainer, {
+                text: generatedToken,
+                width: 220,
+                height: 220,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+
+            qrDetails.textContent =
+                "Name: " + result.fullName
+                + " | Student Number: " + result.studentNumber
+                + " | Type: " + (result.type === "IN" ? "Time-In" : "Time-Out")
+                + " | Date: " + result.date;
+
+            qrResult.style.display = "block";
+            statusMessage.textContent = result.message;
+
+        } catch (error) {
+            statusMessage.textContent =
+                "Error: " + error.message
+                + " If this is a connection error, check the Web App deployment and access settings.";
+        } finally {
+            generateBtn.disabled = false;
+            generateBtn.textContent = "Generate QR Code";
+        }
+    });
+
+    downloadBtn.addEventListener("click", function () {
+        if (!generatedToken) {
+            statusMessage.textContent = "Generate a QR code first.";
+            return;
+        }
+
+        const canvas = qrContainer.querySelector("canvas");
+        const image = qrContainer.querySelector("img");
+        const imageUrl = canvas
+            ? canvas.toDataURL("image/png")
+            : image
+                ? image.src
+                : "";
+
+        if (!imageUrl) {
+            statusMessage.textContent = "QR image is not ready yet.";
+            return;
+        }
+
+        const link = document.createElement("a");
+        link.href = imageUrl;
+        link.download = "PLMunTrack-" + qrTypeInput.value + "-QR.png";
+        link.click();
+    });
+</script>
+</body>
+</html>
+
