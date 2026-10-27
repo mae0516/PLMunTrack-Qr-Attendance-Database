@@ -1,0 +1,503 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack | Student Scanner</title>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #f8fafc;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 5%;
+            background: #111c31;
+            border-bottom: 1px solid #293851;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .brand span { color: #67e8f9; }
+
+        .back {
+            color: #67e8f9;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 650px;
+            margin: auto;
+            padding: 25px 16px;
+        }
+
+        .panel {
+            padding: 22px;
+            margin-bottom: 18px;
+            border: 1px solid #293851;
+            border-radius: 16px;
+            background: #111c31;
+        }
+
+        h1 { margin-top: 0; font-size: 26px; }
+
+        h2 { font-size: 19px; }
+
+        .muted {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        #accountInfo {
+            color: #67e8f9;
+            overflow-wrap: anywhere;
+        }
+
+        #reader {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        button, input {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        button {
+            border: 0;
+            background: #4f46e5;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .secondary {
+            background: #293851;
+        }
+
+        input {
+            border: 1px solid #334155;
+            background: #0b1425;
+            color: white;
+        }
+
+        #message {
+            margin-top: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        #result {
+            display: none;
+        }
+
+        .result-row {
+            padding: 12px 0;
+            border-bottom: 1px solid #293851;
+            overflow-wrap: anywhere;
+        }
+
+        .result-row:last-child {
+            border-bottom: 0;
+        }
+
+        .result-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .result-value {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 22px;
+            color: #64748b;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">PLMun<span>Track</span></div>
+        <a class="back" href="dashboard.html">← Dashboard</a>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h1>Student QR Scanner</h1>
+            <p class="muted">
+                Signed-in account:
+                <br>
+                <strong id="accountInfo">Checking login...</strong>
+            </p>
+            <p class="muted">
+                Use your phone camera to scan a PLMunTrack QR code.
+                Your account must be signed in to open this page.
+            </p>
+        </section>
+
+        <section class="panel">
+            <h2>📷 Scan QR Code</h2>
+            <div id="reader"></div>
+
+            <button id="startButton" type="button">
+                Start Camera
+            </button>
+
+            <button
+                id="stopButton"
+                class="secondary"
+                type="button"
+                disabled
+            >
+                Stop Camera
+            </button>
+
+            <p id="message" role="status" aria-live="polite">
+                Checking your account...
+            </p>
+        </section>
+
+        <section class="panel">
+            <h2>Enter QR Token Manually</h2>
+            <p class="muted">
+                If your camera is unavailable, enter the token
+                from an authorized QR code.
+            </p>
+
+            <form id="tokenForm">
+                <input
+                    id="tokenInput"
+                    type="text"
+                    placeholder="Enter QR token"
+                    autocomplete="off"
+                    required
+                >
+                <button id="submitButton" type="submit">
+                    Submit Token
+                </button>
+            </form>
+        </section>
+
+        <section class="panel" id="result">
+            <h2>Scan Result</h2>
+
+            <div class="result-row">
+                <span class="result-label">Name</span>
+                <span class="result-value" id="personName">—</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Student Number</span>
+                <span class="result-value" id="personId">—</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Person Type</span>
+                <span class="result-value" id="personType">—</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Date</span>
+                <span class="result-value" id="scanDate">—</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Time</span>
+                <span class="result-value" id="scanTime">—</span>
+            </div>
+
+            <div class="result-row">
+                <span class="result-label">Attendance Status</span>
+                <span class="result-value" id="attendanceStatus">—</span>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
+    </footer>
+
+    <script type="module">
+        import {
+            initializeApp,
+            getApp,
+            getApps
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+        import {
+            getAuth,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKAPZZdsY6mkkcCT8LSFpHAYMy3TEDRog",
+            authDomain: "plmuntrack.firebaseapp.com",
+            projectId: "plmuntrack",
+            storageBucket: "plmuntrack.firebasestorage.app",
+            messagingSenderId: "156534335192",
+            appId: "1:156534335192:web:35d43ff8446786840919ad"
+        };
+
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+
+        const app = getApps().length
+            ? getApp()
+            : initializeApp(firebaseConfig);
+
+        const auth = getAuth(app);
+
+        const accountInfo = document.getElementById("accountInfo");
+        const message = document.getElementById("message");
+        const startButton = document.getElementById("startButton");
+        const stopButton = document.getElementById("stopButton");
+        const submitButton = document.getElementById("submitButton");
+        const tokenForm = document.getElementById("tokenForm");
+        const tokenInput = document.getElementById("tokenInput");
+        const result = document.getElementById("result");
+
+        let currentUser = null;
+        let scanner = null;
+        let processing = false;
+        let cameraRunning = false;
+
+        function setMessage(text, color = "#cbd5e1") {
+            message.textContent = text;
+            message.style.color = color;
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.replace("login.html");
+                return;
+            }
+
+            currentUser = user;
+            accountInfo.textContent = user.email || "Signed-in user";
+            setMessage(
+                "You are signed in. You can start the camera.",
+                "#86efac"
+            );
+
+            startButton.disabled = false;
+            submitButton.disabled = false;
+        });
+
+        async function submitToken(rawToken) {
+            if (!currentUser) {
+                setMessage("Please sign in first.", "#fca5a5");
+                return;
+            }
+
+            const token = rawToken.trim();
+
+            if (!token) {
+                setMessage("Please enter or scan a QR token.", "#fca5a5");
+                return;
+            }
+
+            if (processing) return;
+
+            processing = true;
+            submitButton.disabled = true;
+            startButton.disabled = true;
+            setMessage("Checking QR code...", "#67e8f9");
+
+            try {
+                const url = new URL(API_URL);
+                url.searchParams.set("action", "scan");
+                url.searchParams.set("token", token);
+
+                const response = await fetch(url.toString());
+                const data = await response.json();
+
+                if (data.success !== true) {
+                    throw new Error(
+                        data.message || data.error || "QR code is invalid or expired."
+                    );
+                }
+
+                showResult(data);
+                setMessage(
+                    data.message || "QR code processed successfully.",
+                    "#86efac"
+                );
+                tokenInput.value = "";
+            } catch (error) {
+                console.error("Scan failed:", error);
+                setMessage(
+                    error.message || "Unable to process QR code.",
+                    "#fca5a5"
+                );
+            } finally {
+                processing = false;
+                submitButton.disabled = false;
+                startButton.disabled = false;
+            }
+        }
+
+        function showResult(data) {
+            const person = data.person || data.student || data;
+            const attendance = data.attendance || data;
+
+            document.getElementById("personName").textContent =
+                person.Full_Name || person.fullName || person.name || "—";
+
+            document.getElementById("personId").textContent =
+                person.Student_Number ||
+                person.studentNumber ||
+                person.student_number ||
+                "—";
+
+            document.getElementById("personType").textContent =
+                person.Person_Type || person.personType || person.type || "—";
+
+            document.getElementById("scanDate").textContent =
+                attendance.Date || attendance.date || "—";
+
+            document.getElementById("scanTime").textContent =
+                attendance.Time ||
+                attendance.time ||
+                attendance.Time_In ||
+                attendance.Time_Out ||
+                "—";
+
+            document.getElementById("attendanceStatus").textContent =
+                attendance.Status ||
+                attendance.status ||
+                data.message ||
+                "Recorded";
+
+            result.style.display = "block";
+            result.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        async function startCamera() {
+            if (!currentUser) {
+                setMessage("Please sign in first.", "#fca5a5");
+                return;
+            }
+
+            if (!window.Html5Qrcode) {
+                setMessage(
+                    "QR scanner library did not load. Check your internet connection.",
+                    "#fca5a5"
+                );
+                return;
+            }
+
+            if (cameraRunning) return;
+
+            try {
+                scanner = new Html5Qrcode("reader");
+
+                await scanner.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: { width: 240, height: 240 }
+                    },
+                    async (decodedText) => {
+                        if (processing) return;
+
+                        await stopCamera();
+                        await submitToken(decodedText);
+                    },
+                    () => {}
+                );
+
+                cameraRunning = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                setMessage("Camera is running. Point it at a QR code.");
+            } catch (error) {
+                console.error("Camera start failed:", error);
+                setMessage(
+                    "Cannot open camera. Allow camera permission and use the HTTPS website on your phone.",
+                    "#fca5a5"
+                );
+
+                if (scanner) {
+                    try {
+                        await scanner.clear();
+                    } catch (_) {}
+                }
+
+                scanner = null;
+                cameraRunning = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        async function stopCamera() {
+            if (scanner && cameraRunning) {
+                try {
+                    await scanner.stop();
+                } catch (error) {
+                    console.warn("Camera stop:", error);
+                }
+
+                try {
+                    await scanner.clear();
+                } catch (_) {}
+            }
+
+            scanner = null;
+            cameraRunning = false;
+            startButton.disabled = !currentUser;
+            stopButton.disabled = true;
+        }
+
+        startButton.addEventListener("click", startCamera);
+        stopButton.addEventListener("click", stopCamera);
+
+        tokenForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await submitToken(tokenInput.value);
+        });
+
+        window.addEventListener("pagehide", () => {
+            if (scanner && cameraRunning) {
+                scanner.stop().catch(() => {});
+            }
+        });
+    </script>
+</body>
+</html>
