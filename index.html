@@ -1,4 +1,4 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,9 +25,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
-
     body {
       min-height: 100vh;
       background: var(--bg);
@@ -37,7 +35,6 @@
     }
 
     a { color: inherit; text-decoration: none; }
-
     button { font: inherit; }
 
     .ambient {
@@ -51,13 +48,7 @@
       z-index: -1;
       animation: float 12s ease-in-out infinite alternate;
     }
-
-    .ambient.one {
-      top: -160px;
-      left: -120px;
-      background: #6366f1;
-    }
-
+    .ambient.one { top: -160px; left: -120px; background: #6366f1; }
     .ambient.two {
       top: 240px;
       right: -180px;
@@ -69,12 +60,10 @@
       from { transform: translate(0, 0); }
       to { transform: translate(65px, 45px); }
     }
-
     @keyframes appear {
       from { opacity: 0; transform: translateY(18px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes pulse {
       0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, .15); }
       50% { box-shadow: 0 0 0 7px rgba(52, 211, 153, 0); }
@@ -89,7 +78,7 @@
       justify-content: space-between;
       gap: 20px;
       padding: 17px 6%;
-      background: rgba(8, 13, 27, .82);
+      background: rgba(8, 13, 27, .88);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
@@ -101,8 +90,8 @@
       font-size: 19px;
       font-weight: 800;
       letter-spacing: -.5px;
+      flex-shrink: 0;
     }
-
     .brand-icon {
       width: 43px;
       height: 43px;
@@ -113,7 +102,6 @@
       color: white;
       box-shadow: 0 8px 24px rgba(99, 102, 241, .25);
     }
-
     .brand small {
       display: block;
       margin-top: 4px;
@@ -126,32 +114,32 @@
     .nav {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
       gap: 8px;
     }
-
     .nav a {
-      padding: 10px 13px;
+      padding: 10px 12px;
       border-radius: 10px;
       color: var(--muted);
       font-size: 12px;
       font-weight: 600;
       transition: .25s;
     }
-
     .nav a:hover {
       background: var(--panel-light);
       color: white;
     }
-
+    .nav .register-link {
+      color: white;
+      background: linear-gradient(120deg, #0891b2, #06b6d4);
+    }
     .nav .admin-link {
       color: white;
       background: linear-gradient(135deg, #5558e8, #4f46e5);
     }
 
-    .container {
-      width: min(1120px, 88%);
-      margin: auto;
-    }
+    .container { width: min(1120px, 88%); margin: auto; }
 
     .hero {
       display: grid;
@@ -161,7 +149,6 @@
       padding: 82px 0 70px;
       animation: appear .8s ease both;
     }
-
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -175,7 +162,6 @@
       font-weight: 700;
       letter-spacing: .5px;
     }
-
     .eyebrow i { color: var(--cyan); }
 
     .hero h1 {
@@ -185,28 +171,24 @@
       letter-spacing: -2.5px;
       font-weight: 800;
     }
-
     .gradient-text {
       background: linear-gradient(100deg, #818cf8, #22d3ee);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
-
     .hero p {
       max-width: 540px;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.9;
     }
-
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-top: 28px;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -220,22 +202,19 @@
       transition: transform .25s, box-shadow .25s, background .25s;
       cursor: pointer;
     }
-
     .btn:hover { transform: translateY(-3px); }
-
     .btn-primary {
       color: white;
       background: linear-gradient(120deg, #6366f1, #4f46e5);
       box-shadow: 0 10px 25px rgba(79, 70, 229, .2);
     }
-
-    .btn-primary:hover {
-      box-shadow: 0 12px 30px rgba(79, 70, 229, .4);
-    }
-
-    .btn-secondary {
-      background: var(--panel);
-      color: #e2e8f0;
+    .btn-primary:hover { box-shadow: 0 12px 30px rgba(79, 70, 229, .4); }
+    .btn-secondary { background: var(--panel); color: #e2e8f0; }
+    .btn-register {
+      background: linear-gradient(120deg, #0891b2, #06b6d4);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 10px 25px rgba(6, 182, 212, .15);
     }
 
     .hero-visual {
@@ -247,7 +226,6 @@
       box-shadow: 0 25px 80px rgba(0, 0, 0, .25);
       animation: float 7s ease-in-out infinite alternate;
     }
-
     .visual-top {
       display: flex;
       align-items: center;
@@ -255,9 +233,7 @@
       gap: 12px;
       margin-bottom: 26px;
     }
-
     .visual-top h3 { font-size: 14px; }
-
     .live {
       display: inline-flex;
       align-items: center;
@@ -266,7 +242,6 @@
       font-size: 10px;
       font-weight: 700;
     }
-
     .live-dot {
       width: 7px;
       height: 7px;
@@ -274,7 +249,6 @@
       background: var(--green);
       animation: pulse 2s infinite;
     }
-
     .qr-frame {
       display: grid;
       place-items: center;
@@ -287,29 +261,20 @@
       color: #10172a;
       box-shadow: 0 0 45px rgba(99, 102, 241, .12);
     }
-
     .qr-frame i { font-size: 115px; }
-
-    .visual-caption {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
+    .visual-caption { text-align: center; font-size: 13px; font-weight: 700; }
     .visual-subcaption {
       margin-top: 7px;
       color: var(--muted);
       text-align: center;
       font-size: 11px;
     }
-
     .mini-stats {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
       margin-top: 25px;
     }
-
     .mini-stat {
       display: flex;
       align-items: center;
@@ -319,7 +284,6 @@
       border-radius: 13px;
       background: rgba(8, 13, 27, .45);
     }
-
     .mini-stat-icon {
       display: grid;
       place-items: center;
@@ -328,26 +292,13 @@
       border-radius: 11px;
       background: rgba(99, 102, 241, .16);
       color: #a5b4fc;
+      flex-shrink: 0;
     }
-
-    .mini-stat strong {
-      display: block;
-      font-size: 12px;
-    }
-
-    .mini-stat span {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 10px;
-    }
+    .mini-stat strong { display: block; font-size: 12px; }
+    .mini-stat span { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
 
     section { scroll-margin-top: 90px; }
-
-    .section-heading {
-      margin-bottom: 27px;
-    }
-
+    .section-heading { margin-bottom: 27px; }
     .section-heading .overline {
       margin-bottom: 10px;
       color: #818cf8;
@@ -356,33 +307,21 @@
       letter-spacing: 2px;
       text-transform: uppercase;
     }
-
-    .section-heading h2 {
-      font-size: clamp(23px, 3vw, 32px);
-      letter-spacing: -.8px;
-    }
-
-    .section-heading p {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.8;
-    }
+    .section-heading h2 { font-size: clamp(23px, 3vw, 32px); letter-spacing: -.8px; }
+    .section-heading p { margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.8; }
 
     .tools-section { padding: 15px 0 75px; }
-
     .tools-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 18px;
     }
-
     .tool-card {
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      min-height: 230px;
+      min-height: 245px;
       padding: 24px;
       overflow: hidden;
       border: 1px solid var(--border);
@@ -391,7 +330,6 @@
       transition: transform .3s, border-color .3s, box-shadow .3s;
       animation: appear .7s ease both;
     }
-
     .tool-card::after {
       content: "";
       position: absolute;
@@ -405,15 +343,12 @@
       filter: blur(30px);
       transition: opacity .3s;
     }
-
     .tool-card:hover {
       transform: translateY(-6px);
       border-color: rgba(129, 140, 248, .5);
       box-shadow: 0 18px 40px rgba(0, 0, 0, .2);
     }
-
     .tool-card:hover::after { opacity: .3; }
-
     .tool-icon {
       display: grid;
       place-items: center;
@@ -425,19 +360,8 @@
       color: #a5b4fc;
       font-size: 19px;
     }
-
-    .tool-card h3 {
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-
-    .tool-card p {
-      margin-bottom: 22px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
-    }
-
+    .tool-card h3 { margin-bottom: 10px; font-size: 16px; }
+    .tool-card p { margin-bottom: 22px; color: var(--muted); font-size: 12px; line-height: 1.8; }
     .tool-link {
       display: inline-flex;
       align-items: center;
@@ -447,7 +371,6 @@
       font-size: 11px;
       font-weight: 800;
     }
-
     .tool-link i { transition: transform .2s; }
     .tool-card:hover .tool-link i { transform: translateX(5px); }
 
@@ -457,14 +380,12 @@
       gap: 14px;
       padding-bottom: 78px;
     }
-
     .workflow-item {
       padding: 20px 17px;
       border: 1px solid var(--border);
       border-radius: 15px;
       background: rgba(17, 26, 45, .55);
     }
-
     .step-number {
       margin-bottom: 15px;
       color: #818cf8;
@@ -472,17 +393,8 @@
       font-weight: 800;
       letter-spacing: 1px;
     }
-
-    .workflow-item h4 {
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    .workflow-item p {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.8;
-    }
+    .workflow-item h4 { margin-bottom: 8px; font-size: 13px; }
+    .workflow-item p { color: var(--muted); font-size: 11px; line-height: 1.8; }
 
     .notice {
       display: flex;
@@ -494,23 +406,9 @@
       border-radius: 15px;
       background: rgba(6, 182, 212, .06);
     }
-
-    .notice i {
-      margin-top: 2px;
-      color: var(--cyan);
-    }
-
-    .notice strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 12px;
-    }
-
-    .notice p {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.8;
-    }
+    .notice i { margin-top: 2px; color: var(--cyan); }
+    .notice strong { display: block; margin-bottom: 6px; font-size: 12px; }
+    .notice p { color: var(--muted); font-size: 11px; line-height: 1.8; }
 
     footer {
       display: flex;
@@ -522,30 +420,24 @@
       color: var(--muted);
       font-size: 10px;
     }
-
     footer strong { color: #e2e8f0; }
-
-    .footer-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 17px;
-    }
-
+    .footer-links { display: flex; flex-wrap: wrap; gap: 17px; }
     .footer-links a:hover { color: white; }
 
+    @media (max-width: 1050px) {
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+      .topbar { padding-left: 4%; padding-right: 4%; }
+    }
     @media (max-width: 850px) {
-      .topbar { padding: 14px 5%; }
       .nav { gap: 2px; }
       .nav a { padding: 9px; }
       .hero { gap: 30px; padding-top: 60px; }
       .hero-visual { padding: 20px; }
-      .tools-grid { grid-template-columns: repeat(2, 1fr); }
       .workflow { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 600px) {
       .topbar { align-items: flex-start; flex-direction: column; gap: 12px; }
-      .nav { width: 100%; overflow-x: auto; }
+      .nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
       .nav a { white-space: nowrap; }
       .hero { grid-template-columns: 1fr; padding: 48px 0 55px; }
       .hero h1 { letter-spacing: -1.5px; }
@@ -555,7 +447,6 @@
       .workflow { grid-template-columns: 1fr 1fr; }
       footer { align-items: flex-start; flex-direction: column; }
     }
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .01ms !important;
@@ -584,6 +475,9 @@
       <a href="#home">Home</a>
       <a href="#tools">System Tools</a>
       <a href="#workflow">How It Works</a>
+      <a href="register.html" class="register-link">
+        <i class="fa-solid fa-user-plus"></i> Register
+      </a>
       <a href="admin.html" class="admin-link">
         <i class="fa-solid fa-gauge-high"></i> Admin Dashboard
       </a>
@@ -611,12 +505,13 @@
 
         <div class="hero-actions">
           <a class="btn btn-primary" href="scanner.html">
-            <i class="fa-solid fa-expand"></i>
-            Open QR Scanner
+            <i class="fa-solid fa-expand"></i> Open QR Scanner
           </a>
           <a class="btn btn-secondary" href="generator.html">
-            <i class="fa-solid fa-qrcode"></i>
-            Generate QR Code
+            <i class="fa-solid fa-qrcode"></i> Generate QR Code
+          </a>
+          <a class="btn btn-register" href="register.html">
+            <i class="fa-solid fa-user-plus"></i> Student / Visitor Registration
           </a>
         </div>
       </div>
@@ -632,9 +527,7 @@
         </div>
 
         <div class="visual-caption">QR-Based Monitoring</div>
-        <div class="visual-subcaption">
-          Organized attendance and visitor records
-        </div>
+        <div class="visual-subcaption">Organized attendance and visitor records</div>
 
         <div class="mini-stats">
           <div class="mini-stat">
@@ -663,6 +556,15 @@
       </div>
 
       <div class="tools-grid">
+        <a href="register.html" class="tool-card" style="--glow:#06b6d4">
+          <div class="tool-icon" style="background:rgba(6,182,212,.13);color:#67e8f9">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <h3>Student / Visitor Registration</h3>
+          <p>Register a student or submit visitor details. Visitor access requires administrator authorization.</p>
+          <span class="tool-link" style="color:#67e8f9">Open Registration <i class="fa-solid fa-arrow-right"></i></span>
+        </a>
+
         <a href="admin.html" class="tool-card" style="--glow:#6366f1">
           <div class="tool-icon"><i class="fa-solid fa-gauge-high"></i></div>
           <h3>Admin Dashboard</h3>
@@ -675,7 +577,7 @@
             <i class="fa-solid fa-qrcode"></i>
           </div>
           <h3>QR Generator</h3>
-          <p>Open the QR generator for the supported student or visitor registration workflow.</p>
+          <p>Open the QR generator for the supported student or visitor QR workflow.</p>
           <span class="tool-link" style="color:#67e8f9">Generate QR <i class="fa-solid fa-arrow-right"></i></span>
         </a>
 
@@ -694,28 +596,25 @@
       <div class="section-heading">
         <div class="overline">Simple Workflow</div>
         <h2>How PLMunTrack works</h2>
-        <p>A guided flow for supported registration, authorization, and attendance tasks.</p>
+        <p>A guided flow for registration, authorization, and attendance tasks.</p>
       </div>
 
       <div class="workflow">
         <div class="workflow-item">
           <div class="step-number">STEP 01</div>
           <h4><i class="fa-solid fa-id-card" style="color:#818cf8"></i> Register</h4>
-          <p>Use the appropriate registration workflow to provide the required information.</p>
+          <p>Open the registration page and complete the appropriate student or visitor form.</p>
         </div>
-
         <div class="workflow-item">
           <div class="step-number">STEP 02</div>
           <h4><i class="fa-solid fa-qrcode" style="color:#67e8f9"></i> Generate QR</h4>
           <p>Generate a QR token through the configured system workflow.</p>
         </div>
-
         <div class="workflow-item">
           <div class="step-number">STEP 03</div>
           <h4><i class="fa-solid fa-shield-halved" style="color:#c4b5fd"></i> Authorize</h4>
           <p>Visitor access must be authorized before the visitor scan is accepted.</p>
         </div>
-
         <div class="workflow-item">
           <div class="step-number">STEP 04</div>
           <h4><i class="fa-solid fa-clipboard-check" style="color:#6ee7b7"></i> Record</h4>
@@ -742,12 +641,15 @@
       <strong>PLMunTrack</strong><br><br>
       QR Code-Based Visitor Monitoring and Attendance Management System
     </div>
+
     <div class="footer-links">
       <a href="index.html">Home</a>
+      <a href="register.html">Register</a>
       <a href="generator.html">QR Generator</a>
       <a href="scanner.html">QR Scanner</a>
       <a href="admin.html">Admin</a>
     </div>
+
     <div>© <span id="year"></span> PLMunTrack</div>
   </footer>
 
@@ -756,4 +658,5 @@
   </script>
 </body>
 </html>
+```
 
