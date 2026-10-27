@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLMunTrack | Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0b1120;
+            color: #f8fafc;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 6%;
+            background: #111c31;
+            border-bottom: 1px solid #293851;
+        }
+
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .brand span {
+            color: #67e8f9;
+        }
+
+        .logout {
+            padding: 10px 15px;
+            border-radius: 9px;
+            background: #293851;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
+            padding: 35px 20px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        .welcome p {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .notice {
+            padding: 14px;
+            margin-bottom: 25px;
+            border: 1px solid #854d0e;
+            border-radius: 10px;
+            background: #29200d;
+            color: #fde68a;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            padding: 24px;
+            border: 1px solid #293851;
+            border-radius: 16px;
+            background: #111c31;
+        }
+
+        .card .icon {
+            font-size: 30px;
+            margin-bottom: 18px;
+        }
+
+        .card h2 {
+            margin: 0 0 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            min-height: 45px;
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card a {
+            display: block;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 9px;
+            background: #4f46e5;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .card a:hover {
+            background: #6366f1;
+        }
+
+        footer {
+            padding: 25px;
+            color: #64748b;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="brand">PLMun<span>Track</span></div>
+        <a class="logout" href="login.html">Log Out</a>
+    </header>
+
+    <main>
+        <section class="welcome">
+            <h1>My Dashboard</h1>
+            <p>
+                Welcome to PLMunTrack. Manage your registration and
+                attendance using the options below.
+            </p>
+        </section>
+
+        <div class="notice">
+            Prototype dashboard: login verification and account-based access
+            are not connected yet. Do not publish this as a secure user
+            dashboard until authentication is implemented.
+        </div>
+
+        <section class="cards">
+            <article class="card">
+                <div class="icon">📝</div>
+                <h2>Registration</h2>
+                <p>Register a student or visitor account.</p>
+                <a href="register.html">Open Registration</a>
+            </article>
+
+            <article class="card">
+                <div class="icon">📷</div>
+                <h2>QR Scanner</h2>
+                <p>Scan a valid QR code to record attendance.</p>
+                <a href="scanner.html">Open Scanner</a>
+            </article>
+
+            <article class="card">
+                <div class="icon">▦</div>
+                <h2>My QR Code</h2>
+                <p>Open the existing QR generator page for now.</p>
+                <a href="generator.html">Open QR Generator</a>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
+    </footer>
+</body>
+</html>
