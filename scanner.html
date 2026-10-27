@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="description" content="PLMunTrack QR Attendance and Visitor Scanner">
+    <link rel="manifest" href="/manifest.json">
+
     <title>PLMunTrack - QR Scanner</title>
 
     <script src="https://unpkg.com/html5-qrcode"></script>
@@ -22,9 +26,7 @@
             --danger: #ef4444;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -77,6 +79,7 @@
             border-radius: 18px;
             padding: 20px;
             min-width: 0;
+            margin-bottom: 20px;
         }
 
         h2 {
@@ -136,9 +139,7 @@
             outline: none;
         }
 
-        input:focus {
-            border-color: var(--cyan);
-        }
+        input:focus { border-color: var(--cyan); }
 
         .hint {
             color: var(--muted);
@@ -169,14 +170,8 @@
             background: #301619;
         }
 
-        .result {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .result.show {
-            display: block;
-        }
+        .result { display: none; }
+        .result.show { display: block; }
 
         .result-title {
             display: flex;
@@ -186,9 +181,7 @@
             margin-bottom: 15px;
         }
 
-        .result-title h2 {
-            margin: 0;
-        }
+        .result-title h2 { margin: 0; }
 
         .status-badge {
             padding: 7px 11px;
@@ -232,9 +225,14 @@
             overflow-wrap: anywhere;
         }
 
-        .attendance-status {
-            color: #67e8f9;
+        .attendance-status { color: #67e8f9; }
+
+        .install-section {
+            display: none;
+            margin-bottom: 20px;
         }
+
+        .install-section.show { display: block; }
 
         .footer {
             text-align: center;
@@ -244,13 +242,8 @@
         }
 
         @media (max-width: 480px) {
-            h1 {
-                font-size: 25px;
-            }
-
-            .card {
-                padding: 15px;
-            }
+            h1 { font-size: 25px; }
+            .card { padding: 15px; }
         }
     </style>
 </head>
@@ -266,18 +259,22 @@
         </div>
     </header>
 
-    <div class="layout">
+    <section class="card install-section" id="installSection">
+        <h2>Install PLMunTrack</h2>
+        <p class="hint">
+            Install PLMunTrack on this device for quick access like an app.
+        </p>
+        <button id="installBtn" type="button">Install App</button>
+    </section>
 
+    <div class="layout">
         <section class="card">
             <h2>📷 Camera Scanner</h2>
             <div id="reader"></div>
 
             <div class="button-row">
-                <button id="startBtn" onclick="startCamera()">
-                    Start Camera
-                </button>
-                <button id="stopBtn" class="secondary"
-                        onclick="stopCamera()" disabled>
+                <button id="startBtn" type="button">Start Camera</button>
+                <button id="stopBtn" class="secondary" type="button" disabled>
                     Stop Camera
                 </button>
             </div>
@@ -287,17 +284,16 @@
             </div>
 
             <p class="hint">
-                After a successful scan, scan the same QR again to record
-                the next attendance action. If the camera does not scan it
-                again, stop and restart the camera.
+                Allow camera permission when asked. On a cellphone, open this
+                page over HTTPS and use the rear camera to scan QR codes.
             </p>
         </section>
 
         <section class="card">
             <h2>⌨️ Manual QR Token</h2>
             <p class="hint">
-                Use this option if the camera is unavailable. Paste the
-                exact token contained in the student's or visitor's QR code.
+                Use this option if the camera is unavailable. Paste the exact
+                token contained in the QR code.
             </p>
 
             <form id="tokenForm">
@@ -307,11 +303,8 @@
                        autocomplete="off" required>
 
                 <div class="button-row">
-                    <button type="submit" id="submitBtn">
-                        Submit Token
-                    </button>
-                    <button type="button" class="secondary"
-                            onclick="clearToken()">
+                    <button type="submit" id="submitBtn">Submit Token</button>
+                    <button type="button" class="secondary" id="clearBtn">
                         Clear
                     </button>
                 </div>
@@ -321,7 +314,6 @@
                 Waiting for a QR scan.
             </div>
         </section>
-
     </div>
 
     <section class="card result" id="resultCard">
@@ -335,27 +327,22 @@
                 <span class="detail-label">Name</span>
                 <span class="detail-value" id="personName">—</span>
             </div>
-
             <div class="detail">
                 <span class="detail-label">Student / Visitor ID</span>
                 <span class="detail-value" id="personId">—</span>
             </div>
-
             <div class="detail">
                 <span class="detail-label">Person Type</span>
                 <span class="detail-value" id="personType">—</span>
             </div>
-
             <div class="detail">
                 <span class="detail-label">Date</span>
                 <span class="detail-value" id="scanDate">—</span>
             </div>
-
             <div class="detail">
                 <span class="detail-label">Time</span>
                 <span class="detail-value" id="scanTime">—</span>
             </div>
-
             <div class="detail">
                 <span class="detail-label">Attendance / Visit Status</span>
                 <span class="detail-value attendance-status"
@@ -372,7 +359,6 @@
 </div>
 
 <script>
-    // Keep this URL consistent with the currently deployed Apps Script.
     const API_URL =
         "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
@@ -381,6 +367,7 @@
     let processing = false;
     let lastScannedToken = "";
     let lastScanAt = 0;
+    let installPrompt = null;
 
     const cameraMessage = document.getElementById("cameraMessage");
     const scanMessage = document.getElementById("scanMessage");
@@ -408,40 +395,29 @@
         const badge = document.getElementById("resultBadge");
 
         document.getElementById("personName").textContent =
-            firstValue(data, [
-                "fullName", "Full_Name", "name",
-                "visitorName", "studentName"
-            ]);
+            firstValue(data, ["fullName", "Full_Name", "name",
+                "visitorName", "studentName"]);
 
         document.getElementById("personId").textContent =
-            firstValue(data, [
-                "studentNumber", "Student_Number",
-                "visitorId", "Visitor_ID", "id"
-            ]);
+            firstValue(data, ["studentNumber", "Student_Number",
+                "visitorId", "Visitor_ID", "id"]);
 
         document.getElementById("personType").textContent =
-            firstValue(data, [
-                "personType", "Person_Type", "type", "person_type"
-            ]);
+            firstValue(data, ["personType", "Person_Type", "type",
+                "person_type"]);
 
         document.getElementById("scanDate").textContent =
-            firstValue(data, [
-                "date", "Date", "visitDate",
-                "Visit_Date", "Token_Date"
-            ]);
+            firstValue(data, ["date", "Date", "visitDate",
+                "Visit_Date", "Token_Date"]);
 
         document.getElementById("scanTime").textContent =
-            firstValue(data, [
-                "time", "Time", "scanTime",
-                "timeIn", "Time_In", "timeOut", "Time_Out"
-            ]);
+            firstValue(data, ["time", "Time", "scanTime",
+                "timeIn", "Time_In", "timeOut", "Time_Out"]);
 
-        const status = firstValue(data, [
-            "attendanceStatus", "status", "Status",
-            "action", "visitStatus", "Authorization_Status"
-        ]);
+        document.getElementById("attendanceStatus").textContent =
+            firstValue(data, ["attendanceStatus", "status", "Status",
+                "action", "visitStatus", "Authorization_Status"]);
 
-        document.getElementById("attendanceStatus").textContent = status;
         document.getElementById("resultMessage").textContent =
             firstValue(data, ["message", "Message"], "Scan completed.");
 
@@ -454,11 +430,9 @@
         const card = document.getElementById("resultCard");
         const badge = document.getElementById("resultBadge");
 
-        document.getElementById("personName").textContent = "—";
-        document.getElementById("personId").textContent = "—";
-        document.getElementById("personType").textContent = "—";
-        document.getElementById("scanDate").textContent = "—";
-        document.getElementById("scanTime").textContent = "—";
+        ["personName", "personId", "personType", "scanDate", "scanTime"]
+            .forEach(id => document.getElementById(id).textContent = "—");
+
         document.getElementById("attendanceStatus").textContent = "FAILED";
         document.getElementById("resultMessage").textContent = message;
 
@@ -484,7 +458,6 @@
         try {
             const url = new URL(API_URL);
             url.searchParams.set("action", "scan");
-            // Apps Script doGet expects the parameter name "token".
             url.searchParams.set("token", token);
             url.searchParams.set("_", String(Date.now()));
 
@@ -509,12 +482,9 @@
                 );
             }
 
-            if (data.success === false || data.error) {
-                throw new Error(data.message || data.error || "QR scan failed.");
-            }
-
             if (data.success !== true) {
-                throw new Error(data.message || "The QR token was not accepted.");
+                throw new Error(data.message || data.error ||
+                    "The QR token was not accepted.");
             }
 
             lastScannedToken = token;
@@ -523,24 +493,18 @@
             showResult(data);
 
             const status = firstValue(data, ["status", "Status"], "Success");
-            const name = firstValue(data, ["fullName", "Full_Name", "name"], "Record");
-            setMessage(
-                scanMessage,
-                name + " — " + status + ".",
-                "success"
-            );
+            const name = firstValue(data,
+                ["fullName", "Full_Name", "name"], "Record");
 
-            setMessage(
-                cameraMessage,
-                "Scan successful: " + status +
-                ". Scan again for the next attendance action.",
-                "success"
-            );
+            setMessage(scanMessage, name + " — " + status + ".", "success");
+            setMessage(cameraMessage,
+                "Scan successful: " + status + ".", "success");
 
             document.getElementById("tokenInput").value = "";
 
         } catch (error) {
-            const message = error.message || "Unable to process this QR token.";
+            const message = error.message ||
+                "Unable to process this QR token.";
             setMessage(scanMessage, message, "error");
             setMessage(cameraMessage, message, "error");
             showError(message);
@@ -553,10 +517,13 @@
     async function startCamera() {
         if (cameraRunning) return;
 
-        // Clear the previous-camera duplicate guard when starting a new session.
-        lastScannedToken = "";
-
         try {
+            if (!window.isSecureContext) {
+                throw new Error(
+                    "Camera access requires HTTPS. Open the deployed PLMunTrack website."
+                );
+            }
+
             if (!scanner) {
                 scanner = new Html5Qrcode("reader");
             }
@@ -570,14 +537,11 @@
                     qrbox: { width: 240, height: 240 },
                     aspectRatio: 1.0
                 },
-                async (decodedText) => {
+                async decodedText => {
                     if (processing) return;
 
-                    // Prevent rapid duplicate camera callbacks.
-                    if (
-                        decodedText === lastScannedToken &&
-                        Date.now() - lastScanAt < 2500
-                    ) {
+                    if (decodedText === lastScannedToken &&
+                        Date.now() - lastScanAt < 2500) {
                         return;
                     }
 
@@ -601,17 +565,17 @@
             cameraRunning = true;
             startBtn.disabled = true;
             stopBtn.disabled = false;
-            setMessage(cameraMessage, "Camera is running. Point it at a QR code.");
+            setMessage(cameraMessage,
+                "Camera is running. Point it at a QR code.");
 
         } catch (error) {
             cameraRunning = false;
             startBtn.disabled = false;
             stopBtn.disabled = true;
-            setMessage(
-                cameraMessage,
+            setMessage(cameraMessage,
+                error.message ||
                 "Cannot start camera. Allow camera permission or use Manual QR Token.",
-                "error"
-            );
+                "error");
         }
     }
 
@@ -623,8 +587,9 @@
             cameraRunning = false;
             startBtn.disabled = false;
             stopBtn.disabled = true;
-            setMessage(cameraMessage, "Camera stopped. Start it again to scan.");
-        } catch (error) {
+            setMessage(cameraMessage,
+                "Camera stopped. Start it again to scan.");
+        } catch (_) {
             setMessage(cameraMessage, "Unable to stop the camera.", "error");
         }
     }
@@ -634,10 +599,38 @@
         setMessage(scanMessage, "Token field cleared.");
     }
 
-    document.getElementById("tokenForm").addEventListener("submit", async (event) => {
+    document.getElementById("tokenForm").addEventListener("submit",
+        async event => {
+            event.preventDefault();
+            await submitToken(document.getElementById("tokenInput").value);
+        });
+
+    document.getElementById("clearBtn").addEventListener("click", clearToken);
+    startBtn.addEventListener("click", startCamera);
+    stopBtn.addEventListener("click", stopCamera);
+
+    // Install prompt: supported browsers can offer app installation.
+    window.addEventListener("beforeinstallprompt", event => {
         event.preventDefault();
-        const token = document.getElementById("tokenInput").value;
-        await submitToken(token);
+        installPrompt = event;
+        document.getElementById("installSection").classList.add("show");
+    });
+
+    document.getElementById("installBtn").addEventListener("click", async () => {
+        if (!installPrompt) {
+            setMessage(cameraMessage,
+                "If installation is unavailable, open the browser menu and look for Install app or Add to Home screen.");
+            return;
+        }
+
+        installPrompt.prompt();
+        await installPrompt.userChoice;
+        installPrompt = null;
+        document.getElementById("installSection").classList.remove("show");
+    });
+
+    window.addEventListener("appinstalled", () => {
+        document.getElementById("installSection").classList.remove("show");
     });
 </script>
 </body>
