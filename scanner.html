@@ -8,209 +8,48 @@
     <meta name="description" content="PLMunTrack QR Attendance and Visitor Scanner">
     <link rel="manifest" href="/manifest.json">
     <title>PLMunTrack - QR Scanner</title>
-
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         :root {
-            --bg: #0b1120;
-            --panel: #111c31;
-            --panel2: #17243b;
-            --primary: #6366f1;
-            --cyan: #06b6d4;
-            --text: #f8fafc;
-            --muted: #94a3b8;
-            --border: #293851;
+            --bg:#0b1120;--panel:#111c31;--panel2:#17243b;
+            --primary:#6366f1;--cyan:#06b6d4;--text:#f8fafc;
+            --muted:#94a3b8;--border:#293851;
         }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            padding: 24px 14px;
-            font-family: Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .container { width: 100%; max-width: 850px; margin: auto; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .logo {
-            display: inline-block;
-            padding: 10px 16px;
-            border-radius: 12px;
-            background: #202b55;
-            color: #a5b4fc;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        h1 { margin: 5px 0 10px; font-size: 30px; }
-        h2 { font-size: 19px; margin-top: 0; }
-        .subtitle, .hint, .footer { color: var(--muted); }
-        .subtitle { font-size: 14px; }
-
-        .layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 20px;
-            min-width: 0;
-            margin-bottom: 20px;
-        }
-
-        #reader {
-            width: 100%;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #fff;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        button {
-            border: 0;
-            border-radius: 10px;
-            padding: 12px 16px;
-            color: white;
-            background: var(--primary);
-            cursor: pointer;
-            font-weight: bold;
-            flex: 1;
-        }
-
-        button.secondary {
-            background: var(--panel2);
-            border: 1px solid var(--border);
-        }
-
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        label {
-            display: block;
-            margin: 15px 0 8px;
-            color: #cbd5e1;
-            font-size: 14px;
-        }
-
-        input {
-            width: 100%;
-            padding: 13px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: #0b1425;
-            color: white;
-            outline: none;
-        }
-
-        input:focus { border-color: var(--cyan); }
-
-        .hint { font-size: 13px; line-height: 1.6; }
-
-        .message {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            background: var(--panel2);
-            color: #cbd5e1;
-            font-size: 14px;
-            line-height: 1.5;
-            overflow-wrap: anywhere;
-        }
-
-        .message.success {
-            color: #bbf7d0;
-            border: 1px solid #166534;
-            background: #10291f;
-        }
-
-        .message.error {
-            color: #fecaca;
-            border: 1px solid #7f1d1d;
-            background: #301619;
-        }
-
-        .result { display: none; }
-        .result.show { display: block; }
-
-        .result-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .result-title h2 { margin: 0; }
-
-        .status-badge {
-            padding: 7px 11px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            background: #164e35;
-            color: #bbf7d0;
-        }
-
-        .status-badge.error {
-            background: #511b22;
-            color: #fecaca;
-        }
-
-        .details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
-            gap: 10px;
-        }
-
-        .detail {
-            background: #0b1425;
-            border: 1px solid var(--border);
-            padding: 13px;
-            border-radius: 10px;
-            min-width: 0;
-        }
-
-        .detail-label {
-            display: block;
-            color: var(--muted);
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
-
-        .detail-value {
-            display: block;
-            font-size: 15px;
-            font-weight: bold;
-            overflow-wrap: anywhere;
-        }
-
-        .attendance-status { color: #67e8f9; }
-
-        .install-section { display: none; margin-bottom: 20px; }
-        .install-section.show { display: block; }
-
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 25px;
-        }
-
-        @media (max-width: 480px) {
-            h1 { font-size: 25px; }
-            .card { padding: 15px; }
-        }
+        *{box-sizing:border-box}
+        body{margin:0;padding:24px 14px;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
+        .container{width:100%;max-width:850px;margin:auto}
+        .header{text-align:center;margin-bottom:25px}
+        .logo{display:inline-block;padding:10px 16px;border-radius:12px;background:#202b55;color:#a5b4fc;font-weight:bold;margin-bottom:12px}
+        h1{margin:5px 0 10px;font-size:30px}
+        h2{font-size:19px;margin-top:0}
+        .subtitle,.hint,.footer{color:var(--muted)}
+        .subtitle{font-size:14px}
+        .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:20px}
+        #reader{width:100%;max-width:500px;margin:auto;overflow:hidden;border-radius:12px;background:#fff}
+        .button-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}
+        button{border:0;border-radius:10px;padding:12px 16px;color:white;background:var(--primary);cursor:pointer;font-weight:bold;flex:1}
+        button.secondary{background:var(--panel2);border:1px solid var(--border)}
+        button:disabled{opacity:.5;cursor:not-allowed}
+        .hint{font-size:13px;line-height:1.6}
+        .message{margin-top:15px;padding:12px;border-radius:10px;background:var(--panel2);color:#cbd5e1;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+        .message.success{color:#bbf7d0;border:1px solid #166534;background:#10291f}
+        .message.error{color:#fecaca;border:1px solid #7f1d1d;background:#301619}
+        .result{display:none}
+        .result.show{display:block}
+        .result-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+        .result-title h2{margin:0}
+        .status-badge{padding:7px 11px;border-radius:20px;font-size:12px;font-weight:bold;background:#164e35;color:#bbf7d0}
+        .status-badge.error{background:#511b22;color:#fecaca}
+        .details{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px}
+        .detail{background:#0b1425;border:1px solid var(--border);padding:13px;border-radius:10px;min-width:0}
+        .detail-label{display:block;color:var(--muted);font-size:12px;margin-bottom:8px}
+        .detail-value{display:block;font-size:15px;font-weight:bold;overflow-wrap:anywhere}
+        .attendance-status{color:#67e8f9}
+        .install-section{display:none;margin-bottom:20px}
+        .install-section.show{display:block}
+        .footer{text-align:center;font-size:12px;margin-top:25px}
+        @media(max-width:480px){h1{font-size:25px}.card{padding:15px}}
     </style>
 </head>
 
@@ -219,9 +58,7 @@
     <header class="header">
         <div class="logo">PLMunTrack</div>
         <h1>QR Code Scanner</h1>
-        <div class="subtitle">
-            Visitor Monitoring and Attendance Management System
-        </div>
+        <div class="subtitle">Visitor Monitoring and Attendance Management System</div>
     </header>
 
     <section class="card install-section" id="installSection">
@@ -230,95 +67,40 @@
         <button id="installBtn" type="button">Install App</button>
     </section>
 
-    <div class="layout">
-        <section class="card">
-            <h2>📷 Camera Scanner</h2>
-            <div id="reader"></div>
+    <section class="card">
+        <h2>📷 Automatic QR Scanner</h2>
+        <p class="hint">Start the camera and scan a valid PLMunTrack QR code. The token will be submitted automatically.</p>
+        <div id="reader"></div>
 
-            <div class="button-row">
-                <button id="startBtn" type="button">Start Camera</button>
-                <button id="stopBtn" class="secondary" type="button" disabled>
-                    Stop Camera
-                </button>
-            </div>
+        <div class="button-row">
+            <button id="startBtn" type="button">Start Camera</button>
+            <button id="stopBtn" class="secondary" type="button" disabled>Stop Camera</button>
+        </div>
 
-            <div class="message" id="cameraMessage">
-                Click Start Camera to begin scanning.
-            </div>
-
-            <p class="hint">
-                Open the deployed website over HTTPS on your cellphone.
-                Allow camera permission and use the rear camera to scan.
-            </p>
-        </section>
-
-        <section class="card">
-            <h2>⌨️ Manual QR Token</h2>
-            <p class="hint">
-                Use this option if the camera is unavailable. Paste the exact
-                token contained in the QR code.
-            </p>
-
-            <form id="tokenForm">
-                <label for="tokenInput">QR Token</label>
-                <input id="tokenInput" type="text"
-                       placeholder="Enter or paste QR token"
-                       autocomplete="off" required>
-
-                <div class="button-row">
-                    <button type="submit" id="submitBtn">Submit Token</button>
-                    <button type="button" class="secondary" id="clearBtn">Clear</button>
-                </div>
-            </form>
-
-            <div id="scanMessage" class="message">Waiting for a QR scan.</div>
-        </section>
-    </div>
+        <div class="message" id="cameraMessage">Click Start Camera to begin scanning.</div>
+    </section>
 
     <section class="card result" id="resultCard">
         <div class="result-title">
             <h2>Scan Details</h2>
             <span id="resultBadge" class="status-badge">SUCCESS</span>
         </div>
-
         <div class="details">
-            <div class="detail">
-                <span class="detail-label">Name</span>
-                <span class="detail-value" id="personName">—</span>
-            </div>
-            <div class="detail">
-                <span class="detail-label">Student / Visitor ID</span>
-                <span class="detail-value" id="personId">—</span>
-            </div>
-            <div class="detail">
-                <span class="detail-label">Person Type</span>
-                <span class="detail-value" id="personType">—</span>
-            </div>
-            <div class="detail">
-                <span class="detail-label">Date</span>
-                <span class="detail-value" id="scanDate">—</span>
-            </div>
-            <div class="detail">
-                <span class="detail-label">Time</span>
-                <span class="detail-value" id="scanTime">—</span>
-            </div>
-            <div class="detail">
-                <span class="detail-label">Attendance / Visit Status</span>
-                <span class="detail-value attendance-status" id="attendanceStatus">—</span>
-            </div>
+            <div class="detail"><span class="detail-label">Name</span><span class="detail-value" id="personName">—</span></div>
+            <div class="detail"><span class="detail-label">Student / Visitor ID</span><span class="detail-value" id="personId">—</span></div>
+            <div class="detail"><span class="detail-label">Person Type</span><span class="detail-value" id="personType">—</span></div>
+            <div class="detail"><span class="detail-label">Date</span><span class="detail-value" id="scanDate">—</span></div>
+            <div class="detail"><span class="detail-label">Time</span><span class="detail-value" id="scanTime">—</span></div>
+            <div class="detail"><span class="detail-label">Attendance / Visit Status</span><span class="detail-value attendance-status" id="attendanceStatus">—</span></div>
         </div>
-
         <div class="message" id="resultMessage"></div>
     </section>
 
-    <footer class="footer">
-        PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa
-    </footer>
+    <footer class="footer">PLMunTrack © 2026 | Pamantasan ng Lungsod ng Muntinlupa</footer>
 </div>
 
 <script>
-    const API_URL =
-        "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
     let scanner = null;
     let cameraRunning = false;
@@ -328,8 +110,6 @@
     let installPrompt = null;
 
     const cameraMessage = document.getElementById("cameraMessage");
-    const scanMessage = document.getElementById("scanMessage");
-    const submitBtn = document.getElementById("submitBtn");
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
 
@@ -360,7 +140,7 @@
         document.getElementById("scanTime").textContent =
             firstValue(data, ["time", "Time", "scanTime", "timeIn", "Time_In", "timeOut", "Time_Out"]);
         document.getElementById("attendanceStatus").textContent =
-            firstValue(data, ["attendanceStatus", "status", "Status", "action", "visitStatus"]);
+            firstValue(data, ["status", "Status", "attendanceStatus", "action", "visitStatus"]);
         document.getElementById("resultMessage").textContent =
             firstValue(data, ["message", "Message"], "Scan completed.");
 
@@ -384,16 +164,10 @@
 
     async function submitToken(rawToken) {
         const token = String(rawToken || "").trim();
-
-        if (!token) {
-            setMessage(scanMessage, "Please enter a QR token.", "error");
-            return;
-        }
-        if (processing) return;
+        if (!token || processing) return;
 
         processing = true;
-        submitBtn.disabled = true;
-        setMessage(scanMessage, "Processing QR token...");
+        setMessage(cameraMessage, "QR detected. Submitting attendance...");
 
         try {
             const url = new URL(API_URL);
@@ -427,18 +201,14 @@
 
             const status = firstValue(data, ["status", "Status"], "Success");
             const name = firstValue(data, ["fullName", "Full_Name", "name"], "Record");
-            setMessage(scanMessage, name + " — " + status + ".", "success");
-            setMessage(cameraMessage, "Scan successful: " + status + ".", "success");
-            document.getElementById("tokenInput").value = "";
+            setMessage(cameraMessage, name + " — " + status + ". Attendance submitted.", "success");
 
         } catch (error) {
             const message = error.message || "Unable to process this QR token.";
-            setMessage(scanMessage, message, "error");
             setMessage(cameraMessage, message, "error");
             showError(message);
         } finally {
             processing = false;
-            submitBtn.disabled = false;
         }
     }
 
@@ -449,8 +219,8 @@
             if (!window.isSecureContext) {
                 throw new Error("Camera access requires HTTPS. Open the deployed PLMunTrack website.");
             }
-            if (!scanner) scanner = new Html5Qrcode("reader");
 
+            if (!scanner) scanner = new Html5Qrcode("reader");
             setMessage(cameraMessage, "Starting camera...");
 
             await scanner.start(
@@ -458,7 +228,7 @@
                 { fps: 10, qrbox: { width: 240, height: 240 }, aspectRatio: 1.0 },
                 async decodedText => {
                     if (processing) return;
-                    if (decodedText === lastScannedToken && Date.now() - lastScanAt < 2500) return;
+                    if (decodedText === lastScannedToken && Date.now() - lastScanAt < 3000) return;
 
                     try {
                         if (scanner && cameraRunning) await scanner.pause(true);
@@ -477,7 +247,6 @@
             startBtn.disabled = true;
             stopBtn.disabled = false;
             setMessage(cameraMessage, "Camera is running. Point it at a QR code.");
-
         } catch (error) {
             cameraRunning = false;
             startBtn.disabled = false;
@@ -488,7 +257,6 @@
 
     async function stopCamera() {
         if (!scanner || !cameraRunning) return;
-
         try {
             await scanner.stop();
             cameraRunning = false;
@@ -500,17 +268,6 @@
         }
     }
 
-    function clearToken() {
-        document.getElementById("tokenInput").value = "";
-        setMessage(scanMessage, "Token field cleared.");
-    }
-
-    document.getElementById("tokenForm").addEventListener("submit", async event => {
-        event.preventDefault();
-        await submitToken(document.getElementById("tokenInput").value);
-    });
-
-    document.getElementById("clearBtn").addEventListener("click", clearToken);
     startBtn.addEventListener("click", startCamera);
     stopBtn.addEventListener("click", stopCamera);
 
@@ -522,11 +279,9 @@
 
     document.getElementById("installBtn").addEventListener("click", async () => {
         if (!installPrompt) {
-            setMessage(cameraMessage,
-                "Open your browser menu and look for Install app or Add to Home screen.");
+            setMessage(cameraMessage, "Open your browser menu and look for Install app or Add to Home screen.");
             return;
         }
-
         installPrompt.prompt();
         await installPrompt.userChoice;
         installPrompt = null;
@@ -537,7 +292,6 @@
         document.getElementById("installSection").classList.remove("show");
     });
 
-    // Register the service worker for PWA support.
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
             navigator.serviceWorker.register("/service-worker.js")
