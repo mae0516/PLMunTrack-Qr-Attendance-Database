@@ -1,609 +1,876 @@
-<style>
-:root {
-  --bg: #f8fafc;
-  --panel: #ffffff;
-  --panel-light: #f1f5f9;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --primary: #2563eb;
-  --cyan: #0891b2;
-  --green: #16a34a;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-  font-family: Inter, sans-serif;
-  overflow-x: hidden;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  font: inherit;
-}
-
-.ambient {
-  position: fixed;
-  width: 380px;
-  height: 380px;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: .08;
-  pointer-events: none;
-  z-index: -1;
-}
-
-.ambient.one {
-  top: -150px;
-  left: -120px;
-  background: #60a5fa;
-}
-
-.ambient.two {
-  top: 250px;
-  right: -180px;
-  background: #67e8f9;
-}
-
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 16px 6%;
-  background: rgba(255,255,255,.95);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 12px rgba(15,23,42,.03);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 19px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
-.brand-icon {
-  width: 43px;
-  height: 43px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#2563eb,#0891b2);
-  color: white;
-}
-
-.brand small {
-  display: block;
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1px;
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.nav a {
-  padding: 10px 12px;
-  border-radius: 9px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 600;
-  transition: .2s;
-}
-
-.nav a:hover {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.nav .register-link {
-  color: white;
-  background: #0284c7;
-}
-
-.nav .admin-link {
-  color: white;
-  background: #2563eb;
-}
-
-.container {
-  width: min(1120px,88%);
-  margin: auto;
-}
-
-.hero {
-  display: grid;
-  grid-template-columns: 1.15fr .85fr;
-  align-items: center;
-  gap: 50px;
-  padding: 78px 0 70px;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 13px;
-  border: 1px solid #bfdbfe;
-  border-radius: 50px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: .5px;
-}
-
-.eyebrow i {
-  color: var(--cyan);
-}
-
-.hero h1 {
-  margin: 23px 0 18px;
-  font-size: clamp(38px,5.3vw,62px);
-  line-height: 1.08;
-  letter-spacing: -2px;
-  font-weight: 800;
-}
-
-.gradient-text {
-  background: linear-gradient(100deg,#2563eb,#0891b2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.hero p {
-  max-width: 540px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.9;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 28px;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 13px 17px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
-  transition: transform .2s, box-shadow .2s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 7px 18px rgba(15,23,42,.10);
-}
-
-.btn-primary {
-  color: white;
-  background: #2563eb;
-}
-
-.btn-secondary {
-  color: #1e293b;
-  background: white;
-  border-color: #cbd5e1;
-}
-
-.btn-register {
-  color: white;
-  background: #0284c7;
-}
-
-.hero-visual {
-  padding: 27px;
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  background: linear-gradient(145deg,#ffffff,#f1f5f9);
-  box-shadow: 0 20px 55px rgba(15,23,42,.07);
-}
-
-.visual-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 25px;
-}
-
-.visual-top h3 {
-  font-size: 14px;
-}
-
-.status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: #15803d;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-}
-
-.qr-frame {
-  display: grid;
-  place-items: center;
-  width: 165px;
-  height: 165px;
-  margin: 0 auto 22px;
-  border: 1px solid #e2e8f0;
-  border-radius: 18px;
-  background: #ffffff;
-  color: #0f172a;
-}
-
-.qr-frame i {
-  font-size: 105px;
-}
-
-.visual-caption {
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.visual-subcaption {
-  margin-top: 7px;
-  color: var(--muted);
-  text-align: center;
-  font-size: 11px;
-}
-
-.mini-stats {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.mini-stat {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #f8fafc;
-}
-
-.mini-stat-icon {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #dbeafe;
-  color: #2563eb;
-  flex-shrink: 0;
-}
-
-.mini-stat strong {
-  display: block;
-  font-size: 11px;
-}
-
-.mini-stat span {
-  display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 10px;
-}
-
-section {
-  scroll-margin-top: 90px;
-}
-
-.tools-section {
-  padding: 15px 0 75px;
-}
-
-.section-heading {
-  margin-bottom: 27px;
-}
-
-.overline {
-  margin-bottom: 10px;
-  color: #2563eb;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-.section-heading h2 {
-  font-size: clamp(23px,3vw,32px);
-  letter-spacing: -.8px;
-}
-
-.section-heading p {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-.tools-grid {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 18px;
-}
-
-.tool-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-height: 230px;
-  padding: 23px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 3px 12px rgba(15,23,42,.025);
-  transition: transform .25s,border-color .25s,box-shadow .25s;
-}
-
-.tool-card:hover {
-  transform: translateY(-5px);
-  border-color: #93c5fd;
-  box-shadow: 0 14px 30px rgba(15,23,42,.08);
-}
-
-.tool-icon {
-  display: grid;
-  place-items: center;
-  width: 47px;
-  height: 47px;
-  margin-bottom: 19px;
-  border-radius: 13px;
-  background: #eff6ff;
-  color: #2563eb;
-  font-size: 18px;
-}
-
-.tool-card h3 {
-  margin-bottom: 10px;
-  font-size: 15px;
-}
-
-.tool-card p {
-  margin-bottom: 20px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-.tool-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.workflow {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 14px;
-  padding-bottom: 75px;
-}
-
-.workflow-item {
-  padding: 20px 17px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: #ffffff;
-  box-shadow: 0 3px 12px rgba(15,23,42,.025);
-}
-
-.step-number {
-  margin-bottom: 14px;
-  color: #2563eb;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.workflow-item h4 {
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.workflow-item p {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-.notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  margin-bottom: 60px;
-  padding: 19px;
-  border: 1px solid #bae6fd;
-  border-radius: 14px;
-  background: #f0f9ff;
-}
-
-.notice i {
-  margin-top: 2px;
-  color: #0284c7;
-}
-
-.notice strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 12px;
-}
-
-.notice p {
-  color: #475569;
-  font-size: 11px;
-  line-height: 1.8;
-}
-
-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-  padding: 25px 6%;
-  border-top: 1px solid var(--border);
-  background: #ffffff;
-  color: var(--muted);
-  font-size: 10px;
-}
-
-footer strong {
-  color: #0f172a;
-}
-
-.footer-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 17px;
-}
-
-.footer-links a:hover {
-  color: #2563eb;
-}
-
-@media (max-width: 1050px) {
-  .tools-grid {
-    grid-template-columns: repeat(2,1fr);
-  }
-
-  .topbar {
-    padding-left: 4%;
-    padding-right: 4%;
-  }
-}
-
-@media (max-width: 850px) {
-  .nav {
-    gap: 2px;
-  }
-
-  .nav a {
-    padding: 9px;
-  }
-
-  .hero {
-    gap: 30px;
-    padding-top: 55px;
-  }
-
-  .workflow {
-    grid-template-columns: repeat(2,1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  .topbar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .nav {
-    width: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-
-  .nav a {
-    white-space: nowrap;
-  }
-
-  .hero {
-    grid-template-columns: 1fr;
-    padding: 45px 0 55px;
-  }
-
-  .hero h1 {
-    letter-spacing: -1px;
-  }
-
-  .hero-visual {
-    max-width: 420px;
-    width: 100%;
-    margin: auto;
-  }
-
-  .tools-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tool-card {
-    min-height: 195px;
-  }
-
-  .workflow {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  footer {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    scroll-behavior: auto !important;
-    transition: none !important;
-  }
-}
-</style>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>PLMunTrack | Attendance Management System</title>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --cyan: #0891b2;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --surface-light: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --success: #16a34a;
+            --shadow: 0 8px 25px rgba(15, 23, 42, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .container {
+            width: min(1120px, 92%);
+            margin: 0 auto;
+        }
+
+        /* NAVIGATION */
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-container {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 21px;
+            font-weight: 800;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 13px;
+            color: white;
+            background: var(--primary);
+            font-size: 23px;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links .nav-button {
+            color: white;
+            background: var(--primary);
+            padding: 10px 16px;
+            border-radius: 9px;
+        }
+
+        .nav-links .nav-button:hover {
+            color: white;
+            background: var(--primary-dark);
+        }
+
+        /* HERO */
+
+        .hero {
+            padding: 76px 0 70px;
+            background:
+                radial-gradient(
+                    circle at 90% 10%,
+                    rgba(37, 99, 235, 0.08),
+                    transparent 30%
+                ),
+                var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            align-items: center;
+            gap: 55px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            background: #eff6ff;
+            color: var(--primary-dark);
+            border: 1px solid #dbeafe;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .hero h1 {
+            max-width: 650px;
+            font-size: clamp(36px, 5vw, 58px);
+            line-height: 1.12;
+            letter-spacing: -1.8px;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 span {
+            color: var(--primary);
+        }
+
+        .hero-description {
+            max-width: 580px;
+            color: var(--muted);
+            font-size: 17px;
+            margin-bottom: 30px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 19px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .button-secondary {
+            background: white;
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .button-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .hero-visual {
+            min-height: 330px;
+            padding: 28px;
+            border-radius: 24px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .visual-card {
+            width: 100%;
+            max-width: 340px;
+            background: white;
+            padding: 25px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .visual-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .visual-card-header strong {
+            font-size: 15px;
+        }
+
+        .live-label {
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .qr-placeholder {
+            width: 145px;
+            height: 145px;
+            margin: 0 auto 20px;
+            display: grid;
+            place-items: center;
+            background: white;
+            border: 8px solid #f1f5f9;
+            border-radius: 12px;
+            color: var(--primary);
+            font-size: 90px;
+        }
+
+        .visual-caption {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .visual-caption strong {
+            display: block;
+            color: var(--text);
+            font-size: 15px;
+            margin-bottom: 3px;
+        }
+
+        /* SECTION GENERAL */
+
+        section.content-section {
+            padding: 76px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 660px;
+            margin: 0 auto 40px;
+        }
+
+        .section-label {
+            color: var(--primary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.6px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(28px, 4vw, 38px);
+            line-height: 1.2;
+            letter-spacing: -0.7px;
+            margin-bottom: 13px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        /* SYSTEM TOOLS */
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            padding: 26px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: #bfdbfe;
+        }
+
+        .tool-icon {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #eff6ff;
+            color: var(--primary);
+            font-size: 25px;
+            margin-bottom: 20px;
+        }
+
+        .tool-card h3 {
+            font-size: 19px;
+            margin-bottom: 9px;
+        }
+
+        .tool-card p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 23px;
+            flex: 1;
+        }
+
+        .tool-card .button {
+            align-self: flex-start;
+        }
+
+        /* WORKFLOW */
+
+        .workflow-section {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .workflow-item {
+            padding: 24px 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 15px;
+        }
+
+        .workflow-number {
+            display: grid;
+            place-items: center;
+            width: 39px;
+            height: 39px;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .workflow-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .workflow-item p {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* INFORMATION NOTICE */
+
+        .notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 23px;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+        }
+
+        .notice-icon {
+            font-size: 23px;
+        }
+
+        .notice h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .notice p {
+            font-size: 13px;
+            color: #475569;
+        }
+
+        /* FOOTER */
+
+        footer {
+            background: white;
+            border-top: 1px solid var(--border);
+            padding: 30px 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .footer-brand {
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .footer-text {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* MOBILE RESPONSIVE */
+
+        @media (max-width: 850px) {
+            .nav-container {
+                padding: 14px 0;
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 13px;
+            }
+
+            .nav-links {
+                width: 100%;
+                gap: 17px;
+                flex-wrap: wrap;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 52px 0;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 35px;
+            }
+
+            .hero-visual {
+                min-height: 290px;
+            }
+
+            .workflow-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .brand {
+                font-size: 19px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links .nav-button {
+                padding: 8px 11px;
+            }
+
+            .hero h1 {
+                letter-spacing: -1px;
+            }
+
+            .hero-description {
+                font-size: 15px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-actions .button {
+                width: 100%;
+            }
+
+            section.content-section {
+                padding: 55px 0;
+            }
+
+            .tools-grid,
+            .workflow-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tool-card {
+                padding: 22px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <header class="topbar">
+        <div class="container nav-container">
+
+            <a href="#home" class="brand">
+                <span class="brand-icon">▦</span>
+                <span>
+                    PLMunTrack
+                    <small>ATTENDANCE MANAGEMENT SYSTEM</small>
+                </span>
+            </a>
+
+            <nav class="nav-links" aria-label="Main navigation">
+                <a href="#home">Home</a>
+                <a href="#tools">System Tools</a>
+                <a href="#workflow">How It Works</a>
+                <a href="admin.html">Admin Dashboard</a>
+                <a href="#tools" class="nav-button">Get Started</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <main>
+
+        <!-- HERO SECTION -->
+        <section class="hero" id="home">
+            <div class="container hero-grid">
+
+                <div class="hero-content">
+
+                    <div class="eyebrow">
+                        <span class="status-dot"></span>
+                        QR-Based Campus Monitoring
+                    </div>
+
+                    <h1>
+                        Smarter Campus
+                        <span>Attendance</span>
+                        Tracking
+                    </h1>
+
+                    <p class="hero-description">
+                        PLMunTrack is a QR code-based visitor monitoring
+                        and attendance management system designed to help
+                        organize campus entry records and attendance data
+                        through a centralized digital platform.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#tools" class="button button-primary">
+                            Explore System Tools →
+                        </a>
+
+                        <a href="admin.html" class="button button-secondary">
+                            View Admin Dashboard
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="hero-visual">
+                    <div class="visual-card">
+
+                        <div class="visual-card-header">
+                            <strong>PLMunTrack Scanner</strong>
+                            <span class="live-label">QR SYSTEM</span>
+                        </div>
+
+                        <div class="qr-placeholder" aria-hidden="true">
+                            ▦
+                        </div>
+
+                        <div class="visual-caption">
+                            <strong>Quick and Organized</strong>
+                            QR-based attendance and visitor monitoring
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SYSTEM TOOLS -->
+        <section class="content-section" id="tools">
+            <div class="container">
+
+                <div class="section-heading">
+                    <div class="section-label">System Tools</div>
+                    <h2>Everything You Need in One Place</h2>
+                    <p>
+                        Access the main PLMunTrack features using the
+                        links below.
+                    </p>
+                </div>
+
+                <div class="tools-grid">
+
+                    <!-- REGISTRATION -->
+                    <article class="tool-card">
+                        <div class="tool-icon">👤</div>
+
+                        <h3>Student Registration</h3>
+
+                        <p>
+                            Register student information and maintain
+                            organized records for the attendance system.
+                        </p>
+
+                        <a href="registration.html"
+                           class="button button-primary">
+                            Open Registration →
+                        </a>
+                    </article>
+
+                    <!-- QR GENERATOR -->
+                    <article class="tool-card">
+                        <div class="tool-icon">▦</div>
+
+                        <h3>QR Code Generator</h3>
+
+                        <p>
+                            Open the QR generator to create or retrieve
+                            the QR code used by the system.
+                        </p>
+
+                        <a href="generator.html"
+                           class="button button-primary">
+                            Generate QR Code →
+                        </a>
+                    </article>
+
+                    <!-- QR SCANNER -->
+                    <article class="tool-card">
+                        <div class="tool-icon">📷</div>
+
+                        <h3>QR Code Scanner</h3>
+
+                        <p>
+                            Scan a valid QR token to record attendance
+                            and display the scan result.
+                        </p>
+
+                        <a href="scanner.html"
+                           class="button button-primary">
+                            Open QR Scanner →
+                        </a>
+                    </article>
+
+                    <!-- ADMIN DASHBOARD -->
+                    <article class="tool-card">
+                        <div class="tool-icon">📊</div>
+
+                        <h3>Admin Dashboard</h3>
+
+                        <p>
+                            View the attendance management dashboard
+                            and access the system's available records
+                            and monitoring features.
+                        </p>
+
+                        <a href="admin.html"
+                           class="button button-primary">
+                            Open Dashboard →
+                        </a>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- WORKFLOW -->
+        <section class="content-section workflow-section" id="workflow">
+            <div class="container">
+
+                <div class="section-heading">
+                    <div class="section-label">How It Works</div>
+                    <h2>A Simple Attendance Process</h2>
+                    <p>
+                        The system organizes the basic steps for
+                        registering users and recording attendance.
+                    </p>
+                </div>
+
+                <div class="workflow-grid">
+
+                    <article class="workflow-item">
+                        <div class="workflow-number">1</div>
+                        <h3>Register</h3>
+                        <p>
+                            Add the required student information
+                            through the registration page.
+                        </p>
+                    </article>
+
+                    <article class="workflow-item">
+                        <div class="workflow-number">2</div>
+                        <h3>Generate QR</h3>
+                        <p>
+                            Generate or retrieve the QR token
+                            associated with the registered student.
+                        </p>
+                    </article>
+
+                    <article class="workflow-item">
+                        <div class="workflow-number">3</div>
+                        <h3>Scan QR</h3>
+                        <p>
+                            Scan a valid token to submit an
+                            attendance record.
+                        </p>
+                    </article>
+
+                    <article class="workflow-item">
+                        <div class="workflow-number">4</div>
+                        <h3>Review Records</h3>
+                        <p>
+                            Open the dashboard to review the
+                            available attendance information.
+                        </p>
+                    </article>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- SYSTEM NOTICE -->
+        <section class="content-section">
+            <div class="container">
+
+                <div class="notice">
+                    <div class="notice-icon">🔒</div>
+
+                    <div>
+                        <h3>Responsible Use of Information</h3>
+                        <p>
+                            Use the system only for authorized attendance
+                            and visitor monitoring activities. Ensure that
+                            personal information is handled responsibly
+                            and that access is limited to authorized users.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container footer-content">
+
+            <div>
+                <div class="footer-brand">PLMunTrack</div>
+                <div class="footer-text">
+                    QR-Based Visitor Monitoring and Attendance Management
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <a href="#home">Home</a>
+                <a href="#tools">System Tools</a>
+                <a href="#workflow">How It Works</a>
+                <a href="admin.html">Admin Dashboard</a>
+            </div>
+
+            <div class="footer-text">
+                © <span id="currentYear">2026</span> PLMunTrack
+            </div>
+
+        </div>
+    </footer>
+
+    <script>
+        // Automatically update the copyright year.
+        document.getElementById("currentYear").textContent =
+            new Date().getFullYear();
+    </script>
+
+</body>
+</html>
 
