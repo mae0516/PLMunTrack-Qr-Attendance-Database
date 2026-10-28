@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PLMunTrack | Admin Dashboard</title>
+  <title>PLMunTrack - Admin Dashboard</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -20,24 +19,168 @@
       --text: #f1f5ff;
       --muted: #9ba9c5;
       --primary: #7565f5;
-      --cyan: #22d3ee;
+      --cyan: #06b6d4;
       --green: #34d399;
-      --orange: #fbbf24;
       --red: #fb7185;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Inter, Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
-    button, input { font: inherit; }
+    button, input, select {
+      font: inherit;
+    }
 
-    button { cursor: pointer; }
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse at top left, #7565f52b, transparent 40%),
+        radial-gradient(ellipse at bottom right, #06b6d425, transparent 40%),
+        var(--bg);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 420px;
+      padding: 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 25px 70px #0005;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      font-size: 21px;
+    }
+
+    .login-card h1 {
+      margin: 22px 0 8px;
+      font-size: 25px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px;
+      color: white;
+      background: #0b1222;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 11px 15px;
+      border: 0;
+      border-radius: 9px;
+      color: white;
+      background: var(--primary);
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      filter: brightness(1.12);
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-secondary {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.error {
+      background: #9f123922;
+      border: 1px solid #be123c;
+      color: #fecdd3;
+    }
+
+    .message.success {
+      background: #065f4622;
+      border: 1px solid #047857;
+      color: #a7f3d0;
+    }
+
+    .message.info {
+      background: #07598522;
+      border: 1px solid #0369a1;
+      color: #bae6fd;
+    }
+
+    .login-footer {
+      margin-top: 25px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
 
     .app {
       display: flex;
@@ -46,33 +189,22 @@
 
     .sidebar {
       width: 245px;
-      padding: 25px 16px;
+      flex-shrink: 0;
+      padding: 24px 16px;
       background: #0e1528;
       border-right: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0 10px 28px;
-    }
-
-    .brand-icon {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 13px;
-      color: white;
-      background: linear-gradient(135deg, var(--primary), var(--cyan));
-      font-size: 19px;
+      padding: 0 8px 28px;
     }
 
     .brand h2 {
       margin: 0;
-      font-size: 17px;
+      font-size: 18px;
     }
 
     .brand small {
@@ -83,285 +215,175 @@
     }
 
     .nav-label {
-      padding: 14px 12px 9px;
-      color: #72809d;
+      padding: 12px 10px;
+      color: var(--muted);
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
-    .nav-item {
-      width: 100%;
+    .nav-btn {
       display: flex;
-      gap: 12px;
       align-items: center;
+      gap: 12px;
+      width: 100%;
       padding: 12px;
       margin-bottom: 5px;
+      text-align: left;
       color: var(--muted);
       background: transparent;
       border: 0;
-      border-radius: 10px;
-      text-align: left;
+      border-radius: 9px;
       font-size: 13px;
     }
 
-    .nav-item i { width: 18px; }
-
-    .nav-item:hover,
-    .nav-item.active {
+    .nav-btn:hover,
+    .nav-btn.active {
       color: white;
-      background: linear-gradient(90deg, #7565f52b, #22d3ee12);
+      background: #7565f526;
     }
 
-    .nav-item.active {
-      border-left: 3px solid var(--primary);
+    .nav-btn.active {
+      border: 1px solid #7565f54a;
     }
 
     .sidebar-bottom {
       margin-top: 35px;
-      padding: 15px 12px;
-      color: var(--muted);
+      padding: 12px;
       border-top: 1px solid var(--border);
-      font-size: 11px;
-      line-height: 1.8;
+    }
+
+    .sidebar-bottom p {
+      margin: 5px 0;
+      font-size: 12px;
+    }
+
+    .sidebar-bottom small {
+      color: var(--muted);
     }
 
     .main {
       flex: 1;
       min-width: 0;
-      padding: 28px;
     }
 
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 28px;
+      gap: 15px;
+      padding: 22px 28px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
     }
 
     .topbar h1 {
       margin: 0;
-      font-size: 25px;
-      letter-spacing: -0.7px;
+      font-size: 21px;
     }
 
-    .subtitle {
-      color: var(--muted);
-      margin-top: 8px;
-      font-size: 13px;
-    }
-
-    .user-box {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      padding: 9px 13px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      border-radius: 12px;
-    }
-
-    .avatar {
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #7565f52e;
-      color: #b8b0ff;
-    }
-
-    .user-name {
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .user-role {
-      margin-top: 4px;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    .button {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 13px;
-      color: white;
-      background: var(--primary);
-      border: 1px solid transparent;
-      border-radius: 9px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .button:hover { filter: brightness(1.1); }
-
-    .button.secondary {
-      background: var(--panel2);
-      border-color: var(--border);
-    }
-
-    .button.success { background: #087f5b; }
-    .button.danger { background: #9f2946; }
-
-    .button:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 22px;
-    }
-
-    .stat-card, .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 15px;
-    }
-
-    .stat-card { padding: 19px; }
-
-    .stat-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .stat-icon {
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: #7565f51c;
-      color: #aaa0ff;
-    }
-
-    .stat-value {
-      margin-top: 20px;
-      font-size: 29px;
-      font-weight: 800;
-      overflow-wrap: anywhere;
-    }
-
-    .stat-note {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr);
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .panel { padding: 20px; }
-
-    .panel-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .panel-heading h2 {
-      margin: 0;
-      font-size: 15px;
-    }
-
-    .panel-heading p {
+    .topbar p {
       margin: 6px 0 0;
       color: var(--muted);
-      font-size: 11px;
-    }
-
-    .chart-wrap {
-      position: relative;
-      height: 250px;
-    }
-
-    .legend {
-      display: grid;
-      gap: 13px;
-      margin-top: 18px;
-    }
-
-    .legend-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      color: var(--muted);
       font-size: 12px;
     }
 
-    .legend-name {
+    .admin-chip {
       display: flex;
       align-items: center;
       gap: 9px;
+      font-size: 12px;
     }
 
-    .dot {
-      width: 9px;
-      height: 9px;
+    .admin-avatar {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
       border-radius: 50%;
-      background: var(--primary);
+      background: #7565f533;
+      color: #c4b5fd;
     }
 
-    .dot.orange { background: var(--orange); }
-    .dot.green { background: var(--green); }
-    .dot.red { background: var(--red); }
-
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
+    .content {
+      padding: 26px;
     }
 
-    .search-wrap {
-      flex: 1;
-      min-width: 190px;
-      position: relative;
+    .page {
+      display: none;
     }
 
-    .search-wrap i {
-      position: absolute;
-      left: 13px;
-      top: 13px;
+    .page.active {
+      display: block;
+    }
+
+    .section-heading {
+      margin: 0 0 7px;
+      font-size: 19px;
+    }
+
+    .section-description {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 23px;
+    }
+
+    .stat-card {
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .stat-icon {
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 17px;
+      border-radius: 10px;
+      color: #c4b5fd;
+      background: #7565f526;
+    }
+
+    .stat-card p {
+      margin: 0 0 8px;
       color: var(--muted);
       font-size: 12px;
     }
 
-    .search-wrap input {
-      width: 100%;
-      padding: 11px 12px 11px 36px;
-      background: #0e1629;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      color: white;
-      outline: none;
-      font-size: 12px;
+    .stat-card h2 {
+      margin: 0;
+      font-size: 27px;
     }
 
-    .search-wrap input:focus {
-      border-color: var(--primary);
+    .panel {
+      padding: 21px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      margin-bottom: 20px;
+    }
+
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .panel-heading h3 {
+      margin: 0;
+      font-size: 15px;
     }
 
     .table-wrap {
@@ -372,648 +394,604 @@
     table {
       width: 100%;
       border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 14px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
 
     th {
-      padding: 13px 12px;
-      color: #91a0bd;
-      background: #0e1629;
-      text-align: left;
+      color: var(--muted);
       font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: .7px;
+      letter-spacing: .5px;
     }
 
     td {
-      padding: 14px 12px;
-      border-bottom: 1px solid #26324a;
-      font-size: 12px;
+      color: #e2e8f0;
     }
 
-    tbody tr:hover { background: #ffffff05; }
+    .empty-row {
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+    }
 
-    .pill {
+    .status {
       display: inline-block;
       padding: 5px 9px;
-      border-radius: 30px;
+      border-radius: 20px;
       font-size: 10px;
-      font-weight: 700;
-      background: #64748b28;
-      color: #cbd5e1;
+      background: #7565f526;
+      color: #c4b5fd;
     }
 
-    .pill.authorized, .pill.active {
+    .status.active {
+      background: #065f462b;
       color: #6ee7b7;
-      background: #10b98120;
     }
 
-    .pill.pending {
-      color: #fcd34d;
-      background: #f59e0b20;
-    }
-
-    .pill.revoked, .pill.inactive {
+    .status.inactive {
+      background: #9f123922;
       color: #fda4af;
-      background: #f43f5e20;
     }
 
-    .action-group {
-      display: flex;
-      gap: 7px;
-    }
-
-    .action-btn {
-      border: 0;
-      padding: 7px 9px;
-      border-radius: 7px;
-      font-size: 10px;
-      font-weight: 700;
-      color: white;
-      background: #087f5b;
-    }
-
-    .action-btn.revoke { background: #9f2946; }
-
-    .empty {
-      padding: 30px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 12px;
-    }
-
-    .message {
-      display: none;
-      padding: 12px 14px;
-      margin-bottom: 18px;
-      border-radius: 9px;
-      font-size: 12px;
-      line-height: 1.5;
-      overflow-wrap: anywhere;
-    }
-
-    .message.show { display: block; }
-    .message.info { color: #bae6fd; background: #0369a122; border: 1px solid #0e7490; }
-    .message.error { color: #fecdd3; background: #9f123922; border: 1px solid #be123c; }
-    .message.success { color: #a7f3d0; background: #065f4622; border: 1px solid #047857; }
-
-    .login-screen {
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 22px;
-      background:
-        radial-gradient(ellipse at top left, #7565f52c, transparent 40%),
-        radial-gradient(ellipse at bottom right, #22d3ee18, transparent 40%),
-        var(--bg);
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 410px;
-      padding: 32px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 19px;
-      box-shadow: 0 25px 80px #0005;
-    }
-
-    .login-brand {
+    .toolbar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
     }
 
-    .login-card h1 {
-      margin: 0;
-      font-size: 23px;
-    }
-
-    .login-card > p {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      margin: 10px 0 24px;
-    }
-
-    .field { margin-bottom: 17px; }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 12px 13px;
+    .toolbar input,
+    .toolbar select,
+    .form-control {
+      min-width: 170px;
+      padding: 11px 12px;
+      color: white;
       background: #0b1222;
       border: 1px solid var(--border);
-      border-radius: 9px;
-      color: white;
+      border-radius: 8px;
       outline: none;
     }
 
-    .field input:focus { border-color: var(--primary); }
+    .toolbar input:focus,
+    .form-control:focus {
+      border-color: var(--primary);
+    }
 
-    .login-card .button { width: 100%; margin-top: 5px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
 
-    .login-foot {
-      margin-top: 22px;
-      color: #72809d;
-      text-align: center;
-      font-size: 10px;
+    .form-grid .field {
+      margin: 0;
+    }
+
+    .form-grid .field input,
+    .form-grid .field select {
+      width: 100%;
+      padding: 12px;
+      color: white;
+      background: #0b1222;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .form-actions {
+      margin-top: 20px;
+    }
+
+    .notice {
+      padding: 15px;
+      color: var(--muted);
+      background: #0b1222;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font-size: 12px;
       line-height: 1.7;
     }
 
-    .hidden { display: none !important; }
-
-    .footer {
-      padding: 18px 0;
-      color: #72809d;
+    .qr-result {
+      margin-top: 20px;
+      padding: 20px;
       text-align: center;
-      font-size: 10px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
     }
 
-    @media (max-width: 1100px) {
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .content-grid { grid-template-columns: 1fr; }
+    #qrImage {
+      max-width: 100%;
+      margin: 15px auto;
+      background: white;
     }
 
-    @media (max-width: 760px) {
-      .app { display: block; }
-      .sidebar { width: 100%; padding: 15px; }
-      .brand { padding-bottom: 14px; }
-      .nav-label, .sidebar-bottom { display: none; }
-      .sidebar nav { display: flex; gap: 6px; overflow-x: auto; }
-      .nav-item { width: auto; flex-shrink: 0; margin: 0; }
-      .main { padding: 18px 13px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .topbar h1 { font-size: 22px; }
-      .user-box { width: 100%; }
-      .grid { gap: 10px; }
-      .stat-card { padding: 14px; }
-      .stat-value { font-size: 24px; }
-      .panel { padding: 14px; }
+    .footer-note {
+      margin-top: 25px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1000px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sidebar {
+        width: 210px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 15px;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .sidebar .brand {
+        padding-bottom: 14px;
+      }
+
+      .nav-label,
+      .sidebar-bottom {
+        display: none;
+      }
+
+      .nav-btn {
+        display: inline-flex;
+        width: auto;
+        margin: 3px;
+      }
+
+      .topbar {
+        padding: 18px;
+      }
+
+      .content {
+        padding: 17px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-chip span {
+        display: none;
+      }
     }
 
     @media (max-width: 390px) {
-      .grid { grid-template-columns: 1fr; }
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .login-card {
+        padding: 23px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ADMIN LOGIN -->
+  <!-- LOGIN SCREEN -->
   <section id="loginScreen" class="login-screen">
     <div class="login-card">
-      <div class="login-brand">
-        <div class="brand-icon"><i class="fa-solid fa-qrcode"></i></div>
+      <div class="brand" style="padding:0">
+        <div class="logo"><i class="fa-solid fa-qrcode"></i></div>
         <div>
-          <h2 style="margin:0;font-size:18px;">PLMunTrack</h2>
-          <div style="color:var(--muted);font-size:11px;margin-top:5px;">Visitor Monitoring System</div>
+          <strong>PLMunTrack</strong>
+          <small style="display:block;color:var(--muted);margin-top:4px">
+            Attendance Management System
+          </small>
         </div>
       </div>
 
       <h1>Admin Login</h1>
-      <p>Sign in with your registered administrator account to manage visitor authorizations and view system records.</p>
+      <p class="subtitle">
+        Sign in to manage attendance records, visitor information, and system monitoring.
+      </p>
 
       <div id="loginMessage" class="message"></div>
 
       <form id="loginForm">
         <div class="field">
           <label for="username">Username</label>
-          <input id="username" name="username" autocomplete="username" required>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Enter your username"
+            autocomplete="username"
+            required>
         </div>
 
         <div class="field">
           <label for="password">Password</label>
-          <input id="password" name="password" type="password" autocomplete="current-password" required>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required>
         </div>
 
-        <button id="loginButton" class="button" type="submit">
-          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        <button id="loginButton" class="btn btn-block" type="submit">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Sign In
         </button>
       </form>
 
-      <div class="login-foot">
-        Pamantasan ng Lungsod ng Muntinlupa<br>
-        Authorized personnel only
+      <div class="login-footer">
+        PLMunTrack · Pamantasan ng Lungsod ng Muntinlupa
       </div>
     </div>
   </section>
 
-  <!-- ADMIN DASHBOARD -->
-  <div id="adminApp" class="app hidden">
+
+  <!-- ADMIN APPLICATION -->
+  <section id="adminApp" class="app hidden">
+
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <div class="logo"><i class="fa-solid fa-qrcode"></i></div>
         <div>
           <h2>PLMunTrack</h2>
-          <small>Admin Console</small>
+          <small>Admin Dashboard</small>
         </div>
       </div>
 
-      <div class="nav-label">MAIN MENU</div>
+      <div class="nav-label">Main Menu</div>
 
-      <nav>
-        <button class="nav-item active" data-section="dashboardSection">
-          <i class="fa-solid fa-chart-pie"></i> Dashboard
-        </button>
+      <button class="nav-btn active" data-page="dashboardPage">
+        <i class="fa-solid fa-chart-pie"></i> Dashboard
+      </button>
 
-        <button class="nav-item" data-section="visitorsSection">
-          <i class="fa-solid fa-users"></i> Visitor Management
-        </button>
+      <button class="nav-btn" data-page="attendancePage">
+        <i class="fa-solid fa-calendar-check"></i> Attendance
+      </button>
 
-        <button class="nav-item" data-section="registrationSection">
-          <i class="fa-solid fa-user-plus"></i> Registration
-        </button>
+      <button class="nav-btn" data-page="visitorsPage">
+        <i class="fa-solid fa-users"></i> Visitors
+      </button>
 
-        <button class="nav-item" data-section="qrSection">
-          <i class="fa-solid fa-qrcode"></i> QR Generator
-        </button>
+      <button class="nav-btn" data-page="registerPage">
+        <i class="fa-solid fa-user-plus"></i> Register Person
+      </button>
 
-        <button class="nav-item" data-section="scannerSection">
-          <i class="fa-solid fa-camera"></i> QR Scanner
-        </button>
-      </nav>
+      <button class="nav-btn" data-page="qrPage">
+        <i class="fa-solid fa-qrcode"></i> QR Generator
+      </button>
 
       <div class="sidebar-bottom">
-        <i class="fa-solid fa-shield-halved"></i> Secure admin access<br>
-        <span>PLMunTrack Attendance & Visitor System</span>
+        <p><i class="fa-solid fa-user-shield"></i> <span id="sidebarAdminName">Administrator</span></p>
+        <small>System Administrator</small>
+        <button id="logoutButton" class="btn btn-secondary btn-block" style="margin-top:15px">
+          <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+        </button>
       </div>
     </aside>
+
 
     <main class="main">
       <header class="topbar">
         <div>
-          <h1 id="pageTitle">Dashboard Overview</h1>
-          <div class="subtitle">Monitor visitors and manage campus access.</div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p>PLMunTrack monitoring and attendance system</p>
         </div>
 
-        <div class="user-box">
-          <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
-          <div style="flex:1;min-width:0;">
-            <div id="adminName" class="user-name">Administrator</div>
-            <div class="user-role">Authorized Admin</div>
-          </div>
-          <button id="logoutButton" class="button secondary" title="Sign out">
-            <i class="fa-solid fa-right-from-bracket"></i>
-          </button>
+        <div class="admin-chip">
+          <div class="admin-avatar"><i class="fa-solid fa-user-shield"></i></div>
+          <span id="topAdminName">Administrator</span>
         </div>
       </header>
 
-      <div id="globalMessage" class="message"></div>
+      <div class="content">
 
-      <!-- DASHBOARD -->
-      <section id="dashboardSection" class="page-section">
-        <div class="grid">
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-label">Registered Visitors</div>
+        <div id="globalMessage" class="message"></div>
+
+        <!-- DASHBOARD -->
+        <section id="dashboardPage" class="page active">
+          <h2 class="section-heading">Dashboard Overview</h2>
+          <p class="section-description">
+            Review the attendance and visitor records available in your system.
+          </p>
+
+          <div class="stats">
+            <div class="stat-card">
               <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <p>Total People</p>
+              <h2 id="totalPeople">—</h2>
             </div>
-            <div id="totalVisitors" class="stat-value">—</div>
-            <div class="stat-note">Total visitor records</div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+              <p>Attendance Records</p>
+              <h2 id="totalAttendance">—</h2>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-user-clock"></i></div>
+              <p>Visitors</p>
+              <h2 id="totalVisitors">—</h2>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <p>System Status</p>
+              <h2 style="font-size:19px;color:var(--green)">Connected</h2>
+            </div>
           </div>
 
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-label">Pending Approval</div>
-              <div class="stat-icon" style="color:var(--orange);"><i class="fa-solid fa-clock"></i></div>
-            </div>
-            <div id="pendingVisitors" class="stat-value">—</div>
-            <div class="stat-note">Awaiting authorization</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-label">Authorized Visitors</div>
-              <div class="stat-icon" style="color:var(--green);"><i class="fa-solid fa-circle-check"></i></div>
-            </div>
-            <div id="authorizedVisitors" class="stat-value">—</div>
-            <div class="stat-note">Approved for access</div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-label">Revoked Authorization</div>
-              <div class="stat-icon" style="color:var(--red);"><i class="fa-solid fa-ban"></i></div>
-            </div>
-            <div id="revokedVisitors" class="stat-value">—</div>
-            <div class="stat-note">Access revoked</div>
-          </div>
-        </div>
-
-        <div class="content-grid">
           <div class="panel">
             <div class="panel-heading">
-              <div>
-                <h2>Visitor Authorization Overview</h2>
-                <p>Distribution based on current visitor records</p>
-              </div>
-              <button id="refreshChartButton" class="button secondary">
+              <h3>Recent Attendance</h3>
+              <button id="refreshDashboardButton" class="btn btn-secondary">
                 <i class="fa-solid fa-rotate"></i> Refresh
               </button>
             </div>
 
-            <div class="chart-wrap">
-              <canvas id="visitorChart"></canvas>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student Number</th>
+                    <th>Person Type</th>
+                    <th>Date</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentAttendanceBody">
+                  <tr><td colspan="6" class="empty-row">Loading records...</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
+        </section>
+
+
+        <!-- ATTENDANCE -->
+        <section id="attendancePage" class="page">
+          <h2 class="section-heading">Attendance Records</h2>
+          <p class="section-description">
+            View attendance records returned by the Apps Script backend.
+          </p>
 
           <div class="panel">
-            <div class="panel-heading">
-              <div>
-                <h2>Authorization Summary</h2>
-                <p>Visitor status breakdown</p>
-              </div>
+            <div class="toolbar">
+              <input id="attendanceSearch" type="search"
+                placeholder="Search student number...">
+              <button id="refreshAttendanceButton" class="btn">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
             </div>
 
-            <div class="legend">
-              <div class="legend-row">
-                <div class="legend-name"><span class="dot green"></span> Authorized</div>
-                <strong id="legendAuthorized">—</strong>
-              </div>
-              <div class="legend-row">
-                <div class="legend-name"><span class="dot orange"></span> Pending</div>
-                <strong id="legendPending">—</strong>
-              </div>
-              <div class="legend-row">
-                <div class="legend-name"><span class="dot red"></span> Revoked</div>
-                <strong id="legendRevoked">—</strong>
-              </div>
-            </div>
-
-            <div style="margin-top:28px;padding-top:18px;border-top:1px solid var(--border);">
-              <div style="color:var(--muted);font-size:11px;">Last updated</div>
-              <div id="lastUpdated" style="font-size:13px;font-weight:700;margin-top:7px;">Not loaded yet</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VISITOR MANAGEMENT -->
-      <section id="visitorsSection" class="page-section hidden">
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Visitor Management</h2>
-              <p>Review visitor records and change authorization status.</p>
-            </div>
-            <button id="refreshVisitorsButton" class="button">
-              <i class="fa-solid fa-rotate"></i> Refresh Records
-            </button>
-          </div>
-
-          <div class="toolbar">
-            <div class="search-wrap">
-              <i class="fa-solid fa-magnifying-glass"></i>
-              <input id="visitorSearch" type="search" placeholder="Search visitor name, ID, email, or status...">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Student Number</th>
+                    <th>Person Type</th>
+                    <th>Date</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="attendanceBody">
+                  <tr><td colspan="6" class="empty-row">Load attendance records to begin.</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
+        </section>
 
-          <div class="table-wrap">
-            <table>
-              <thead id="visitorTableHead"></thead>
-              <tbody id="visitorTableBody">
-                <tr><td class="empty">Loading visitor records...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
-      <!-- REGISTRATION -->
-      <section id="registrationSection" class="page-section hidden">
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Registration</h2>
-              <p>Open the registration page to register a student or visitor.</p>
-            </div>
-          </div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
-            The registration page must be created and deployed separately. This admin page does not create a registration form automatically.
+        <!-- VISITORS -->
+        <section id="visitorsPage" class="page">
+          <h2 class="section-heading">Visitor Management</h2>
+          <p class="section-description">
+            View visitor information returned by the connected database.
           </p>
-          <button class="button" id="registrationInfoButton">
-            <i class="fa-solid fa-circle-info"></i> Registration Page Information
-          </button>
-        </div>
-      </section>
 
-      <!-- QR GENERATOR -->
-      <section id="qrSection" class="page-section hidden">
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>QR Generator</h2>
-              <p>Open the QR generator page connected to your project.</p>
+          <div class="panel">
+            <div class="toolbar">
+              <input id="visitorSearch" type="search"
+                placeholder="Search visitor...">
+              <button id="refreshVisitorsButton" class="btn">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Visitor Name</th>
+                    <th>Contact</th>
+                    <th>Purpose</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="visitorsBody">
+                  <tr><td colspan="5" class="empty-row">Load visitor records to begin.</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
-            Make sure your QR generator page is available in your deployed website.
-          </p>
-          <button class="button" id="openGeneratorButton">
-            <i class="fa-solid fa-qrcode"></i> Open QR Generator
-          </button>
-        </div>
-      </section>
+        </section>
 
-      <!-- QR SCANNER -->
-      <section id="scannerSection" class="page-section hidden">
-        <div class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>QR Scanner</h2>
-              <p>Open your attendance and visitor QR scanner.</p>
+
+        <!-- REGISTER PERSON -->
+        <section id="registerPage" class="page">
+          <h2 class="section-heading">Register Person</h2>
+          <p class="section-description">
+            Enter a person's information. The form submits to the Apps Script backend.
+          </p>
+
+          <div class="panel">
+            <div id="registerMessage" class="message"></div>
+
+            <form id="registerForm">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="regStudentNumber">Student / Employee Number</label>
+                  <input id="regStudentNumber" type="text" required>
+                </div>
+
+                <div class="field">
+                  <label for="regType">Person Type</label>
+                  <select id="regType" class="form-control" required>
+                    <option value="STUDENT">Student</option>
+                    <option value="FACULTY">Faculty</option>
+                    <option value="STAFF">Staff</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="regFullName">Full Name</label>
+                  <input id="regFullName" type="text" required>
+                </div>
+
+                <div class="field">
+                  <label for="regEmail">Email</label>
+                  <input id="regEmail" type="email">
+                </div>
+
+                <div class="field">
+                  <label for="regCourse">Course / Department</label>
+                  <input id="regCourse" type="text">
+                </div>
+
+                <div class="field">
+                  <label for="regYearSection">Year / Section</label>
+                  <input id="regYearSection" type="text">
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button id="registerButton" class="btn" type="submit">
+                  <i class="fa-solid fa-user-plus"></i> Register Person
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+
+        <!-- QR GENERATOR -->
+        <section id="qrPage" class="page">
+          <h2 class="section-heading">Daily QR Generator</h2>
+          <p class="section-description">
+            Request a daily QR token from the Apps Script backend.
+          </p>
+
+          <div class="panel">
+            <div id="qrMessage" class="message"></div>
+
+            <form id="qrForm">
+              <div class="field">
+                <label for="qrStudentNumber">Student / Employee Number</label>
+                <input id="qrStudentNumber" type="text"
+                  placeholder="Enter registered number" required>
+              </div>
+
+              <button id="generateQRButton" class="btn" type="submit">
+                <i class="fa-solid fa-qrcode"></i> Generate Daily QR
+              </button>
+            </form>
+
+            <div id="qrResult" class="qr-result hidden">
+              <h3>Generated QR Code</h3>
+              <div id="qrImage"></div>
+              <p id="qrTokenText" style="font-size:12px;overflow-wrap:anywhere"></p>
+              <p class="section-description">
+                Use the QR according to the system's configured attendance rules.
+              </p>
             </div>
           </div>
-          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
-            Make sure the scanner page is available in your deployed website and that camera access is allowed when needed.
-          </p>
-          <button class="button" id="openScannerButton">
-            <i class="fa-solid fa-camera"></i> Open QR Scanner
-          </button>
-        </div>
-      </section>
+        </section>
 
-      <div class="footer">PLMunTrack · Pamantasan ng Lungsod ng Muntinlupa</div>
+        <p class="footer-note">
+          PLMunTrack · QR Code-Based Visitor Monitoring and Attendance Management System.
+          Only authorized administrators should access this dashboard.
+        </p>
+      </div>
     </main>
-  </div>
+  </section>
+
 
   <script>
-    // =========================================
-    // CONFIGURATION
-    // =========================================
+    "use strict";
 
+    // IMPORTANT: This must match your deployed Google Apps Script Web App URL.
     const API_URL =
       "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
     const TOKEN_KEY = "plmuntrack_admin_token";
     const NAME_KEY = "plmuntrack_admin_name";
 
+    const $ = (id) => document.getElementById(id);
+
+    let attendanceRecords = [];
     let visitorRecords = [];
-    let visitorChart = null;
-    let currentDashboard = {};
 
-    // =========================================
-    // ELEMENT HELPERS
-    // =========================================
-
-    function $(id) {
-      return document.getElementById(id);
-    }
-
-    function showMessage(elementId, message, type = "info") {
-      const element = $(elementId);
+    function showMessage(id, message, type = "info") {
+      const element = $(id);
       if (!element) return;
 
       element.textContent = message;
       element.className = "message show " + type;
     }
 
-    function hideMessage(elementId) {
-      const element = $(elementId);
+    function hideMessage(id) {
+      const element = $(id);
       if (!element) return;
 
       element.textContent = "";
       element.className = "message";
     }
 
-    function getToken() {
-      return sessionStorage.getItem(TOKEN_KEY) || "";
-    }
-
-    function getAdminName() {
-      return sessionStorage.getItem(NAME_KEY) || "Administrator";
-    }
-
-    function safeString(value) {
-      if (value === null || value === undefined || value === "") {
-        return "—";
-      }
-
-      if (typeof value === "object") {
-        return JSON.stringify(value);
-      }
-
-      return String(value);
-    }
-
-    function normalizeKey(value) {
-      return String(value || "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "");
-    }
-
-    function findValue(object, possibleKeys) {
-      if (!object || typeof object !== "object") return undefined;
-
-      const entries = Object.entries(object);
-
-      for (const wanted of possibleKeys) {
-        const normalizedWanted = normalizeKey(wanted);
-
-        const found = entries.find(([key]) =>
-          normalizeKey(key) === normalizedWanted
-        );
-
-        if (found && found[1] !== undefined && found[1] !== null) {
-          return found[1];
-        }
-      }
-
-      return undefined;
-    }
-
-    function formatStatus(value) {
-      const text = safeString(value);
-
-      if (text === "—") return text;
-
-      return text
-        .replace(/_/g, " ")
-        .replace(/([a-z])([A-Z])/g, "$1 $2");
-    }
-
-    function statusClass(value) {
-      const status = String(value || "").toLowerCase();
-
-      if (status.includes("authoriz") || status === "active") {
-        return "authorized";
-      }
-
-      if (status.includes("pending")) return "pending";
-
-      if (status.includes("revok") || status.includes("denied") ||
-          status.includes("inactive")) {
-        return "revoked";
-      }
-
-      return "";
-    }
-
-    function setBusy(button, busy, busyText = "Please wait...") {
+    function setBusy(button, busy, label) {
       if (!button) return;
 
       if (busy) {
-        button.dataset.originalHtml = button.innerHTML;
+        button.dataset.originalText = button.innerHTML;
         button.disabled = true;
-        button.innerHTML =
-          '<i class="fa-solid fa-spinner fa-spin"></i> ' + busyText;
+        button.textContent = label || "Please wait...";
       } else {
         button.disabled = false;
 
-        if (button.dataset.originalHtml) {
-          button.innerHTML = button.dataset.originalHtml;
-          delete button.dataset.originalHtml;
+        if (button.dataset.originalText) {
+          button.innerHTML = button.dataset.originalText;
+          delete button.dataset.originalText;
         }
       }
-    }
-
-    // =========================================
-    // API HELPERS
-    // =========================================
-
-    async function getAPI(action, params = {}) {
-      const url = new URL(API_URL);
-
-      url.searchParams.set("action", action);
-
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          url.searchParams.set(key, String(value));
-        }
-      });
-
-      const response = await fetch(url.toString(), {
-        method: "GET",
-        redirect: "follow",
-        cache: "no-store"
-      });
-
-      if (!response.ok) {
-        throw new Error("Server request failed: HTTP " + response.status);
-      }
-
-      const result = await response.json();
-
-      if (result.success === false) {
-        throw new Error(result.message || "The server request failed.");
-      }
-
-      return result;
     }
 
     async function postAPI(payload) {
-      /*
-       * Apps Script web apps commonly work with text/plain JSON
-       * to avoid a browser CORS preflight request.
-       */
       const response = await fetch(API_URL, {
         method: "POST",
         redirect: "follow",
@@ -1027,22 +1005,78 @@
         throw new Error("Server request failed: HTTP " + response.status);
       }
 
-      const result = await response.json();
+      let result;
 
-      if (result.success === false) {
-        throw new Error(result.message || "The server request failed.");
+      try {
+        result = await response.json();
+      } catch (error) {
+        throw new Error(
+          "The server did not return valid JSON. Check the Apps Script deployment."
+        );
+      }
+
+      if (!result || result.success === false) {
+        throw new Error(
+          result && result.message
+            ? result.message
+            : "The server request failed."
+        );
       }
 
       return result;
     }
 
-    // =========================================
-    // LOGIN AND LOGOUT
-    // =========================================
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, function(character) {
+        const map = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
 
+        return map[character];
+      });
+    }
+
+    function pickArray(result, possibleKeys) {
+      if (Array.isArray(result)) return result;
+
+      for (const key of possibleKeys) {
+        if (Array.isArray(result && result[key])) {
+          return result[key];
+        }
+
+        if (result && result.data && Array.isArray(result.data[key])) {
+          return result.data[key];
+        }
+      }
+
+      if (result && result.data && Array.isArray(result.data)) {
+        return result.data;
+      }
+
+      return [];
+    }
+
+    function showLoginScreen() {
+      $("loginScreen").classList.remove("hidden");
+      $("adminApp").classList.add("hidden");
+    }
+
+    function showAdminApp() {
+      $("loginScreen").classList.add("hidden");
+      $("adminApp").classList.remove("hidden");
+
+      const name = sessionStorage.getItem(NAME_KEY) || "Administrator";
+      $("topAdminName").textContent = name;
+      $("sidebarAdminName").textContent = name;
+    }
+
+    // LOGIN
     $("loginForm").addEventListener("submit", async function(event) {
       event.preventDefault();
-
       hideMessage("loginMessage");
 
       const username = $("username").value.trim();
@@ -1050,7 +1084,11 @@
       const button = $("loginButton");
 
       if (!username || !password) {
-        showMessage("loginMessage", "Enter your username and password.", "error");
+        showMessage(
+          "loginMessage",
+          "Please enter your username and password.",
+          "error"
+        );
         return;
       }
 
@@ -1063,28 +1101,31 @@
           password: password
         });
 
-        if (result.success === false) {
-          throw new Error(result.message || "Login failed.");
-        }
-
-        /*
-         * Supports common token field names returned by loginAdmin().
-         */
-        const token = result.token ||
-          result.adminToken ||
-          result.data?.token ||
-          result.data?.adminToken;
-
-        if (!token) {
+        if (!result || result.success !== true) {
           throw new Error(
-            "Login response did not contain an admin token. Check the return value of loginAdmin() in Code.gs."
+            result && result.message
+              ? result.message
+              : "Login failed. Please try again."
           );
         }
 
-        const fullName = result.fullName ||
+        const token =
+          result.token ||
+          result.adminToken ||
+          (result.data && result.data.token) ||
+          (result.data && result.data.adminToken);
+
+        if (!token) {
+          throw new Error(
+            "Login response has no admin token. Check loginAdmin() in Code.gs."
+          );
+        }
+
+        const fullName =
+          result.fullName ||
           result.name ||
-          result.data?.fullName ||
-          result.data?.name ||
+          (result.data && result.data.fullName) ||
+          (result.data && result.data.name) ||
           username;
 
         sessionStorage.setItem(TOKEN_KEY, token);
@@ -1093,13 +1134,24 @@
         $("password").value = "";
 
         showAdminApp();
-        await loadDashboard();
-        await loadVisitors();
+
+        try {
+          await loadDashboard();
+          await loadVisitors();
+        } catch (dashboardError) {
+          showMessage(
+            "globalMessage",
+            "Login successful, but some dashboard records could not load: " +
+              dashboardError.message,
+            "error"
+          );
+        }
 
       } catch (error) {
         showMessage(
           "loginMessage",
-          error.message || "Unable to sign in. Check your connection and Apps Script deployment.",
+          error.message ||
+            "Unable to sign in. Check your credentials and Apps Script deployment.",
           "error"
         );
       } finally {
@@ -1107,502 +1159,398 @@
       }
     });
 
-    function showAdminApp() {
-      $("loginScreen").classList.add("hidden");
-      $("adminApp").classList.remove("hidden");
-      $("adminName").textContent = getAdminName();
-    }
-
-    function logout() {
-      sessionStorage.removeItem(TOKEN_KEY);
-      sessionStorage.removeItem(NAME_KEY);
-
-      $("adminApp").classList.add("hidden");
-      $("loginScreen").classList.remove("hidden");
-
-      $("username").value = "";
-      $("password").value = "";
-
-      hideMessage("globalMessage");
-      hideMessage("loginMessage");
-    }
-
-    $("logoutButton").addEventListener("click", logout);
-
-    // =========================================
     // NAVIGATION
-    // =========================================
-
-    const sectionTitles = {
-      dashboardSection: "Dashboard Overview",
-      visitorsSection: "Visitor Management",
-      registrationSection: "Registration",
-      qrSection: "QR Generator",
-      scannerSection: "QR Scanner"
-    };
-
-    document.querySelectorAll(".nav-item[data-section]").forEach(button => {
+    document.querySelectorAll(".nav-btn").forEach(function(button) {
       button.addEventListener("click", async function() {
-        const sectionId = this.dataset.section;
+        const pageId = button.dataset.page;
 
-        document.querySelectorAll(".nav-item").forEach(item => {
-          item.classList.remove("active");
+        document.querySelectorAll(".nav-btn").forEach(function(nav) {
+          nav.classList.toggle("active", nav === button);
         });
 
-        this.classList.add("active");
-
-        document.querySelectorAll(".page-section").forEach(section => {
-          section.classList.add("hidden");
+        document.querySelectorAll(".page").forEach(function(page) {
+          page.classList.toggle("active", page.id === pageId);
         });
 
-        $(sectionId).classList.remove("hidden");
-        $("pageTitle").textContent = sectionTitles[sectionId] || "PLMunTrack";
+        const titles = {
+          dashboardPage: "Dashboard",
+          attendancePage: "Attendance Records",
+          visitorsPage: "Visitor Management",
+          registerPage: "Register Person",
+          qrPage: "QR Generator"
+        };
 
-        hideMessage("globalMessage");
+        $("pageTitle").textContent = titles[pageId] || "Dashboard";
 
-        if (sectionId === "dashboardSection") {
-          await loadDashboard();
-        }
-
-        if (sectionId === "visitorsSection") {
+        if (pageId === "attendancePage") {
+          await loadAttendance();
+        } else if (pageId === "visitorsPage") {
           await loadVisitors();
         }
       });
     });
 
-    // =========================================
     // DASHBOARD
-    // =========================================
-
-    function readMetric(object, keys, fallback = 0) {
-      const value = findValue(object, keys);
-
-      if (value === undefined || value === null || value === "") {
-        return fallback;
-      }
-
-      const numeric = Number(value);
-
-      return Number.isFinite(numeric) ? numeric : value;
-    }
-
-    function renderDashboard(summary) {
-      currentDashboard = summary || {};
-
-      /*
-       * These aliases allow common summary field names.
-       * If getDashboardSummary() uses different names,
-       * update the key lists below to match Code.gs.
-       */
-      const total = readMetric(summary, [
-        "totalVisitors", "registeredVisitors", "total", "totalVisitor",
-        "visitorCount", "totalRecords"
-      ]);
-
-      const pending = readMetric(summary, [
-        "pendingApproval", "pendingVisitors", "pending", "pendingCount"
-      ]);
-
-      const authorized = readMetric(summary, [
-        "authorizedVisitors", "authorized", "approvedVisitors",
-        "authorizedCount"
-      ]);
-
-      const revoked = readMetric(summary, [
-        "revokedAuthorization", "revokedVisitors", "revoked",
-        "revokedCount"
-      ]);
-
-      $("totalVisitors").textContent = total;
-      $("pendingVisitors").textContent = pending;
-      $("authorizedVisitors").textContent = authorized;
-      $("revokedVisitors").textContent = revoked;
-
-      $("legendAuthorized").textContent = authorized;
-      $("legendPending").textContent = pending;
-      $("legendRevoked").textContent = revoked;
-
-      $("lastUpdated").textContent = new Date().toLocaleString();
-
-      renderChart(authorized, pending, revoked);
-    }
-
-    function renderChart(authorized, pending, revoked) {
-      const canvas = $("visitorChart");
-
-      if (visitorChart) {
-        visitorChart.destroy();
-      }
-
-      visitorChart = new Chart(canvas, {
-        type: "doughnut",
-        data: {
-          labels: ["Authorized", "Pending", "Revoked"],
-          datasets: [{
-            data: [
-              Number(authorized) || 0,
-              Number(pending) || 0,
-              Number(revoked) || 0
-            ],
-            backgroundColor: ["#34d399", "#fbbf24", "#fb7185"],
-            borderColor: "#121a2e",
-            borderWidth: 5,
-            hoverOffset: 7
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: "69%",
-          plugins: {
-            legend: {
-              display: true,
-              position: "bottom",
-              labels: {
-                color: "#9ba9c5",
-                padding: 18,
-                usePointStyle: true,
-                pointStyle: "circle",
-                font: { size: 11 }
-              }
-            }
-          }
-        }
-      });
-    }
-
     async function loadDashboard() {
-      if (!getToken()) {
-        logout();
-        return;
-      }
+      hideMessage("globalMessage");
 
-      try {
-        const result = await getAPI("dashboard", {
-          token: getToken()
-        });
-
-        const summary = result.data || result.summary || result.dashboard || result;
-
-        renderDashboard(summary);
-        hideMessage("globalMessage");
-
-      } catch (error) {
-        showMessage(
-          "globalMessage",
-          "Unable to load dashboard: " + error.message,
-          "error"
-        );
-
-        if (/token|unauthoriz|expired/i.test(error.message)) {
-          logout();
-        }
-      }
-    }
-
-    $("refreshChartButton").addEventListener("click", loadDashboard);
-
-    // =========================================
-    // VISITOR RECORDS
-    // =========================================
-
-    function extractVisitorArray(result) {
-      if (Array.isArray(result)) return result;
-
-      const possibleArrays = [
-        result.visitors,
-        result.records,
-        result.data,
-        result.results,
-        result.visitorRecords
-      ];
-
-      for (const item of possibleArrays) {
-        if (Array.isArray(item)) return item;
-      }
-
-      if (result.data && typeof result.data === "object") {
-        for (const value of Object.values(result.data)) {
-          if (Array.isArray(value)) return value;
-        }
-      }
-
-      return [];
-    }
-
-    function getVisitorId(visitor) {
-      return findValue(visitor, [
-        "Visitor_ID", "VisitorID", "visitorId", "visitor_id", "ID", "id"
-      ]);
-    }
-
-    function getAuthorizationStatus(visitor) {
-      return findValue(visitor, [
-        "Authorization_Status", "AuthorizationStatus",
-        "authorizationStatus", "Status", "status"
-      ]);
-    }
-
-    function getVisitorName(visitor) {
-      return findValue(visitor, [
-        "Full_Name", "FullName", "Visitor_Name", "VisitorName",
-        "Name", "name", "visitorName"
-      ]);
-    }
-
-    function getVisitorEmail(visitor) {
-      return findValue(visitor, [
-        "Email", "email", "Email_Address", "EmailAddress"
-      ]);
-    }
-
-    function getVisitorPurpose(visitor) {
-      return findValue(visitor, [
-        "Purpose", "Visit_Purpose", "VisitPurpose", "purpose"
-      ]);
-    }
-
-    function getVisitorDate(visitor) {
-      return findValue(visitor, [
-        "Date", "Visit_Date", "VisitDate", "Created_At", "CreatedAt"
-      ]);
-    }
-
-    async function loadVisitors() {
-      if (!getToken()) {
-        logout();
-        return;
-      }
-
-      $("visitorTableBody").innerHTML =
-        '<tr><td class="empty" colspan="6">Loading visitor records...</td></tr>';
-
-      try {
-        const result = await getAPI("visitors", {
-          token: getToken()
-        });
-
-        visitorRecords = extractVisitorArray(result);
-
-        renderVisitors($("visitorSearch").value);
-
-        hideMessage("globalMessage");
-
-      } catch (error) {
-        $("visitorTableBody").innerHTML =
-          '<tr><td class="empty" colspan="6">Could not load visitor records.</td></tr>';
-
-        showMessage(
-          "globalMessage",
-          "Unable to load visitor records: " + error.message,
-          "error"
-        );
-
-        if (/token|unauthoriz|expired/i.test(error.message)) {
-          logout();
-        }
-      }
-    }
-
-    function renderVisitors(searchText = "") {
-      const head = $("visitorTableHead");
-      const body = $("visitorTableBody");
-      const query = String(searchText || "").trim().toLowerCase();
-
-      head.innerHTML = `
-        <tr>
-          <th>Visitor ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Purpose</th>
-          <th>Authorization</th>
-          <th>Actions</th>
-        </tr>
-      `;
-
-      const filtered = visitorRecords.filter(visitor => {
-        return Object.values(visitor).some(value =>
-          safeString(value).toLowerCase().includes(query)
-        );
+      const result = await postAPI({
+        action: "getDashboard",
+        token: sessionStorage.getItem(TOKEN_KEY)
       });
 
-      if (!filtered.length) {
-        body.innerHTML = `
-          <tr>
-            <td class="empty" colspan="6">
-              ${visitorRecords.length
-                ? "No matching visitors found."
-                : "No visitor records found."}
-            </td>
-          </tr>
-        `;
-        return;
+      const data = result.data || result.dashboard || result;
+
+      if (data.totalPeople !== undefined) {
+        $("totalPeople").textContent = data.totalPeople;
       }
 
-      body.innerHTML = "";
-
-      filtered.forEach(visitor => {
-        const id = getVisitorId(visitor);
-        const name = getVisitorName(visitor);
-        const email = getVisitorEmail(visitor);
-        const purpose = getVisitorPurpose(visitor);
-        const status = getAuthorizationStatus(visitor);
-
-        const row = document.createElement("tr");
-
-        addCell(row, id);
-        addCell(row, name);
-        addCell(row, email);
-        addCell(row, purpose);
-
-        const statusCell = document.createElement("td");
-        const badge = document.createElement("span");
-
-        badge.className = "pill " + statusClass(status);
-        badge.textContent = formatStatus(status);
-
-        statusCell.appendChild(badge);
-        row.appendChild(statusCell);
-
-        const actionCell = document.createElement("td");
-        const actionGroup = document.createElement("div");
-        actionGroup.className = "action-group";
-
-        const normalizedStatus = String(status || "").toLowerCase();
-
-        if (normalizedStatus === "authorized") {
-          const revokeButton = document.createElement("button");
-          revokeButton.className = "action-btn revoke";
-          revokeButton.textContent = "Revoke";
-          revokeButton.addEventListener("click", () => {
-            changeAuthorization(id, "Revoked", revokeButton);
-          });
-          actionGroup.appendChild(revokeButton);
-
-        } else {
-          const approveButton = document.createElement("button");
-          approveButton.className = "action-btn";
-          approveButton.textContent = "Authorize";
-          approveButton.addEventListener("click", () => {
-            changeAuthorization(id, "Authorized", approveButton);
-          });
-          actionGroup.appendChild(approveButton);
-        }
-
-        actionCell.appendChild(actionGroup);
-        row.appendChild(actionCell);
-
-        body.appendChild(row);
-      });
-    }
-
-    function addCell(row, value) {
-      const cell = document.createElement("td");
-      cell.textContent = safeString(value);
-      row.appendChild(cell);
-    }
-
-    $("visitorSearch").addEventListener("input", function() {
-      renderVisitors(this.value);
-    });
-
-    $("refreshVisitorsButton").addEventListener("click", loadVisitors);
-
-    // =========================================
-    // AUTHORIZE / REVOKE VISITOR
-    // =========================================
-
-    async function changeAuthorization(visitorId, authorizationStatus, button) {
-      if (!visitorId || visitorId === "—") {
-        showMessage(
-          "globalMessage",
-          "This visitor record does not have a Visitor_ID value.",
-          "error"
-        );
-        return;
+      if (data.totalAttendance !== undefined) {
+        $("totalAttendance").textContent = data.totalAttendance;
       }
 
-      const actionWord = authorizationStatus === "Authorized"
-        ? "authorize"
-        : "revoke the authorization for";
+      if (data.totalVisitors !== undefined) {
+        $("totalVisitors").textContent = data.totalVisitors;
+      }
 
-      const confirmed = confirm(
-        "Are you sure you want to " + actionWord +
-        " visitor " + visitorId + "?"
-      );
+      const recent = pickArray(result, [
+        "attendance",
+        "attendanceRecords",
+        "recentAttendance",
+        "records"
+      ]);
 
-      if (!confirmed) return;
+      if (recent.length) {
+        renderAttendanceRows(recent, "recentAttendanceBody");
+      } else {
+        $("recentAttendanceBody").innerHTML =
+          '<tr><td colspan="6" class="empty-row">' +
+          "No recent attendance records were returned." +
+          "</td></tr>";
+      }
+    }
 
-      setBusy(button, true, "Saving...");
+    // ATTENDANCE
+    async function loadAttendance() {
+      $("attendanceBody").innerHTML =
+        '<tr><td colspan="6" class="empty-row">Loading attendance...</td></tr>';
 
       try {
         const result = await postAPI({
-          action: "authorizeVisitor",
-          visitorId: String(visitorId),
-          authorizationStatus: authorizationStatus,
-          adminToken: getToken()
+          action: "getAttendance",
+          token: sessionStorage.getItem(TOKEN_KEY)
         });
 
-        if (result.success === false) {
-          throw new Error(result.message || "Authorization update failed.");
-        }
+        attendanceRecords = pickArray(result, [
+          "attendance",
+          "attendanceRecords",
+          "records"
+        ]);
 
-        showMessage(
-          "globalMessage",
-          result.message || "Visitor authorization updated successfully.",
-          "success"
-        );
-
-        await loadVisitors();
-        await loadDashboard();
+        renderAttendanceRows(attendanceRecords, "attendanceBody");
 
       } catch (error) {
-        showMessage(
-          "globalMessage",
-          "Unable to update authorization: " + error.message,
-          "error"
-        );
-      } finally {
-        setBusy(button, false);
+        $("attendanceBody").innerHTML =
+          '<tr><td colspan="6" class="empty-row">' +
+          escapeHTML(error.message) +
+          "</td></tr>";
       }
     }
 
-    // =========================================
-    // OTHER NAVIGATION BUTTONS
-    // =========================================
+    function renderAttendanceRows(records, targetId) {
+      const body = $(targetId);
 
-    $("registrationInfoButton").addEventListener("click", function() {
-      showMessage(
-        "globalMessage",
-        "Create or connect your registration page, then update this button with its deployed URL.",
-        "info"
-      );
-    });
+      if (!records.length) {
+        body.innerHTML =
+          '<tr><td colspan="6" class="empty-row">No attendance records found.</td></tr>';
+        return;
+      }
 
-    $("openGeneratorButton").addEventListener("click", function() {
-      window.location.href = "generator.html";
-    });
+      body.innerHTML = records.map(function(record) {
+        const studentNumber =
+          record.Student_Number ||
+          record.studentNumber ||
+          record.student_number ||
+          "";
 
-    $("openScannerButton").addEventListener("click", function() {
-      window.location.href = "scanner.html";
-    });
+        const personType =
+          record.Person_Type ||
+          record.personType ||
+          record.person_type ||
+          "";
 
-    // =========================================
-    // STARTUP
-    // =========================================
+        const date = record.Date || record.date || "";
+        const timeIn = record.Time_In || record.timeIn || "";
+        const timeOut = record.Time_Out || record.timeOut || "";
+        const status = record.Status || record.status || "Recorded";
 
-    async function startApp() {
-      if (!getToken()) return;
-
-      showAdminApp();
-
-      await loadDashboard();
-      await loadVisitors();
+        return `
+          <tr>
+            <td>${escapeHTML(studentNumber)}</td>
+            <td>${escapeHTML(personType)}</td>
+            <td>${escapeHTML(date)}</td>
+            <td>${escapeHTML(timeIn)}</td>
+            <td>${escapeHTML(timeOut)}</td>
+            <td><span class="status active">${escapeHTML(status)}</span></td>
+          </tr>
+        `;
+      }).join("");
     }
 
-    startApp();
+    $("attendanceSearch").addEventListener("input", function() {
+      const search = this.value.trim().toLowerCase();
+
+      const filtered = attendanceRecords.filter(function(record) {
+        const number =
+          record.Student_Number ||
+          record.studentNumber ||
+          record.student_number ||
+          "";
+
+        return String(number).toLowerCase().includes(search);
+      });
+
+      renderAttendanceRows(filtered, "attendanceBody");
+    });
+
+    // VISITORS
+    async function loadVisitors() {
+      $("visitorsBody").innerHTML =
+        '<tr><td colspan="5" class="empty-row">Loading visitors...</td></tr>';
+
+      try {
+        const result = await postAPI({
+          action: "getVisitors",
+          token: sessionStorage.getItem(TOKEN_KEY)
+        });
+
+        visitorRecords = pickArray(result, [
+          "visitors",
+          "visitorRecords",
+          "records"
+        ]);
+
+        renderVisitors(visitorRecords);
+
+      } catch (error) {
+        $("visitorsBody").innerHTML =
+          '<tr><td colspan="5" class="empty-row">' +
+          escapeHTML(error.message) +
+          "</td></tr>";
+      }
+    }
+
+    function renderVisitors(records) {
+      if (!records.length) {
+        $("visitorsBody").innerHTML =
+          '<tr><td colspan="5" class="empty-row">No visitor records found.</td></tr>';
+        $("totalVisitors").textContent = "0";
+        return;
+      }
+
+      $("totalVisitors").textContent = records.length;
+
+      $("visitorsBody").innerHTML = records.map(function(visitor) {
+        const name =
+          visitor.Full_Name ||
+          visitor.Visitor_Name ||
+          visitor.fullName ||
+          visitor.visitorName ||
+          visitor.Name ||
+          "";
+
+        const contact =
+          visitor.Contact_Number ||
+          visitor.Contact ||
+          visitor.contact ||
+          visitor.Email ||
+          "";
+
+        const purpose =
+          visitor.Purpose ||
+          visitor.Visit_Purpose ||
+          visitor.purpose ||
+          "";
+
+        const date =
+          visitor.Date ||
+          visitor.Visit_Date ||
+          visitor.date ||
+          "";
+
+        const status = visitor.Status || visitor.status || "Registered";
+
+        return `
+          <tr>
+            <td>${escapeHTML(name)}</td>
+            <td>${escapeHTML(contact)}</td>
+            <td>${escapeHTML(purpose)}</td>
+            <td>${escapeHTML(date)}</td>
+            <td><span class="status active">${escapeHTML(status)}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    $("visitorSearch").addEventListener("input", function() {
+      const search = this.value.trim().toLowerCase();
+
+      const filtered = visitorRecords.filter(function(visitor) {
+        const text = [
+          visitor.Full_Name,
+          visitor.Visitor_Name,
+          visitor.fullName,
+          visitor.visitorName,
+          visitor.Name,
+          visitor.Contact_Number,
+          visitor.Contact,
+          visitor.Email,
+          visitor.Purpose
+        ].join(" ").toLowerCase();
+
+        return text.includes(search);
+      });
+
+      renderVisitors(filtered);
+    });
+
+    // REGISTER PERSON
+    $("registerForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      hideMessage("registerMessage");
+
+      const button = $("registerButton");
+      setBusy(button, true, "Registering...");
+
+      try {
+        const result = await postAPI({
+          action: "registerPerson",
+          token: sessionStorage.getItem(TOKEN_KEY),
+          studentNumber: $("regStudentNumber").value.trim(),
+          personType: $("regType").value,
+          fullName: $("regFullName").value.trim(),
+          email: $("regEmail").value.trim(),
+          course: $("regCourse").value.trim(),
+          yearSection: $("regYearSection").value.trim()
+        });
+
+        showMessage(
+          "registerMessage",
+          result.message || "Registration request completed.",
+          "success"
+        );
+
+        $("registerForm").reset();
+
+        try {
+          await loadDashboard();
+        } catch (error) {
+          // The registration response is shown separately.
+        }
+
+      } catch (error) {
+        showMessage("registerMessage", error.message, "error");
+      } finally {
+        setBusy(button, false);
+      }
+    });
+
+    // DAILY QR GENERATOR
+    $("qrForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      hideMessage("qrMessage");
+
+      const button = $("generateQRButton");
+      const studentNumber = $("qrStudentNumber").value.trim();
+
+      if (!studentNumber) {
+        showMessage("qrMessage", "Enter a student number first.", "error");
+        return;
+      }
+
+      setBusy(button, true, "Generating QR...");
+
+      try {
+        const result = await postAPI({
+          action: "generateQR",
+          studentNumber: studentNumber,
+          token: sessionStorage.getItem(TOKEN_KEY)
+        });
+
+        const qrToken =
+          result.qrToken ||
+          result.QR_Token ||
+          result.tokenValue ||
+          (result.data && (
+            result.data.qrToken ||
+            result.data.QR_Token ||
+            result.data.tokenValue
+          ));
+
+        if (!qrToken) {
+          throw new Error(
+            "The server did not return a QR token. Check generateQR() in Code.gs."
+          );
+        }
+
+        $("qrImage").innerHTML = "";
+        $("qrResult").classList.remove("hidden");
+        $("qrTokenText").textContent = qrToken;
+
+        const image = document.createElement("img");
+        image.alt = "Generated daily QR code";
+        image.width = 240;
+        image.height = 240;
+        image.src =
+          "https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=" +
+          encodeURIComponent(qrToken);
+
+        $("qrImage").appendChild(image);
+
+        showMessage("qrMessage", "QR token generated successfully.", "success");
+
+      } catch (error) {
+        showMessage("qrMessage", error.message, "error");
+      } finally {
+        setBusy(button, false);
+      }
+    });
+
+    // REFRESH BUTTONS
+    $("refreshDashboardButton").addEventListener("click", async function() {
+      setBusy(this, true, "Refreshing...");
+
+      try {
+        await loadDashboard();
+        await loadVisitors();
+        showMessage("globalMessage", "Dashboard refreshed.", "success");
+      } catch (error) {
+        showMessage("globalMessage", error.message, "error");
+      } finally {
+        setBusy(this, false);
+      }
+    });
+
+    $("refreshAttendanceButton").addEventListener("click", loadAttendance);
+    $("refreshVisitorsButton").addEventListener("click", loadVisitors);
+
+    // LOGOUT
+    $("logoutButton").addEventListener("click", function() {
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(NAME_KEY);
+
+      $("password").value = "";
+      $("loginForm").reset();
+
+      showLoginScreen();
+      hideMessage("loginMessage");
+      hideMessage("globalMessage");
+    });
+
+    // INITIAL PAGE STATE
+    // Do not automatically treat a saved token as proof that the server session is valid.
+    showLoginScreen();
   </script>
 </body>
 </html>
-
 
