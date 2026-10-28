@@ -2,1400 +2,1607 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLMunTrack | Admin Dashboard</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-:root {
-  --bg:#080d1b;
-  --panel:#111a2e;
-  --panel2:#16223a;
-  --line:rgba(148,163,184,.15);
-  --text:#f1f5f9;
-  --muted:#94a3b8;
-  --primary:#818cf8;
-  --cyan:#22d3ee;
-  --green:#34d399;
-  --red:#fb7185;
-  --yellow:#fbbf24;
-}
-
-* { box-sizing:border-box; }
-
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Inter,Arial,sans-serif;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-body::before {
-  content:"";
-  position:fixed;
-  width:440px;
-  height:440px;
-  border-radius:50%;
-  background:rgba(79,70,229,.16);
-  filter:blur(100px);
-  top:-180px;
-  right:-100px;
-  pointer-events:none;
-}
-
-body::after {
-  content:"";
-  position:fixed;
-  width:320px;
-  height:320px;
-  border-radius:50%;
-  background:rgba(6,182,212,.10);
-  filter:blur(100px);
-  bottom:-140px;
-  left:180px;
-  pointer-events:none;
-}
-
-button,input { font:inherit; }
-button { cursor:pointer; }
-
-[hidden] { display:none !important; }
-
-/* LOGIN PAGE */
-
-#loginScreen {
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:22px;
-  overflow-y:auto;
-  background:
-    radial-gradient(ellipse at 12% 12%,rgba(79,70,229,.25),transparent 40%),
-    radial-gradient(ellipse at 88% 88%,rgba(6,182,212,.16),transparent 38%),
-    #080d1b;
-}
-
-.login-card {
-  width:100%;
-  max-width:440px;
-  padding:36px;
-  border:1px solid rgba(129,140,248,.25);
-  border-radius:24px;
-  background:rgba(17,26,46,.97);
-  box-shadow:0 25px 80px rgba(0,0,0,.45);
-  position:relative;
-  z-index:1;
-  animation:loginAppear .45s ease;
-}
-
-@keyframes loginAppear {
-  from { opacity:0; transform:translateY(12px); }
-  to { opacity:1; transform:translateY(0); }
-}
-
-.login-brand {
-  display:flex;
-  align-items:center;
-  gap:13px;
-  margin-bottom:32px;
-}
-
-.login-brand-icon {
-  width:52px;
-  height:52px;
-  display:grid;
-  place-items:center;
-  border-radius:16px;
-  color:white;
-  background:linear-gradient(135deg,#6366f1,#06b6d4);
-  box-shadow:0 8px 25px rgba(79,70,229,.25);
-  font-size:28px;
-}
-
-.login-brand h1 {
-  margin:0;
-  font-size:23px;
-  letter-spacing:-.7px;
-}
-
-.login-brand p {
-  margin:5px 0 0;
-  color:var(--muted);
-  font-size:10px;
-  letter-spacing:1.5px;
-}
-
-.login-heading {
-  margin:0 0 9px;
-  font-size:26px;
-  font-weight:800;
-  letter-spacing:-.8px;
-}
-
-.login-description {
-  margin:0 0 26px;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.8;
-}
-
-.login-field { margin-bottom:18px; }
-
-.login-field label {
-  display:block;
-  margin-bottom:9px;
-  color:#cbd5e1;
-  font-size:12px;
-  font-weight:600;
-}
-
-.login-input-wrap {
-  display:flex;
-  align-items:center;
-  gap:11px;
-  padding:0 14px;
-  border:1px solid rgba(148,163,184,.2);
-  border-radius:12px;
-  background:#0b1325;
-  transition:border-color .2s,box-shadow .2s;
-}
-
-.login-input-wrap:focus-within {
-  border-color:#818cf8;
-  box-shadow:0 0 0 3px rgba(99,102,241,.13);
-}
-
-.login-field-icon {
-  color:#818cf8;
-  font-size:18px;
-}
-
-.login-input-wrap input {
-  width:100%;
-  min-width:0;
-  padding:15px 0;
-  outline:none;
-  border:0;
-  color:#f8fafc;
-  background:transparent;
-  font-size:13px;
-}
-
-.login-input-wrap input::placeholder { color:#64748b; }
-
-.login-eye {
-  flex-shrink:0;
-  padding:5px;
-  border:0;
-  color:#94a3b8;
-  background:transparent;
-  font-size:17px;
-}
-
-.login-eye:hover { color:#fff; }
-
-.login-error {
-  display:none;
-  margin-bottom:16px;
-  padding:12px;
-  border:1px solid rgba(251,113,133,.25);
-  border-radius:10px;
-  color:#fda4af;
-  background:rgba(244,63,94,.08);
-  font-size:11px;
-  line-height:1.7;
-  overflow-wrap:anywhere;
-}
-
-.login-submit {
-  width:100%;
-  margin-top:7px;
-  padding:15px;
-  border:0;
-  border-radius:12px;
-  color:white;
-  background:linear-gradient(110deg,#6366f1,#4f46e5 55%,#0891b2);
-  box-shadow:0 8px 25px rgba(79,70,229,.22);
-  font-size:13px;
-  font-weight:700;
-  transition:transform .2s,opacity .2s;
-}
-
-.login-submit:hover { transform:translateY(-1px); }
-.login-submit:disabled { opacity:.65; cursor:wait; }
-
-.login-footer {
-  margin-top:25px;
-  color:#64748b;
-  font-size:10px;
-  text-align:center;
-  line-height:1.9;
-}
-
-/* DASHBOARD */
-
-.app {
-  display:flex;
-  min-height:100vh;
-  position:relative;
-  z-index:1;
-}
-
-.sidebar {
-  width:250px;
-  flex-shrink:0;
-  padding:25px 17px;
-  border-right:1px solid var(--line);
-  background:rgba(10,16,32,.96);
-  backdrop-filter:blur(18px);
-  position:fixed;
-  inset:0 auto 0 0;
-  z-index:20;
-  transition:transform .3s;
-}
-
-.brand {
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 10px 28px;
-  border-bottom:1px solid var(--line);
-}
-
-.brand-icon {
-  width:43px;
-  height:43px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#6366f1,#06b6d4);
-  font-size:23px;
-}
-
-.brand h2 { margin:0;font-size:18px;letter-spacing:-.5px; }
-.brand p { margin:5px 0 0;font-size:10px;color:var(--muted); }
-
-.nav-label {
-  font-size:10px;
-  font-weight:700;
-  color:#64748b;
-  letter-spacing:1.5px;
-  margin:27px 12px 12px;
-}
-
-.nav { display:flex;flex-direction:column;gap:7px; }
-
-.nav a {
-  color:#aab8cf;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:13px 14px;
-  border-radius:11px;
-  font-size:13px;
-  transition:.2s;
-}
-
-.nav a:hover,.nav a.active {
-  color:white;
-  background:linear-gradient(100deg,rgba(99,102,241,.25),rgba(6,182,212,.08));
-  box-shadow:inset 3px 0 #818cf8;
-}
-
-.nav .ico { width:20px;text-align:center;font-size:17px; }
-
-.side-bottom { position:absolute;bottom:22px;left:17px;right:17px; }
-
-.system-status {
-  padding:14px;
-  border:1px solid var(--line);
-  background:rgba(22,34,58,.7);
-  border-radius:13px;
-}
-
-.status-dot {
-  display:inline-block;
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--green);
-  margin-right:6px;
-}
-
-.system-status p { font-size:11px;color:var(--muted);margin:7px 0 0; }
-
-.main {
-  margin-left:250px;
-  padding:27px 32px 45px;
-  width:calc(100% - 250px);
-  min-width:0;
-}
-
-.topbar {
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  margin-bottom:30px;
-}
-
-.topbar h1 { margin:0;font-size:clamp(22px,3vw,29px);letter-spacing:-1px; }
-.topbar p { color:var(--muted);font-size:12px;margin:8px 0 0; }
-
-.top-actions { display:flex;align-items:center;gap:10px; }
-
-.date-pill {
-  color:#cbd5e1;
-  font-size:11px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  padding:11px 13px;
-  border-radius:10px;
-}
-
-.btn {
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:11px 14px;
-  color:white;
-  background:var(--panel2);
-  transition:.2s;
-  font-size:12px;
-  font-weight:600;
-}
-
-.btn:hover { border-color:var(--primary); }
-
-.btn-primary {
-  border:none;
-  background:linear-gradient(110deg,#6366f1,#4f46e5);
-}
-
-.welcome {
-  border:1px solid rgba(129,140,248,.28);
-  border-radius:18px;
-  padding:26px 28px;
-  background:
-    radial-gradient(ellipse at 85% 15%,rgba(34,211,238,.16),transparent 35%),
-    linear-gradient(110deg,rgba(79,70,229,.20),rgba(17,26,46,.95) 65%);
-  margin-bottom:24px;
-  position:relative;
-  overflow:hidden;
-}
-
-.welcome h2 { font-size:22px;margin:0 0 9px;position:relative;z-index:1; }
-.welcome p { color:#a9b8d1;font-size:12px;margin:0;line-height:1.8;position:relative;z-index:1; }
-
-.welcome .tag {
-  display:inline-block;
-  margin-top:17px;
-  font-size:10px;
-  padding:7px 10px;
-  border-radius:30px;
-  color:#a5f3fc;
-  background:rgba(6,182,212,.10);
-  border:1px solid rgba(34,211,238,.22);
-}
-
-.section-head {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin:27px 0 15px;
-}
-
-.section-head h2 { font-size:15px;margin:0; }
-.section-head p { color:var(--muted);font-size:11px;margin:5px 0 0; }
-
-.stats {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:15px;
-}
-
-.stat-card {
-  padding:20px;
-  background:linear-gradient(145deg,rgba(22,34,58,.95),rgba(15,23,42,.95));
-  border:1px solid var(--line);
-  border-radius:15px;
-  position:relative;
-  overflow:hidden;
-  transition:.2s;
-}
-
-.stat-card:hover { transform:translateY(-3px);border-color:rgba(129,140,248,.5); }
-
-.stat-top { display:flex;justify-content:space-between;align-items:center;gap:8px; }
-.stat-label { font-size:11px;color:var(--muted);line-height:1.5; }
-
-.stat-icon {
-  width:39px;
-  height:39px;
-  display:grid;
-  place-items:center;
-  border-radius:12px;
-  font-size:19px;
-}
-
-.purple { color:#c4b5fd;background:rgba(139,92,246,.15); }
-.cyan { color:#67e8f9;background:rgba(6,182,212,.13); }
-.green { color:#6ee7b7;background:rgba(16,185,129,.13); }
-.orange { color:#fcd34d;background:rgba(245,158,11,.13); }
-
-.stat-number { font-size:30px;font-weight:800;letter-spacing:-1px;margin-top:17px; }
-.stat-note { font-size:10px;color:#8fa2bd;margin-top:8px; }
-
-.two-col {
-  display:grid;
-  grid-template-columns:minmax(0,1.45fr) minmax(250px,1fr);
-  gap:17px;
-}
-
-.panel {
-  background:rgba(17,26,46,.92);
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:21px;
-  min-width:0;
-}
-
-.panel h3 { font-size:13px;margin:0; }
-.panel-sub { font-size:10px;color:var(--muted);margin:7px 0 18px; }
-
-.chart-wrap { height:220px;position:relative; }
-
-.quick-grid { display:grid;grid-template-columns:1fr 1fr;gap:11px; }
-
-.quick-link {
-  display:block;
-  color:white;
-  text-decoration:none;
-  padding:15px 13px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:rgba(22,34,58,.7);
-  transition:.2s;
-}
-
-.quick-link:hover { border-color:var(--primary);background:rgba(99,102,241,.12); }
-.quick-link .qicon { font-size:22px;margin-bottom:13px; }
-.quick-link strong { display:block;font-size:11px; }
-.quick-link span { display:block;color:var(--muted);font-size:10px;margin-top:6px;line-height:1.5; }
-
-.visitor-panel { margin-top:20px; }
-
-.table-toolbar {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  margin:20px 0;
-}
-
-.search {
-  background:#0b1325;
-  border:1px solid var(--line);
-  color:white;
-  padding:11px 13px;
-  border-radius:9px;
-  width:min(100%,290px);
-  outline:none;
-  font-size:12px;
-}
-
-.search:focus { border-color:var(--primary); }
-
-.table-wrap { width:100%;overflow-x:auto; }
-
-table { width:100%;border-collapse:collapse;min-width:730px; }
-
-th {
-  text-align:left;
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.8px;
-  color:#8494ad;
-  font-weight:600;
-  padding:13px 12px;
-  border-bottom:1px solid var(--line);
-}
-
-td {
-  font-size:11px;
-  color:#d6deeb;
-  padding:15px 12px;
-  border-bottom:1px solid rgba(148,163,184,.08);
-}
-
-tbody tr:hover { background:rgba(99,102,241,.06); }
-.name-cell { font-weight:600;color:white; }
-.id-cell { color:#9ca3ff;font-size:10px; }
-
-.badge {
-  display:inline-block;
-  padding:6px 9px;
-  border-radius:30px;
-  font-size:9px;
-  font-weight:700;
-  white-space:nowrap;
-}
-
-.badge-pending { color:#fcd34d;background:rgba(245,158,11,.12); }
-.badge-authorized { color:#6ee7b7;background:rgba(16,185,129,.12); }
-.badge-revoked { color:#fda4af;background:rgba(244,63,94,.12); }
-.badge-neutral { color:#cbd5e1;background:rgba(148,163,184,.12); }
-
-.action-btn {
-  border:1px solid rgba(129,140,248,.35);
-  color:#c7d2fe;
-  background:rgba(99,102,241,.12);
-  border-radius:7px;
-  padding:8px 10px;
-  font-size:10px;
-  font-weight:600;
-}
-
-.action-btn.revoke {
-  color:#fda4af;
-  border-color:rgba(251,113,133,.3);
-  background:rgba(244,63,94,.08);
-}
-
-.action-btn:disabled { opacity:.5;cursor:wait; }
-
-.message {
-  color:var(--muted);
-  font-size:11px;
-  margin-top:12px;
-  white-space:pre-wrap;
-  line-height:1.6;
-  overflow-wrap:anywhere;
-}
-
-.footer {
-  border-top:1px solid var(--line);
-  padding-top:20px;
-  margin-top:28px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  color:#64748b;
-  font-size:10px;
-}
-
-.mobile-menu { display:none; }
-
-@media(max-width:1100px) {
-  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .two-col { grid-template-columns:1fr; }
-}
-
-@media(max-width:760px) {
-  .sidebar {
-    transform:translateX(-100%);
-    box-shadow:20px 0 60px #0008;
-  }
-
-  .sidebar.open { transform:translateX(0); }
-  .main { margin-left:0;width:100%;padding:20px 15px 35px; }
-  .mobile-menu { display:inline-block; }
-  .topbar { align-items:flex-start; }
-  .top-actions { flex-wrap:wrap;justify-content:flex-end; }
-  .date-pill { display:none; }
-  .welcome { padding:22px 18px; }
-  .welcome h2 { font-size:19px; }
-  .stats { gap:10px; }
-  .stat-card { padding:15px; }
-  .stat-number { font-size:25px; }
-  .stat-icon { width:33px;height:33px; }
-  .panel { padding:15px; }
-  .footer { flex-direction:column; }
-}
-
-@media(max-width:380px) {
-  .login-card { padding:24px 19px; }
-  .stats { grid-template-columns:1fr; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLMunTrack | Admin Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a2e;
+      --panel2: #17213a;
+      --border: #273451;
+      --text: #f1f5ff;
+      --muted: #9ba9c5;
+      --primary: #7565f5;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --orange: #fbbf24;
+      --red: #fb7185;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    button { cursor: pointer; }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 245px;
+      padding: 25px 16px;
+      background: #0e1528;
+      border-right: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px 28px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--cyan));
+      font-size: 19px;
+    }
+
+    .brand h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .nav-label {
+      padding: 14px 12px 9px;
+      color: #72809d;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .nav-item {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 5px;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    .nav-item i { width: 18px; }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: white;
+      background: linear-gradient(90deg, #7565f52b, #22d3ee12);
+    }
+
+    .nav-item.active {
+      border-left: 3px solid var(--primary);
+    }
+
+    .sidebar-bottom {
+      margin-top: 35px;
+      padding: 15px 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 28px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 25px;
+      letter-spacing: -0.7px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .user-box {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 12px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #7565f52e;
+      color: #b8b0ff;
+    }
+
+    .user-name {
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .user-role {
+      margin-top: 4px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 13px;
+      color: white;
+      background: var(--primary);
+      border: 1px solid transparent;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .button:hover { filter: brightness(1.1); }
+
+    .button.secondary {
+      background: var(--panel2);
+      border-color: var(--border);
+    }
+
+    .button.success { background: #087f5b; }
+    .button.danger { background: #9f2946; }
+
+    .button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card, .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+    }
+
+    .stat-card { padding: 19px; }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: #7565f51c;
+      color: #aaa0ff;
+    }
+
+    .stat-value {
+      margin-top: 20px;
+      font-size: 29px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(260px, .8fr);
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    .panel { padding: 20px; }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .panel-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 250px;
+    }
+
+    .legend {
+      display: grid;
+      gap: 13px;
+      margin-top: 18px;
+    }
+
+    .legend-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-name {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .dot.orange { background: var(--orange); }
+    .dot.green { background: var(--green); }
+    .dot.red { background: var(--red); }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 190px;
+      position: relative;
+    }
+
+    .search-wrap i {
+      position: absolute;
+      left: 13px;
+      top: 13px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      padding: 11px 12px 11px 36px;
+      background: #0e1629;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: white;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .search-wrap input:focus {
+      border-color: var(--primary);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+
+    th {
+      padding: 13px 12px;
+      color: #91a0bd;
+      background: #0e1629;
+      text-align: left;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    td {
+      padding: 14px 12px;
+      border-bottom: 1px solid #26324a;
+      font-size: 12px;
+    }
+
+    tbody tr:hover { background: #ffffff05; }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 700;
+      background: #64748b28;
+      color: #cbd5e1;
+    }
+
+    .pill.authorized, .pill.active {
+      color: #6ee7b7;
+      background: #10b98120;
+    }
+
+    .pill.pending {
+      color: #fcd34d;
+      background: #f59e0b20;
+    }
+
+    .pill.revoked, .pill.inactive {
+      color: #fda4af;
+      background: #f43f5e20;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 7px;
+    }
+
+    .action-btn {
+      border: 0;
+      padding: 7px 9px;
+      border-radius: 7px;
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+      background: #087f5b;
+    }
+
+    .action-btn.revoke { background: #9f2946; }
+
+    .empty {
+      padding: 30px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .message {
+      display: none;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+      border-radius: 9px;
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .message.show { display: block; }
+    .message.info { color: #bae6fd; background: #0369a122; border: 1px solid #0e7490; }
+    .message.error { color: #fecdd3; background: #9f123922; border: 1px solid #be123c; }
+    .message.success { color: #a7f3d0; background: #065f4622; border: 1px solid #047857; }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background:
+        radial-gradient(ellipse at top left, #7565f52c, transparent 40%),
+        radial-gradient(ellipse at bottom right, #22d3ee18, transparent 40%),
+        var(--bg);
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 410px;
+      padding: 32px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      box-shadow: 0 25px 80px #0005;
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .login-card h1 {
+      margin: 0;
+      font-size: 23px;
+    }
+
+    .login-card > p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      margin: 10px 0 24px;
+    }
+
+    .field { margin-bottom: 17px; }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px 13px;
+      background: #0b1222;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      color: white;
+      outline: none;
+    }
+
+    .field input:focus { border-color: var(--primary); }
+
+    .login-card .button { width: 100%; margin-top: 5px; }
+
+    .login-foot {
+      margin-top: 22px;
+      color: #72809d;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    .hidden { display: none !important; }
+
+    .footer {
+      padding: 18px 0;
+      color: #72809d;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar { width: 100%; padding: 15px; }
+      .brand { padding-bottom: 14px; }
+      .nav-label, .sidebar-bottom { display: none; }
+      .sidebar nav { display: flex; gap: 6px; overflow-x: auto; }
+      .nav-item { width: auto; flex-shrink: 0; margin: 0; }
+      .main { padding: 18px 13px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbar h1 { font-size: 22px; }
+      .user-box { width: 100%; }
+      .grid { gap: 10px; }
+      .stat-card { padding: 14px; }
+      .stat-value { font-size: 24px; }
+      .panel { padding: 14px; }
+    }
+
+    @media (max-width: 390px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- CUSTOM ADMIN LOGIN -->
-<section id="loginScreen">
-  <form class="login-card" id="adminLoginForm">
-    <div class="login-brand">
-      <div class="login-brand-icon">⌗</div>
-      <div>
-        <h1>PLMunTrack</h1>
-        <p>SMART CAMPUS SYSTEM</p>
+  <!-- ADMIN LOGIN -->
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <div>
+          <h2 style="margin:0;font-size:18px;">PLMunTrack</h2>
+          <div style="color:var(--muted);font-size:11px;margin-top:5px;">Visitor Monitoring System</div>
+        </div>
+      </div>
+
+      <h1>Admin Login</h1>
+      <p>Sign in with your registered administrator account to manage visitor authorizations and view system records.</p>
+
+      <div id="loginMessage" class="message"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="username">Username</label>
+          <input id="username" name="username" autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+
+        <button id="loginButton" class="button" type="submit">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+      </form>
+
+      <div class="login-foot">
+        Pamantasan ng Lungsod ng Muntinlupa<br>
+        Authorized personnel only
       </div>
     </div>
+  </section>
 
-    <h2 class="login-heading">Welcome back</h2>
-    <p class="login-description">
-      Sign in to access the administrator dashboard and manage campus visitors.
-    </p>
-
-    <div id="loginError" class="login-error" role="alert"></div>
-
-    <div class="login-field">
-      <label for="loginUsername">Admin Username</label>
-      <div class="login-input-wrap">
-        <span class="login-field-icon">♙</span>
-        <input
-          id="loginUsername"
-          type="text"
-          placeholder="Enter your username"
-          autocomplete="username"
-          required
-        >
+  <!-- ADMIN DASHBOARD -->
+  <div id="adminApp" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon"><i class="fa-solid fa-qrcode"></i></div>
+        <div>
+          <h2>PLMunTrack</h2>
+          <small>Admin Console</small>
+        </div>
       </div>
-    </div>
 
-    <div class="login-field">
-      <label for="loginPassword">Password</label>
-      <div class="login-input-wrap">
-        <span class="login-field-icon">⌑</span>
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Enter your password"
-          autocomplete="current-password"
-          required
-        >
-        <button
-          class="login-eye"
-          type="button"
-          id="toggleLoginPassword"
-          aria-label="Show password"
-        >◉</button>
+      <div class="nav-label">MAIN MENU</div>
+
+      <nav>
+        <button class="nav-item active" data-section="dashboardSection">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard
+        </button>
+
+        <button class="nav-item" data-section="visitorsSection">
+          <i class="fa-solid fa-users"></i> Visitor Management
+        </button>
+
+        <button class="nav-item" data-section="registrationSection">
+          <i class="fa-solid fa-user-plus"></i> Registration
+        </button>
+
+        <button class="nav-item" data-section="qrSection">
+          <i class="fa-solid fa-qrcode"></i> QR Generator
+        </button>
+
+        <button class="nav-item" data-section="scannerSection">
+          <i class="fa-solid fa-camera"></i> QR Scanner
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <i class="fa-solid fa-shield-halved"></i> Secure admin access<br>
+        <span>PLMunTrack Attendance & Visitor System</span>
       </div>
-    </div>
+    </aside>
 
-    <button class="login-submit" id="loginSubmit" type="submit">
-      Sign In →
-    </button>
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard Overview</h1>
+          <div class="subtitle">Monitor visitors and manage campus access.</div>
+        </div>
 
-    <div class="login-footer">
-      © 2026 PLMunTrack<br>
-      Pamantasan ng Lungsod ng Muntinlupa
-    </div>
-  </form>
-</section>
+        <div class="user-box">
+          <div class="avatar"><i class="fa-solid fa-user-shield"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div id="adminName" class="user-name">Administrator</div>
+            <div class="user-role">Authorized Admin</div>
+          </div>
+          <button id="logoutButton" class="button secondary" title="Sign out">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      </header>
 
-<!-- ADMIN DASHBOARD -->
-<div class="app" id="adminApp" hidden>
+      <div id="globalMessage" class="message"></div>
 
-<aside class="sidebar" id="sidebar">
-  <div class="brand">
-    <div class="brand-icon">⌗</div>
-    <div><h2>PLMunTrack</h2><p>SMART CAMPUS SYSTEM</p></div>
+      <!-- DASHBOARD -->
+      <section id="dashboardSection" class="page-section">
+        <div class="grid">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-label">Registered Visitors</div>
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            </div>
+            <div id="totalVisitors" class="stat-value">—</div>
+            <div class="stat-note">Total visitor records</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-label">Pending Approval</div>
+              <div class="stat-icon" style="color:var(--orange);"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <div id="pendingVisitors" class="stat-value">—</div>
+            <div class="stat-note">Awaiting authorization</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-label">Authorized Visitors</div>
+              <div class="stat-icon" style="color:var(--green);"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+            <div id="authorizedVisitors" class="stat-value">—</div>
+            <div class="stat-note">Approved for access</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-label">Revoked Authorization</div>
+              <div class="stat-icon" style="color:var(--red);"><i class="fa-solid fa-ban"></i></div>
+            </div>
+            <div id="revokedVisitors" class="stat-value">—</div>
+            <div class="stat-note">Access revoked</div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Visitor Authorization Overview</h2>
+                <p>Distribution based on current visitor records</p>
+              </div>
+              <button id="refreshChartButton" class="button secondary">
+                <i class="fa-solid fa-rotate"></i> Refresh
+              </button>
+            </div>
+
+            <div class="chart-wrap">
+              <canvas id="visitorChart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <h2>Authorization Summary</h2>
+                <p>Visitor status breakdown</p>
+              </div>
+            </div>
+
+            <div class="legend">
+              <div class="legend-row">
+                <div class="legend-name"><span class="dot green"></span> Authorized</div>
+                <strong id="legendAuthorized">—</strong>
+              </div>
+              <div class="legend-row">
+                <div class="legend-name"><span class="dot orange"></span> Pending</div>
+                <strong id="legendPending">—</strong>
+              </div>
+              <div class="legend-row">
+                <div class="legend-name"><span class="dot red"></span> Revoked</div>
+                <strong id="legendRevoked">—</strong>
+              </div>
+            </div>
+
+            <div style="margin-top:28px;padding-top:18px;border-top:1px solid var(--border);">
+              <div style="color:var(--muted);font-size:11px;">Last updated</div>
+              <div id="lastUpdated" style="font-size:13px;font-weight:700;margin-top:7px;">Not loaded yet</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VISITOR MANAGEMENT -->
+      <section id="visitorsSection" class="page-section hidden">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Visitor Management</h2>
+              <p>Review visitor records and change authorization status.</p>
+            </div>
+            <button id="refreshVisitorsButton" class="button">
+              <i class="fa-solid fa-rotate"></i> Refresh Records
+            </button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input id="visitorSearch" type="search" placeholder="Search visitor name, ID, email, or status...">
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead id="visitorTableHead"></thead>
+              <tbody id="visitorTableBody">
+                <tr><td class="empty">Loading visitor records...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- REGISTRATION -->
+      <section id="registrationSection" class="page-section hidden">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Registration</h2>
+              <p>Open the registration page to register a student or visitor.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
+            The registration page must be created and deployed separately. This admin page does not create a registration form automatically.
+          </p>
+          <button class="button" id="registrationInfoButton">
+            <i class="fa-solid fa-circle-info"></i> Registration Page Information
+          </button>
+        </div>
+      </section>
+
+      <!-- QR GENERATOR -->
+      <section id="qrSection" class="page-section hidden">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>QR Generator</h2>
+              <p>Open the QR generator page connected to your project.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
+            Make sure your QR generator page is available in your deployed website.
+          </p>
+          <button class="button" id="openGeneratorButton">
+            <i class="fa-solid fa-qrcode"></i> Open QR Generator
+          </button>
+        </div>
+      </section>
+
+      <!-- QR SCANNER -->
+      <section id="scannerSection" class="page-section hidden">
+        <div class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>QR Scanner</h2>
+              <p>Open your attendance and visitor QR scanner.</p>
+            </div>
+          </div>
+          <p style="color:var(--muted);font-size:13px;line-height:1.8;">
+            Make sure the scanner page is available in your deployed website and that camera access is allowed when needed.
+          </p>
+          <button class="button" id="openScannerButton">
+            <i class="fa-solid fa-camera"></i> Open QR Scanner
+          </button>
+        </div>
+      </section>
+
+      <div class="footer">PLMunTrack · Pamantasan ng Lungsod ng Muntinlupa</div>
+    </main>
   </div>
 
-  <div class="nav-label">MAIN MENU</div>
-  <nav class="nav">
-    <a href="#dashboard" class="active"><span class="ico">▦</span>Dashboard</a>
-    <a href="#analytics"><span class="ico">◷</span>Analytics</a>
-    <a href="#visitors"><span class="ico">♙</span>Visitor Management</a>
-  </nav>
+  <script>
+    // =========================================
+    // CONFIGURATION
+    // =========================================
 
-  <div class="nav-label">SYSTEM TOOLS</div>
-  <nav class="nav">
-    <a href="index.html"><span class="ico">⌂</span>Home / Registration</a>
-    <a href="generator.html"><span class="ico">▦</span>QR Generator</a>
-    <a href="scanner.html"><span class="ico">⌗</span>QR Scanner</a>
-  </nav>
+    const API_URL =
+      "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
 
-  <div class="side-bottom">
-    <div class="system-status">
-      <span class="status-dot"></span>
-      <span style="font-size:11px;font-weight:600">PLMunTrack</span>
-      <p id="connectionStatus">Checking connection...</p>
-    </div>
-  </div>
-</aside>
+    const TOKEN_KEY = "plmuntrack_admin_token";
+    const NAME_KEY = "plmuntrack_admin_name";
 
-<main class="main" id="dashboard">
+    let visitorRecords = [];
+    let visitorChart = null;
+    let currentDashboard = {};
 
-<header class="topbar">
-  <div style="display:flex;align-items:flex-start;gap:12px">
-    <button class="btn mobile-menu" type="button" onclick="toggleSidebar()">☰</button>
-    <div>
-      <h1>Dashboard Overview</h1>
-      <p id="adminWelcome">Welcome back, Administrator. Here's your campus overview.</p>
-    </div>
-  </div>
+    // =========================================
+    // ELEMENT HELPERS
+    // =========================================
 
-  <div class="top-actions">
-    <div class="date-pill" id="currentDate">Loading date...</div>
-    <button class="btn btn-primary" type="button" onclick="refreshAll()">↻ Refresh</button>
-    <button class="btn" type="button" onclick="logoutAdmin()">Sign Out</button>
-  </div>
-</header>
-
-<section class="welcome">
-  <h2>Welcome to PLMunTrack <span style="color:#67e8f9">✦</span></h2>
-  <p>
-    Visitor Monitoring & Attendance Management System<br>
-    Monitor campus attendance, manage visitor approvals, and review daily activity in one place.
-  </p>
-  <span class="tag">✦ &nbsp; SMART CAMPUS · REAL-TIME OVERVIEW</span>
-</section>
-
-<div class="section-head">
-  <div><h2>Campus at a Glance</h2><p>Summary from your connected database</p></div>
-</div>
-
-<section class="stats">
-  <div class="stat-card">
-    <div class="stat-top"><div class="stat-label">Registered Visitors</div><div class="stat-icon purple">♙</div></div>
-    <div class="stat-number" id="totalVisitors">—</div>
-    <div class="stat-note">All visitor records</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-top"><div class="stat-label">Pending Approval</div><div class="stat-icon orange">◷</div></div>
-    <div class="stat-number" id="pendingVisitors">—</div>
-    <div class="stat-note">Awaiting admin review</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-top"><div class="stat-label">Authorized Visitors</div><div class="stat-icon green">✓</div></div>
-    <div class="stat-number" id="authorizedVisitors">—</div>
-    <div class="stat-note">Approved visitor records</div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-top"><div class="stat-label">Revoked Authorization</div><div class="stat-icon cyan">⊘</div></div>
-    <div class="stat-number" id="revokedVisitors">—</div>
-    <div class="stat-note">Authorization revoked</div>
-  </div>
-</section>
-
-<section class="two-col" id="analytics">
-  <div class="panel">
-    <h3>Visitor Authorization Analytics</h3>
-    <p class="panel-sub">Distribution of registered visitors by approval status</p>
-    <div class="chart-wrap"><canvas id="visitorChart"></canvas></div>
-    <div id="analyticsMessage" class="message"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Quick Access</h3>
-    <p class="panel-sub">Navigate to your system tools</p>
-
-    <div class="quick-grid">
-      <a class="quick-link" href="generator.html"><div class="qicon">▦</div><strong>QR Generator</strong><span>Generate student QR codes</span></a>
-      <a class="quick-link" href="scanner.html"><div class="qicon">⌗</div><strong>QR Scanner</strong><span>Record attendance scans</span></a>
-      <a class="quick-link" href="index.html"><div class="qicon">♙</div><strong>Registration</strong><span>Open registration page</span></a>
-      <a class="quick-link" href="#visitors"><div class="qicon">✓</div><strong>Approvals</strong><span>Review visitor requests</span></a>
-    </div>
-  </div>
-</section>
-
-<section class="panel visitor-panel" id="visitors">
-  <div class="section-head" style="margin-top:0">
-    <div><h2>Visitor Management</h2><p>Review and manage visitor authorization requests</p></div>
-    <span class="badge badge-neutral" id="recordCount">0 RECORDS</span>
-  </div>
-
-  <div class="table-toolbar">
-    <input
-      class="search"
-      id="visitorSearch"
-      type="search"
-      placeholder="⌕ Search name or visitor ID..."
-      autocomplete="off"
-    >
-    <button class="btn" type="button" onclick="loadVisitors()">↻ Reload Records</button>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Visitor</th>
-          <th>Visitor ID</th>
-          <th>Purpose</th>
-          <th>Visit Date</th>
-          <th>Approval</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="visitorTable">
-        <tr><td colspan="6">Sign in to load visitor records.</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div id="authorizationMessage" class="message" role="status"></div>
-  <div id="dashboardMessage" class="message" role="status"></div>
-</section>
-
-<footer class="footer">
-  <span>© 2026 PLMunTrack · Pamantasan ng Lungsod ng Muntinlupa</span>
-  <span>QR-Based Visitor Monitoring & Attendance Management</span>
-</footer>
-
-</main>
-</div>
-
-<script>
-"use strict";
-
-/* Keep this URL matched to your current Apps Script deployment. */
-const API_URL = "https://script.google.com/macros/s/AKfycbz2WDr8p9UzsvpGgrL_A3XRfmIt5P8yjmQiqiciuHqNZ1Gd72syFf21ytR3RVen6EEP/exec";
-const ADMIN_TOKEN_KEY = "plmuntrack_admin_token";
-
-let visitors = [];
-let visitorChart = null;
-let requestInProgress = false;
-
-const $ = id => document.getElementById(id);
-
-$("currentDate").textContent = new Intl.DateTimeFormat("en-PH", {
-  year:"numeric",
-  month:"short",
-  day:"numeric"
-}).format(new Date());
-
-function getAdminToken() {
-  return sessionStorage.getItem(ADMIN_TOKEN_KEY) || "";
-}
-
-function toggleSidebar() {
-  $("sidebar").classList.toggle("open");
-}
-
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
-}
-
-async function parseResponse(response) {
-  const text = await response.text();
-  let data;
-
-  try {
-    data = JSON.parse(text);
-  } catch {
-    throw new Error(
-      "Invalid server response. Check your Apps Script deployment and API URL."
-    );
-  }
-
-  if (!response.ok || data.success === false) {
-    throw new Error(data.message || "The request failed.");
-  }
-
-  return data;
-}
-
-async function getJSON(url) {
-  const response = await fetch(url, {
-    method:"GET",
-    cache:"no-store"
-  });
-
-  return parseResponse(response);
-}
-
-async function postJSON(payload) {
-  const response = await fetch(API_URL, {
-    method:"POST",
-    headers:{
-      "Content-Type":"text/plain;charset=UTF-8"
-    },
-    body:JSON.stringify(payload)
-  });
-
-  return parseResponse(response);
-}
-
-/* LOGIN */
-
-function showLoginError(message) {
-  const box = $("loginError");
-  box.textContent = message;
-  box.style.display = "block";
-}
-
-async function adminLogin(event) {
-  event.preventDefault();
-
-  if (requestInProgress) return;
-
-  const username = $("loginUsername").value.trim();
-  const password = $("loginPassword").value;
-  const submit = $("loginSubmit");
-
-  $("loginError").style.display = "none";
-  $("loginError").textContent = "";
-
-  if (!username || !password) {
-    showLoginError("Please enter your username and password.");
-    return;
-  }
-
-  requestInProgress = true;
-  submit.disabled = true;
-  submit.textContent = "Signing in...";
-
-  try {
-    const result = await postJSON({
-      action:"loginAdmin",
-      username:username,
-      password:password
-    });
-
-    if (!result.token) {
-      throw new Error("The server did not return an admin token.");
+    function $(id) {
+      return document.getElementById(id);
     }
 
-    sessionStorage.setItem(ADMIN_TOKEN_KEY, result.token);
+    function showMessage(elementId, message, type = "info") {
+      const element = $(elementId);
+      if (!element) return;
 
-    $("loginPassword").value = "";
-    $("loginScreen").hidden = true;
-    $("adminApp").hidden = false;
-
-    $("connectionStatus").textContent =
-      "Signed in" + (result.fullName ? " as " + result.fullName : "");
-
-    $("adminWelcome").textContent =
-      "Welcome back, " + (result.fullName || "Administrator") + ".";
-
-    $("dashboardMessage").textContent = "Loading visitor records...";
-
-    await loadVisitors();
-
-  } catch (error) {
-    showLoginError(error.message || "Login failed. Please try again.");
-  } finally {
-    requestInProgress = false;
-    submit.disabled = false;
-    submit.textContent = "Sign In →";
-  }
-}
-
-function logoutAdmin() {
-  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
-  visitors = [];
-
-  if (visitorChart) {
-    visitorChart.destroy();
-    visitorChart = null;
-  }
-
-  $("loginUsername").value = "";
-  $("loginPassword").value = "";
-  $("loginError").textContent = "";
-  $("loginError").style.display = "none";
-
-  $("adminApp").hidden = true;
-  $("loginScreen").hidden = false;
-  $("connectionStatus").textContent = "Signed out";
-
-  $("visitorTable").innerHTML =
-    '<tr><td colspan="6">Sign in to load visitor records.</td></tr>';
-
-  $("recordCount").textContent = "0 RECORDS";
-}
-
-/* VISITOR FIELD HELPERS */
-
-function normalizeStatus(visitor) {
-  return String(
-    visitor.authorizationStatus ??
-    visitor.Authorization_Status ??
-    visitor.authorization_status ??
-    visitor.approvalStatus ??
-    visitor.status ??
-    "Pending"
-  ).trim();
-}
-
-function getVisitorId(visitor) {
-  return visitor.visitorId ??
-    visitor.Visitor_ID ??
-    visitor.visitor_id ??
-    visitor.id ??
-    "";
-}
-
-function getVisitorName(visitor) {
-  return visitor.fullName ??
-    visitor.Full_Name ??
-    visitor.full_name ??
-    visitor.name ??
-    "";
-}
-
-function getVisitorPurpose(visitor) {
-  return visitor.purpose ?? visitor.Purpose ?? "";
-}
-
-function getVisitDate(visitor) {
-  return visitor.visitDate ??
-    visitor.Visit_Date ??
-    visitor.visit_date ??
-    visitor.registrationDate ??
-    visitor.Registration_Date ??
-    "";
-}
-
-function countStatus(status) {
-  return visitors.filter(visitor =>
-    normalizeStatus(visitor).toLowerCase() === status.toLowerCase()
-  ).length;
-}
-
-/* SUMMARY CARDS */
-
-function animateNumber(id, target) {
-  const element = $(id);
-  const end = Number(target) || 0;
-  const start = Number(element.dataset.current || 0);
-  const startTime = performance.now();
-  const duration = 400;
-
-  function step(now) {
-    const progress = Math.min((now - startTime) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-
-    element.textContent = Math.round(start + (end - start) * eased);
-
-    if (progress < 1) {
-      requestAnimationFrame(step);
-    } else {
-      element.dataset.current = String(end);
+      element.textContent = message;
+      element.className = "message show " + type;
     }
-  }
 
-  requestAnimationFrame(step);
-}
+    function hideMessage(elementId) {
+      const element = $(elementId);
+      if (!element) return;
 
-function updateChart(pending, authorized, revoked) {
-  $("analyticsMessage").textContent = "";
+      element.textContent = "";
+      element.className = "message";
+    }
 
-  if (typeof Chart === "undefined") {
-    $("analyticsMessage").textContent =
-      "Chart library unavailable. Visitor records can still be viewed.";
-    return;
-  }
+    function getToken() {
+      return sessionStorage.getItem(TOKEN_KEY) || "";
+    }
 
-  const values = [pending, authorized, revoked];
+    function getAdminName() {
+      return sessionStorage.getItem(NAME_KEY) || "Administrator";
+    }
 
-  if (visitorChart) {
-    visitorChart.data.datasets[0].data = values;
-    visitorChart.update();
-    return;
-  }
+    function safeString(value) {
+      if (value === null || value === undefined || value === "") {
+        return "—";
+      }
 
-  visitorChart = new Chart($("visitorChart"), {
-    type:"doughnut",
-    data:{
-      labels:["Pending","Authorized","Revoked"],
-      datasets:[{
-        data:values,
-        backgroundColor:["#fbbf24","#34d399","#fb7185"],
-        borderColor:"#111a2e",
-        borderWidth:5,
-        hoverOffset:8
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      cutout:"70%",
-      plugins:{
-        legend:{
-          position:"bottom",
-          labels:{
-            color:"#aab8cf",
-            padding:18,
-            usePointStyle:true,
-            pointStyle:"circle",
-            font:{family:"Inter",size:11}
-          }
+      if (typeof value === "object") {
+        return JSON.stringify(value);
+      }
+
+      return String(value);
+    }
+
+    function normalizeKey(value) {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function findValue(object, possibleKeys) {
+      if (!object || typeof object !== "object") return undefined;
+
+      const entries = Object.entries(object);
+
+      for (const wanted of possibleKeys) {
+        const normalizedWanted = normalizeKey(wanted);
+
+        const found = entries.find(([key]) =>
+          normalizeKey(key) === normalizedWanted
+        );
+
+        if (found && found[1] !== undefined && found[1] !== null) {
+          return found[1];
+        }
+      }
+
+      return undefined;
+    }
+
+    function formatStatus(value) {
+      const text = safeString(value);
+
+      if (text === "—") return text;
+
+      return text
+        .replace(/_/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2");
+    }
+
+    function statusClass(value) {
+      const status = String(value || "").toLowerCase();
+
+      if (status.includes("authoriz") || status === "active") {
+        return "authorized";
+      }
+
+      if (status.includes("pending")) return "pending";
+
+      if (status.includes("revok") || status.includes("denied") ||
+          status.includes("inactive")) {
+        return "revoked";
+      }
+
+      return "";
+    }
+
+    function setBusy(button, busy, busyText = "Please wait...") {
+      if (!button) return;
+
+      if (busy) {
+        button.dataset.originalHtml = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> ' + busyText;
+      } else {
+        button.disabled = false;
+
+        if (button.dataset.originalHtml) {
+          button.innerHTML = button.dataset.originalHtml;
+          delete button.dataset.originalHtml;
         }
       }
     }
-  });
-}
 
-function updateSummaryFromVisitors() {
-  animateNumber("totalVisitors", visitors.length);
-  animateNumber("pendingVisitors", countStatus("Pending"));
-  animateNumber("authorizedVisitors", countStatus("Authorized"));
-  animateNumber("revokedVisitors", countStatus("Revoked"));
+    // =========================================
+    // API HELPERS
+    // =========================================
 
-  updateChart(
-    countStatus("Pending"),
-    countStatus("Authorized"),
-    countStatus("Revoked")
-  );
-}
+    async function getAPI(action, params = {}) {
+      const url = new URL(API_URL);
 
-/* DASHBOARD API */
+      url.searchParams.set("action", action);
 
-async function refreshDashboard() {
-  const token = getAdminToken();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          url.searchParams.set(key, String(value));
+        }
+      });
 
-  if (!token) throw new Error("Admin login required.");
+      const response = await fetch(url.toString(), {
+        method: "GET",
+        redirect: "follow",
+        cache: "no-store"
+      });
 
-  const data = await getJSON(
-    API_URL + "?action=dashboard&token=" +
-    encodeURIComponent(token) + "&t=" + Date.now()
-  );
+      if (!response.ok) {
+        throw new Error("Server request failed: HTTP " + response.status);
+      }
 
-  const total = data.totalVisitors ?? data.total ?? visitors.length;
-  const pending = data.pendingVisitors ?? data.pending ?? countStatus("Pending");
-  const authorized = data.authorizedVisitors ?? data.authorized ?? countStatus("Authorized");
-  const revoked = data.revokedVisitors ?? data.revoked ?? countStatus("Revoked");
+      const result = await response.json();
 
-  animateNumber("totalVisitors", total);
-  animateNumber("pendingVisitors", pending);
-  animateNumber("authorizedVisitors", authorized);
-  animateNumber("revokedVisitors", revoked);
+      if (result.success === false) {
+        throw new Error(result.message || "The server request failed.");
+      }
 
-  updateChart(Number(pending), Number(authorized), Number(revoked));
-}
-
-async function loadVisitors() {
-  const tbody = $("visitorTable");
-  const message = $("dashboardMessage");
-  const token = getAdminToken();
-
-  if (!token) {
-    tbody.innerHTML =
-      '<tr><td colspan="6">Administrator login required.</td></tr>';
-    message.textContent = "Sign in to view visitor records.";
-    return;
-  }
-
-  tbody.innerHTML =
-    '<tr><td colspan="6">Loading visitor records...</td></tr>';
-
-  message.textContent = "Connecting to visitor database...";
-
-  try {
-    const data = await getJSON(
-      API_URL + "?action=visitors&token=" +
-      encodeURIComponent(token) + "&t=" + Date.now()
-    );
-
-    let records;
-
-    if (Array.isArray(data)) {
-      records = data;
-    } else if (Array.isArray(data.visitors)) {
-      records = data.visitors;
-    } else if (Array.isArray(data.records)) {
-      records = data.records;
-    } else if (Array.isArray(data.data)) {
-      records = data.data;
-    } else {
-      throw new Error("The API response did not contain a visitors array.");
+      return result;
     }
 
-    visitors = records;
-    renderVisitors();
-    updateSummaryFromVisitors();
+    async function postAPI(payload) {
+      /*
+       * Apps Script web apps commonly work with text/plain JSON
+       * to avoid a browser CORS preflight request.
+       */
+      const response = await fetch(API_URL, {
+        method: "POST",
+        redirect: "follow",
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8"
+        },
+        body: JSON.stringify(payload)
+      });
 
-    $("connectionStatus").textContent = "Visitor database connected";
-    message.textContent = "Loaded " + visitors.length + " visitor record(s).";
+      if (!response.ok) {
+        throw new Error("Server request failed: HTTP " + response.status);
+      }
 
-    try {
-      await refreshDashboard();
-    } catch (error) {
-      console.warn("Dashboard summary:", error.message);
-      $("analyticsMessage").textContent =
-        "Analytics are based on the loaded visitor records.";
+      const result = await response.json();
+
+      if (result.success === false) {
+        throw new Error(result.message || "The server request failed.");
+      }
+
+      return result;
     }
 
-  } catch (error) {
-    console.error("Visitor loading error:", error);
+    // =========================================
+    // LOGIN AND LOGOUT
+    // =========================================
 
-    $("recordCount").textContent = "0 RECORDS";
-    tbody.innerHTML =
-      '<tr><td colspan="6">Unable to load visitor records.</td></tr>';
+    $("loginForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
 
-    $("connectionStatus").textContent =
-      "Connection needs checking";
+      hideMessage("loginMessage");
 
-    message.textContent = "Error: " + error.message;
-  }
-}
+      const username = $("username").value.trim();
+      const password = $("password").value;
+      const button = $("loginButton");
 
-/* VISITOR TABLE */
+      if (!username || !password) {
+        showMessage("loginMessage", "Enter your username and password.", "error");
+        return;
+      }
 
-function renderVisitors() {
-  const tbody = $("visitorTable");
-  const query = $("visitorSearch").value.trim().toLowerCase();
+      setBusy(button, true, "Signing in...");
 
-  const filtered = visitors.filter(visitor => {
-    const name = String(getVisitorName(visitor)).toLowerCase();
-    const id = String(getVisitorId(visitor)).toLowerCase();
-    const email = String(visitor.email ?? visitor.Email ?? "").toLowerCase();
+      try {
+        const result = await postAPI({
+          action: "loginAdmin",
+          username: username,
+          password: password
+        });
 
-    return name.includes(query) || id.includes(query) || email.includes(query);
-  });
+        if (result.success === false) {
+          throw new Error(result.message || "Login failed.");
+        }
 
-  $("recordCount").textContent =
-    filtered.length + (filtered.length === 1 ? " RECORD" : " RECORDS");
+        /*
+         * Supports common token field names returned by loginAdmin().
+         */
+        const token = result.token ||
+          result.adminToken ||
+          result.data?.token ||
+          result.data?.adminToken;
 
-  if (!filtered.length) {
-    tbody.innerHTML = visitors.length
-      ? '<tr><td colspan="6">No matching visitor records.</td></tr>'
-      : '<tr><td colspan="6">No visitor records are available.</td></tr>';
-    return;
-  }
+        if (!token) {
+          throw new Error(
+            "Login response did not contain an admin token. Check the return value of loginAdmin() in Code.gs."
+          );
+        }
 
-  tbody.innerHTML = filtered.map(visitor => {
-    const id = String(getVisitorId(visitor));
-    const name = getVisitorName(visitor) || "Unnamed visitor";
-    const purpose = getVisitorPurpose(visitor) || "—";
-    const date = getVisitDate(visitor) || "—";
-    const status = normalizeStatus(visitor);
-    const normalized = status.toLowerCase();
+        const fullName = result.fullName ||
+          result.name ||
+          result.data?.fullName ||
+          result.data?.name ||
+          username;
 
-    let badgeClass = "badge-pending";
+        sessionStorage.setItem(TOKEN_KEY, token);
+        sessionStorage.setItem(NAME_KEY, fullName);
 
-    if (normalized === "authorized") {
-      badgeClass = "badge-authorized";
-    } else if (normalized === "revoked") {
-      badgeClass = "badge-revoked";
-    } else if (normalized !== "pending" && normalized !== "registered") {
-      badgeClass = "badge-neutral";
-    }
+        $("password").value = "";
 
-    let action = '<span style="color:#64748b">No action</span>';
+        showAdminApp();
+        await loadDashboard();
+        await loadVisitors();
 
-    if (
-      normalized === "pending" ||
-      normalized === "registered" ||
-      normalized === "revoked"
-    ) {
-      action = `<button class="action-btn"
-        data-id="${escapeHTML(id)}"
-        onclick="updateAuthorization(this.dataset.id,'Authorized',this)">✓ Authorize</button>`;
-    } else if (normalized === "authorized") {
-      action = `<button class="action-btn revoke"
-        data-id="${escapeHTML(id)}"
-        onclick="updateAuthorization(this.dataset.id,'Revoked',this)">⊘ Revoke</button>`;
-    }
-
-    return `<tr>
-      <td class="name-cell">${escapeHTML(name)}</td>
-      <td class="id-cell">${escapeHTML(id || "—")}</td>
-      <td>${escapeHTML(purpose)}</td>
-      <td>${escapeHTML(date)}</td>
-      <td><span class="badge ${badgeClass}">${escapeHTML(status)}</span></td>
-      <td>${action}</td>
-    </tr>`;
-  }).join("");
-}
-
-/* AUTHORIZE OR REVOKE VISITOR */
-
-async function updateAuthorization(visitorId, authorizationStatus, button) {
-  const message = $("authorizationMessage");
-
-  if (!getAdminToken()) {
-    message.textContent = "Admin login required. Please sign in again.";
-    return;
-  }
-
-  if (!visitorId) {
-    message.textContent = "Missing visitor ID. Reload the records.";
-    return;
-  }
-
-  if (!confirm(
-    "Set visitor " + visitorId + " to " + authorizationStatus + "?"
-  )) {
-    return;
-  }
-
-  button.disabled = true;
-  message.textContent = "Submitting authorization request...";
-
-  try {
-    const result = await postJSON({
-      action:"authorizeVisitor",
-      visitorId:visitorId,
-      authorizationStatus:authorizationStatus,
-      adminToken:getAdminToken()
+      } catch (error) {
+        showMessage(
+          "loginMessage",
+          error.message || "Unable to sign in. Check your connection and Apps Script deployment.",
+          "error"
+        );
+      } finally {
+        setBusy(button, false);
+      }
     });
 
-    message.textContent = result.message || "Authorization updated.";
-    await loadVisitors();
+    function showAdminApp() {
+      $("loginScreen").classList.add("hidden");
+      $("adminApp").classList.remove("hidden");
+      $("adminName").textContent = getAdminName();
+    }
 
-  } catch (error) {
-    console.error("Authorization error:", error);
-    message.textContent = "Authorization failed: " + error.message;
+    function logout() {
+      sessionStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(NAME_KEY);
 
-  } finally {
-    button.disabled = false;
-  }
-}
+      $("adminApp").classList.add("hidden");
+      $("loginScreen").classList.remove("hidden");
 
-async function refreshAll() {
-  await loadVisitors();
-}
+      $("username").value = "";
+      $("password").value = "";
 
-/* PAGE INITIALIZATION */
+      hideMessage("globalMessage");
+      hideMessage("loginMessage");
+    }
 
-$("adminLoginForm").addEventListener("submit", adminLogin);
+    $("logoutButton").addEventListener("click", logout);
 
-$("toggleLoginPassword").addEventListener("click", function() {
-  const input = $("loginPassword");
-  const showing = input.type === "password";
+    // =========================================
+    // NAVIGATION
+    // =========================================
 
-  input.type = showing ? "text" : "password";
-  this.setAttribute(
-    "aria-label",
-    showing ? "Hide password" : "Show password"
-  );
-});
+    const sectionTitles = {
+      dashboardSection: "Dashboard Overview",
+      visitorsSection: "Visitor Management",
+      registrationSection: "Registration",
+      qrSection: "QR Generator",
+      scannerSection: "QR Scanner"
+    };
 
-$("visitorSearch").addEventListener("input", renderVisitors);
+    document.querySelectorAll(".nav-item[data-section]").forEach(button => {
+      button.addEventListener("click", async function() {
+        const sectionId = this.dataset.section;
 
-async function initializeAdminPage() {
-  if (!getAdminToken()) {
-    $("loginScreen").hidden = false;
-    $("adminApp").hidden = true;
-    $("connectionStatus").textContent = "Please sign in";
-    return;
-  }
+        document.querySelectorAll(".nav-item").forEach(item => {
+          item.classList.remove("active");
+        });
 
-  $("loginScreen").hidden = true;
-  $("adminApp").hidden = false;
+        this.classList.add("active");
 
-  await loadVisitors();
-}
+        document.querySelectorAll(".page-section").forEach(section => {
+          section.classList.add("hidden");
+        });
 
-initializeAdminPage();
-</script>
+        $(sectionId).classList.remove("hidden");
+        $("pageTitle").textContent = sectionTitles[sectionId] || "PLMunTrack";
 
+        hideMessage("globalMessage");
+
+        if (sectionId === "dashboardSection") {
+          await loadDashboard();
+        }
+
+        if (sectionId === "visitorsSection") {
+          await loadVisitors();
+        }
+      });
+    });
+
+    // =========================================
+    // DASHBOARD
+    // =========================================
+
+    function readMetric(object, keys, fallback = 0) {
+      const value = findValue(object, keys);
+
+      if (value === undefined || value === null || value === "") {
+        return fallback;
+      }
+
+      const numeric = Number(value);
+
+      return Number.isFinite(numeric) ? numeric : value;
+    }
+
+    function renderDashboard(summary) {
+      currentDashboard = summary || {};
+
+      /*
+       * These aliases allow common summary field names.
+       * If getDashboardSummary() uses different names,
+       * update the key lists below to match Code.gs.
+       */
+      const total = readMetric(summary, [
+        "totalVisitors", "registeredVisitors", "total", "totalVisitor",
+        "visitorCount", "totalRecords"
+      ]);
+
+      const pending = readMetric(summary, [
+        "pendingApproval", "pendingVisitors", "pending", "pendingCount"
+      ]);
+
+      const authorized = readMetric(summary, [
+        "authorizedVisitors", "authorized", "approvedVisitors",
+        "authorizedCount"
+      ]);
+
+      const revoked = readMetric(summary, [
+        "revokedAuthorization", "revokedVisitors", "revoked",
+        "revokedCount"
+      ]);
+
+      $("totalVisitors").textContent = total;
+      $("pendingVisitors").textContent = pending;
+      $("authorizedVisitors").textContent = authorized;
+      $("revokedVisitors").textContent = revoked;
+
+      $("legendAuthorized").textContent = authorized;
+      $("legendPending").textContent = pending;
+      $("legendRevoked").textContent = revoked;
+
+      $("lastUpdated").textContent = new Date().toLocaleString();
+
+      renderChart(authorized, pending, revoked);
+    }
+
+    function renderChart(authorized, pending, revoked) {
+      const canvas = $("visitorChart");
+
+      if (visitorChart) {
+        visitorChart.destroy();
+      }
+
+      visitorChart = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+          labels: ["Authorized", "Pending", "Revoked"],
+          datasets: [{
+            data: [
+              Number(authorized) || 0,
+              Number(pending) || 0,
+              Number(revoked) || 0
+            ],
+            backgroundColor: ["#34d399", "#fbbf24", "#fb7185"],
+            borderColor: "#121a2e",
+            borderWidth: 5,
+            hoverOffset: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "69%",
+          plugins: {
+            legend: {
+              display: true,
+              position: "bottom",
+              labels: {
+                color: "#9ba9c5",
+                padding: 18,
+                usePointStyle: true,
+                pointStyle: "circle",
+                font: { size: 11 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadDashboard() {
+      if (!getToken()) {
+        logout();
+        return;
+      }
+
+      try {
+        const result = await getAPI("dashboard", {
+          token: getToken()
+        });
+
+        const summary = result.data || result.summary || result.dashboard || result;
+
+        renderDashboard(summary);
+        hideMessage("globalMessage");
+
+      } catch (error) {
+        showMessage(
+          "globalMessage",
+          "Unable to load dashboard: " + error.message,
+          "error"
+        );
+
+        if (/token|unauthoriz|expired/i.test(error.message)) {
+          logout();
+        }
+      }
+    }
+
+    $("refreshChartButton").addEventListener("click", loadDashboard);
+
+    // =========================================
+    // VISITOR RECORDS
+    // =========================================
+
+    function extractVisitorArray(result) {
+      if (Array.isArray(result)) return result;
+
+      const possibleArrays = [
+        result.visitors,
+        result.records,
+        result.data,
+        result.results,
+        result.visitorRecords
+      ];
+
+      for (const item of possibleArrays) {
+        if (Array.isArray(item)) return item;
+      }
+
+      if (result.data && typeof result.data === "object") {
+        for (const value of Object.values(result.data)) {
+          if (Array.isArray(value)) return value;
+        }
+      }
+
+      return [];
+    }
+
+    function getVisitorId(visitor) {
+      return findValue(visitor, [
+        "Visitor_ID", "VisitorID", "visitorId", "visitor_id", "ID", "id"
+      ]);
+    }
+
+    function getAuthorizationStatus(visitor) {
+      return findValue(visitor, [
+        "Authorization_Status", "AuthorizationStatus",
+        "authorizationStatus", "Status", "status"
+      ]);
+    }
+
+    function getVisitorName(visitor) {
+      return findValue(visitor, [
+        "Full_Name", "FullName", "Visitor_Name", "VisitorName",
+        "Name", "name", "visitorName"
+      ]);
+    }
+
+    function getVisitorEmail(visitor) {
+      return findValue(visitor, [
+        "Email", "email", "Email_Address", "EmailAddress"
+      ]);
+    }
+
+    function getVisitorPurpose(visitor) {
+      return findValue(visitor, [
+        "Purpose", "Visit_Purpose", "VisitPurpose", "purpose"
+      ]);
+    }
+
+    function getVisitorDate(visitor) {
+      return findValue(visitor, [
+        "Date", "Visit_Date", "VisitDate", "Created_At", "CreatedAt"
+      ]);
+    }
+
+    async function loadVisitors() {
+      if (!getToken()) {
+        logout();
+        return;
+      }
+
+      $("visitorTableBody").innerHTML =
+        '<tr><td class="empty" colspan="6">Loading visitor records...</td></tr>';
+
+      try {
+        const result = await getAPI("visitors", {
+          token: getToken()
+        });
+
+        visitorRecords = extractVisitorArray(result);
+
+        renderVisitors($("visitorSearch").value);
+
+        hideMessage("globalMessage");
+
+      } catch (error) {
+        $("visitorTableBody").innerHTML =
+          '<tr><td class="empty" colspan="6">Could not load visitor records.</td></tr>';
+
+        showMessage(
+          "globalMessage",
+          "Unable to load visitor records: " + error.message,
+          "error"
+        );
+
+        if (/token|unauthoriz|expired/i.test(error.message)) {
+          logout();
+        }
+      }
+    }
+
+    function renderVisitors(searchText = "") {
+      const head = $("visitorTableHead");
+      const body = $("visitorTableBody");
+      const query = String(searchText || "").trim().toLowerCase();
+
+      head.innerHTML = `
+        <tr>
+          <th>Visitor ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Purpose</th>
+          <th>Authorization</th>
+          <th>Actions</th>
+        </tr>
+      `;
+
+      const filtered = visitorRecords.filter(visitor => {
+        return Object.values(visitor).some(value =>
+          safeString(value).toLowerCase().includes(query)
+        );
+      });
+
+      if (!filtered.length) {
+        body.innerHTML = `
+          <tr>
+            <td class="empty" colspan="6">
+              ${visitorRecords.length
+                ? "No matching visitors found."
+                : "No visitor records found."}
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      body.innerHTML = "";
+
+      filtered.forEach(visitor => {
+        const id = getVisitorId(visitor);
+        const name = getVisitorName(visitor);
+        const email = getVisitorEmail(visitor);
+        const purpose = getVisitorPurpose(visitor);
+        const status = getAuthorizationStatus(visitor);
+
+        const row = document.createElement("tr");
+
+        addCell(row, id);
+        addCell(row, name);
+        addCell(row, email);
+        addCell(row, purpose);
+
+        const statusCell = document.createElement("td");
+        const badge = document.createElement("span");
+
+        badge.className = "pill " + statusClass(status);
+        badge.textContent = formatStatus(status);
+
+        statusCell.appendChild(badge);
+        row.appendChild(statusCell);
+
+        const actionCell = document.createElement("td");
+        const actionGroup = document.createElement("div");
+        actionGroup.className = "action-group";
+
+        const normalizedStatus = String(status || "").toLowerCase();
+
+        if (normalizedStatus === "authorized") {
+          const revokeButton = document.createElement("button");
+          revokeButton.className = "action-btn revoke";
+          revokeButton.textContent = "Revoke";
+          revokeButton.addEventListener("click", () => {
+            changeAuthorization(id, "Revoked", revokeButton);
+          });
+          actionGroup.appendChild(revokeButton);
+
+        } else {
+          const approveButton = document.createElement("button");
+          approveButton.className = "action-btn";
+          approveButton.textContent = "Authorize";
+          approveButton.addEventListener("click", () => {
+            changeAuthorization(id, "Authorized", approveButton);
+          });
+          actionGroup.appendChild(approveButton);
+        }
+
+        actionCell.appendChild(actionGroup);
+        row.appendChild(actionCell);
+
+        body.appendChild(row);
+      });
+    }
+
+    function addCell(row, value) {
+      const cell = document.createElement("td");
+      cell.textContent = safeString(value);
+      row.appendChild(cell);
+    }
+
+    $("visitorSearch").addEventListener("input", function() {
+      renderVisitors(this.value);
+    });
+
+    $("refreshVisitorsButton").addEventListener("click", loadVisitors);
+
+    // =========================================
+    // AUTHORIZE / REVOKE VISITOR
+    // =========================================
+
+    async function changeAuthorization(visitorId, authorizationStatus, button) {
+      if (!visitorId || visitorId === "—") {
+        showMessage(
+          "globalMessage",
+          "This visitor record does not have a Visitor_ID value.",
+          "error"
+        );
+        return;
+      }
+
+      const actionWord = authorizationStatus === "Authorized"
+        ? "authorize"
+        : "revoke the authorization for";
+
+      const confirmed = confirm(
+        "Are you sure you want to " + actionWord +
+        " visitor " + visitorId + "?"
+      );
+
+      if (!confirmed) return;
+
+      setBusy(button, true, "Saving...");
+
+      try {
+        const result = await postAPI({
+          action: "authorizeVisitor",
+          visitorId: String(visitorId),
+          authorizationStatus: authorizationStatus,
+          adminToken: getToken()
+        });
+
+        if (result.success === false) {
+          throw new Error(result.message || "Authorization update failed.");
+        }
+
+        showMessage(
+          "globalMessage",
+          result.message || "Visitor authorization updated successfully.",
+          "success"
+        );
+
+        await loadVisitors();
+        await loadDashboard();
+
+      } catch (error) {
+        showMessage(
+          "globalMessage",
+          "Unable to update authorization: " + error.message,
+          "error"
+        );
+      } finally {
+        setBusy(button, false);
+      }
+    }
+
+    // =========================================
+    // OTHER NAVIGATION BUTTONS
+    // =========================================
+
+    $("registrationInfoButton").addEventListener("click", function() {
+      showMessage(
+        "globalMessage",
+        "Create or connect your registration page, then update this button with its deployed URL.",
+        "info"
+      );
+    });
+
+    $("openGeneratorButton").addEventListener("click", function() {
+      window.location.href = "generator.html";
+    });
+
+    $("openScannerButton").addEventListener("click", function() {
+      window.location.href = "scanner.html";
+    });
+
+    // =========================================
+    // STARTUP
+    // =========================================
+
+    async function startApp() {
+      if (!getToken()) return;
+
+      showAdminApp();
+
+      await loadDashboard();
+      await loadVisitors();
+    }
+
+    startApp();
+  </script>
 </body>
 </html>
+
 
